@@ -210,5 +210,5 @@ Nesta versão não estão previstos: pagamento online, nota fiscal, login de cli
 
 ## Colaboradores
 
-- **Humberto Perira Gomes**
+- **Humberto Pereira Gomes**
 - **Gabriel Nascimento Botelho**
