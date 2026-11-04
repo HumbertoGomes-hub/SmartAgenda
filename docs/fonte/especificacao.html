@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>SmartAgenda — Especificação de Requisitos</title>
+<meta name="author" content="Humberto e Gabriel Nascimento Botelho">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<style>
+  @page {
+    size: A4;
+    margin: 51.7pt;
+    @bottom-right {
+      content: counter(page) " / " counter(pages);
+      font: 8pt "Inter", "DejaVu Sans", sans-serif;
+      color: #222;
+      vertical-align: top;
+      padding-top: 26pt;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { font-family: "Inter", "DejaVu Sans", sans-serif; color: #1a1a1a; }
+  body { margin: 0; font-size: 10.5pt; line-height: 1.45; }
+
+  header { border-bottom: 1.5pt solid #1f3a5f; padding-bottom: 11pt; margin-bottom: 0; }
+  h1 { font-size: 20pt; line-height: 24pt; font-weight: 700; color: #1f3a5f; margin: 0; }
+  .subtitulo { font-size: 12pt; font-weight: 600; color: #2b4a73; margin: 4pt 0 0; }
+  .meta { font-size: 9.5pt; color: #555; margin: 5pt 0 0; }
+
+  h2 {
+    font-size: 14pt; line-height: 1.25; font-weight: 700; color: #1f3a5f;
+    margin: 20pt 0 9pt; padding-bottom: 5pt; border-bottom: 0.7pt solid #c9d3e0;
+    break-after: avoid;
+  }
+  h3 { font-size: 11.5pt; font-weight: 700; color: #2b4a73; margin: 15pt 0 7pt; break-after: avoid; }
+  p { margin: 0 0 8pt; }
+  ul { margin: 0 0 8pt; padding-left: 18pt; }
+  li { margin: 0 0 2.6pt; }
+  strong { font-weight: 700; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; line-height: 1.4; margin: 0 0 12pt; }
+  thead { display: table-header-group; }
+  th { background: #1f3a5f; color: #fff; font-weight: 600; text-align: left; padding: 5.6pt 6pt; }
+  td { padding: 5.6pt 6pt; border-bottom: 0.7pt solid #d9dee6; vertical-align: top; }
+  tr { break-inside: avoid; }
+  tbody tr:nth-child(even) td { background: #f4f7fb; }
+  td.k { font-weight: 600; color: #1f3a5f; }
+  .c { text-align: center; }
+
+  table.req col.id { width: 54pt; }
+  table.req col.nome { width: 123.7pt; }
+  table.dupla col.a { width: 118.5pt; }
+  table.matriz col.acao { width: 256.5pt; }
+  table.matriz col.dono { width: 60.7pt; }
+  table.matriz col.socio { width: 63.7pt; }
+
+  code {
+    font-family: "Liberation Mono", "DejaVu Sans Mono", monospace; font-size: 9pt;
+    background: #eef2f7; border-radius: 3pt; padding: 0.5pt 3pt;
+  }
+
+  .nova-pagina { break-before: page; }
+  figure { margin: 6pt 0 0; }
+  figure img { display: block; margin: 0 auto; }
+  img.classes { width: 100%; }
+  img.uml { max-width: 100%; height: 609pt; width: auto; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SmartAgenda — Especificação de Requisitos</h1>
+  <p class="subtitulo">Sistema web de vitrine e agendamento para estéticas automotivas</p>
+  <p class="meta">Versão 1.0 · 04/11/2026 · Colaboradores: Humberto e Gabriel Nascimento Botelho</p>
+</header>
+
+<h2>1. Visão Geral e Objetivos</h2>
+<p>O SmartAgenda é uma aplicação web em Node.js para estéticas automotivas. O site funciona como vitrine
+da empresa e como agenda online: o cliente escolhe os serviços e marca ou desmarca um horário informando
+apenas nome e telefone, sem cadastro. Cada pedido é enviado ao WhatsApp do dono por um robô, e o dono
+aceita, pede reagendamento ou recusa. A aplicação é genérica: nome, logotipo, cores, serviços e horários
+são configurados no painel administrativo.</p>
+
+<h3>Objetivos</h3>
+<ul>
+  <li>Divulgar os serviços e os trabalhos realizados, com fotos e textos próprios.</li>
+  <li>Permitir que o cliente agende e cancele horários pela web, sem criar conta.</li>
+  <li>Avisar o dono pelo WhatsApp a cada novo pedido e permitir a resposta pela própria conversa.</li>
+  <li>Confirmar o agendamento ao cliente pelo WhatsApp.</li>
+  <li>Evitar horários em conflito, com a agenda atualizada a cada resposta.</li>
+  <li>Restringir o painel administrativo a dono, sócios e funcionários.</li>
+</ul>
+
+<h3>Usuários do sistema</h3>
+<table class="dupla">
+  <colgroup><col class="a"><col></colgroup>
+  <thead><tr><th>Usuário</th><th>Acesso</th></tr></thead>
+  <tbody>
+    <tr><td class="k">Cliente</td><td>Site público: vitrine, agendamento e cancelamento</td></tr>
+    <tr><td class="k">Dono</td><td>Painel completo, incluindo usuários, agenda e vitrine</td></tr>
+    <tr><td class="k">Sócio</td><td>Painel: agenda, serviços, portfólio e relatórios</td></tr>
+    <tr><td class="k">Funcionário</td><td>Painel: agenda e portfólio</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Fora do escopo desta versão:</strong> pagamento online, nota fiscal, login de clientes,
+aplicativo nativo e controle financeiro ou de estoque.</p>
+
+<h2>2. Requisitos Funcionais (RF)</h2>
+
+<h3>Módulo A — Vitrine</h3>
+<table class="req">
+  <colgroup><col class="id"><col class="nome"><col></colgroup>
+  <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td class="k">RF-01</td><td>Exibir página inicial</td><td>Exibir nome, logotipo, descrição, endereço, horário de funcionamento e contatos da estética, com acesso ao agendamento.</td></tr>
+    <tr><td class="k">RF-02</td><td>Exibir catálogo de serviços</td><td>Listar os serviços ativos por categoria, com descrição, preço “a partir de” e duração estimada.</td></tr>
+    <tr><td class="k">RF-03</td><td>Exibir portfólio</td><td>Exibir os trabalhos publicados em galeria, com título, descrição, fotos e serviço relacionado.</td></tr>
+  </tbody>
+</table>
+
+<h3>Módulo B — Agendamento</h3>
+<table class="req">
+  <colgroup><col class="id"><col class="nome"><col></colgroup>
+  <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td class="k">RF-04</td><td>Consultar horários disponíveis</td><td>Exibir calendário com os horários livres, calculados pela configuração da agenda e pela duração dos serviços escolhidos.</td></tr>
+    <tr><td class="k">RF-05</td><td>Solicitar agendamento</td><td>Permitir que o cliente escolha serviços, data e horário, informe nome, telefone e, opcionalmente, modelo do veículo e observações. O pedido é gravado com status Pendente.</td></tr>
+    <tr><td class="k">RF-06</td><td>Validar telefone</td><td>Confirmar junto ao provedor de WhatsApp que o telefone informado existe antes de gravar o pedido.</td></tr>
+    <tr><td class="k">RF-07</td><td>Cancelar agendamento</td><td>Permitir que o cliente desmarque um agendamento informando telefone e código do agendamento.</td></tr>
+    <tr><td class="k">RF-08</td><td>Atualizar agenda</td><td>Refletir na agenda cada mudança de status, liberando horários recusados, expirados ou cancelados.</td></tr>
+  </tbody>
+</table>
+
+<h3>Módulo C — Notificações via WhatsApp</h3>
+<table class="req">
+  <colgroup><col class="id"><col class="nome"><col></colgroup>
+  <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td class="k">RF-09</td><td>Notificar novo pedido</td><td>Enviar ao WhatsApp do dono os dados do pedido e as opções 1 – Aceitar, 2 – Reagendar, 3 – Recusar.</td></tr>
+    <tr><td class="k">RF-10</td><td>Receber resposta do dono</td><td>Interpretar a resposta enviada ao robô e atualizar o status do agendamento.</td></tr>
+    <tr><td class="k">RF-11</td><td>Propor reagendamento</td><td>Enviar ao cliente o novo horário proposto e registrar se ele aceita ou recusa.</td></tr>
+    <tr><td class="k">RF-12</td><td>Confirmar ao cliente</td><td>Enviar ao cliente data, horário, serviços, endereço e código quando o pedido for aceito.</td></tr>
+    <tr><td class="k">RF-13</td><td>Avisar recusa e cancelamento</td><td>Avisar o cliente sobre recusa ou expiração do pedido, e o dono sobre cancelamento feito pelo cliente.</td></tr>
+  </tbody>
+</table>
+
+<h3>Módulo D — Painel Administrativo</h3>
+<table class="req">
+  <colgroup><col class="id"><col class="nome"><col></colgroup>
+  <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td class="k">RF-14</td><td>Autenticar usuário</td><td>Permitir acesso ao painel com e-mail e senha de usuário ativo.</td></tr>
+    <tr><td class="k">RF-15</td><td>Gerenciar usuários</td><td>Permitir que o dono cadastre, edite e desative sócios e funcionários.</td></tr>
+    <tr><td class="k">RF-16</td><td>Responder pedidos pelo painel</td><td>Aceitar, reagendar ou recusar pedidos pendentes pelo painel.</td></tr>
+    <tr><td class="k">RF-17</td><td>Visualizar agenda</td><td>Exibir agendamentos em visão diária, semanal e mensal, com filtro por status e serviço.</td></tr>
+    <tr><td class="k">RF-18</td><td>Criar agendamento manual</td><td>Registrar agendamento confirmado para cliente atendido por telefone ou presencialmente.</td></tr>
+    <tr><td class="k">RF-19</td><td>Registrar atendimento</td><td>Marcar agendamento confirmado como Concluído ou Não compareceu.</td></tr>
+    <tr><td class="k">RF-20</td><td>Gerenciar serviços</td><td>Cadastrar, editar, ativar e desativar serviços, com categoria, preço base e duração.</td></tr>
+    <tr><td class="k">RF-21</td><td>Gerenciar portfólio</td><td>Criar trabalhos com título, descrição e fotos, ordenar fotos e publicar ou ocultar cada trabalho.</td></tr>
+    <tr><td class="k">RF-22</td><td>Configurar agenda</td><td>Definir dias e horários de funcionamento, intervalo entre horários, capacidade simultânea, prazos e datas bloqueadas.</td></tr>
+    <tr><td class="k">RF-23</td><td>Personalizar vitrine</td><td>Alterar nome, logotipo, cores, descrição, endereço, contatos e número de WhatsApp das notificações.</td></tr>
+    <tr><td class="k">RF-24</td><td>Gerar relatório mensal</td><td>Gerar o total de agendamentos por status e por serviço e o valor estimado dos atendimentos concluídos no mês.</td></tr>
+  </tbody>
+</table>
+
+<h2>3. Requisitos Não Funcionais (RNF)</h2>
+<table class="req">
+  <colgroup><col class="id"><col class="nome"><col></colgroup>
+  <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td class="k">RNF-01</td><td>Tempo de resposta</td><td>Páginas públicas devem carregar em até 3 s em conexão 4G; a consulta de horários livres deve responder em até 2 s.</td></tr>
+    <tr><td class="k">RNF-02</td><td>Tempo de notificação</td><td>A mensagem ao dono deve ser enviada em até 30 s após o pedido em pelo menos 95% dos casos.</td></tr>
+    <tr><td class="k">RNF-03</td><td>Disponibilidade</td><td>O sistema deve ficar disponível em 99% do tempo de cada mês.</td></tr>
+    <tr><td class="k">RNF-04</td><td>Capacidade</td><td>O sistema deve atender 50 usuários simultâneos mantendo os tempos do RNF-01.</td></tr>
+    <tr><td class="k">RNF-05</td><td>Responsividade</td><td>As telas devem funcionar sem rolagem horizontal em larguras de 360 px a 1920 px.</td></tr>
+    <tr><td class="k">RNF-06</td><td>Usabilidade do agendamento</td><td>O cliente deve concluir um agendamento em até 2 minutos e no máximo 4 telas.</td></tr>
+    <tr><td class="k">RNF-07</td><td>Segurança de acesso</td><td>Senhas armazenadas com hash bcrypt; sessão do painel expira após 30 minutos sem uso.</td></tr>
+    <tr><td class="k">RNF-08</td><td>Comunicação segura</td><td>Todas as páginas devem usar HTTPS.</td></tr>
+    <tr><td class="k">RNF-09</td><td>Imagens</td><td>Upload em JPG, PNG ou WebP de até 5 MB, redimensionado para no máximo 1600 px no maior lado.</td></tr>
+    <tr><td class="k">RNF-10</td><td>Backup</td><td>Cópia diária do banco de dados, mantida por 7 dias.</td></tr>
+    <tr><td class="k">RNF-11</td><td>Plataforma</td><td>Back-end em Node.js (LTS) com Express e banco de dados Supabase (PostgreSQL), com Supabase Storage para as fotos do portfólio.</td></tr>
+    <tr><td class="k">RNF-12</td><td>Configuração sem código</td><td>Uma nova estética deve entrar em operação alterando apenas dados no painel e variáveis de ambiente.</td></tr>
+    <tr><td class="k">RNF-13</td><td>LGPD</td><td>Coletar nome e telefone somente com consentimento explícito e anonimizar clientes sem agendamento há 12 meses.</td></tr>
+    <tr><td class="k">RNF-14</td><td>Integração com WhatsApp</td><td>Usar API autorizada de WhatsApp; a indisponibilidade do serviço não deve impedir o agendamento pelo site, e as mensagens pendentes devem ser reenviadas.</td></tr>
+  </tbody>
+</table>
+
+<h2>4. Regras de Negócio (RN)</h2>
+<table class="req">
+  <colgroup><col class="id"><col class="nome"><col></colgroup>
+  <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td class="k">RN-01</td><td>Dados mínimos</td><td>O agendamento exige nome (mínimo 3 caracteres) e telefone celular com DDD; o cliente não possui login.</td></tr>
+    <tr><td class="k">RN-02</td><td>Telefone existente</td><td>Só é aceito pedido com telefone ativo no WhatsApp.</td></tr>
+    <tr><td class="k">RN-03</td><td>Cliente único por telefone</td><td>Não pode haver dois clientes com o mesmo telefone; novos pedidos do mesmo número são vinculados ao mesmo cliente.</td></tr>
+    <tr><td class="k">RN-04</td><td>Serviço obrigatório</td><td>Todo pedido deve ter ao menos um serviço.</td></tr>
+    <tr><td class="k">RN-05</td><td>Duração</td><td>O tempo reservado é a soma das durações dos serviços e deve terminar até o horário de fechamento.</td></tr>
+    <tr><td class="k">RN-06</td><td>Capacidade simultânea</td><td>Agendamentos pendentes e confirmados no mesmo intervalo não podem exceder a capacidade configurada.</td></tr>
+    <tr><td class="k">RN-07</td><td>Antecedência</td><td>Pedidos com no mínimo 2 horas e no máximo 30 dias de antecedência (configurável).</td></tr>
+    <tr><td class="k">RN-08</td><td>Prazo de resposta</td><td>Pedido pendente sem resposta em 12 horas expira e o horário é liberado (configurável).</td></tr>
+    <tr><td class="k">RN-09</td><td>Limite por telefone</td><td>Máximo de 2 agendamentos ativos (pendentes ou confirmados) por telefone.</td></tr>
+    <tr><td class="k">RN-10</td><td>Confirmação</td><td>O cliente só recebe confirmação após aceite de um usuário administrativo.</td></tr>
+    <tr><td class="k">RN-11</td><td>Reagendamento</td><td>O novo horário deve estar livre; recusa ou falta de resposta do cliente cancela o agendamento.</td></tr>
+    <tr><td class="k">RN-12</td><td>Cancelamento pelo cliente</td><td>Permitido até 2 horas antes do horário (configurável).</td></tr>
+    <tr><td class="k">RN-13</td><td>Permissões por perfil</td><td>Cada perfil executa apenas as ações da matriz de permissões abaixo.</td></tr>
+    <tr><td class="k">RN-14</td><td>Gestão de usuários</td><td>Somente o dono cadastra ou desativa usuários; deve existir sempre pelo menos um dono ativo.</td></tr>
+    <tr><td class="k">RN-15</td><td>Preço estimado</td><td>O preço da vitrine é “a partir de”; o valor final é definido após avaliação do veículo.</td></tr>
+    <tr><td class="k">RN-16</td><td>Status do agendamento</td><td>Um agendamento assume um dos status: Pendente, Aguardando cliente, Confirmado, Recusado, Expirado, Cancelado, Concluído ou Não compareceu.</td></tr>
+  </tbody>
+</table>
+
+<h3>Matriz de permissões (RN-13)</h3>
+<table class="matriz">
+  <colgroup><col class="acao"><col class="dono"><col class="socio"><col></colgroup>
+  <thead><tr><th>Ação</th><th class="c">Dono</th><th class="c">Sócio</th><th class="c">Funcionário</th></tr></thead>
+  <tbody>
+    <tr><td>Ver agenda, responder pedidos, registrar atendimento</td><td class="c">Sim</td><td class="c">Sim</td><td class="c">Sim</td></tr>
+    <tr><td>Criar agendamento manual</td><td class="c">Sim</td><td class="c">Sim</td><td class="c">Sim</td></tr>
+    <tr><td>Gerenciar portfólio</td><td class="c">Sim</td><td class="c">Sim</td><td class="c">Sim</td></tr>
+    <tr><td>Gerenciar serviços</td><td class="c">Sim</td><td class="c">Sim</td><td class="c">Não</td></tr>
+    <tr><td>Gerar relatório mensal</td><td class="c">Sim</td><td class="c">Sim</td><td class="c">Não</td></tr>
+    <tr><td>Configurar agenda e vitrine</td><td class="c">Sim</td><td class="c">Não</td><td class="c">Não</td></tr>
+    <tr><td>Gerenciar usuários</td><td class="c">Sim</td><td class="c">Não</td><td class="c">Não</td></tr>
+  </tbody>
+</table>
+
+<section class="nova-pagina">
+  <h2>5. Diagrama de Classes</h2>
+  <p>Classes do domínio com seus atributos, operações principais e associações com multiplicidade.</p>
+  <figure><img class="classes" src="../diagrama-classes.png" alt="Diagrama de classes do domínio do SmartAgenda"></figure>
+</section>
+
+<section class="nova-pagina">
+  <h2>6. UML Técnica Completa</h2>
+  <p>Diagrama de classes de projeto com visibilidade, tipos de dados, assinaturas de métodos e tipos de relacionamento.</p>
+  <figure><img class="uml" src="../uml-tecnica.png" alt="UML técnica — diagrama de classes de projeto do SmartAgenda"></figure>
+
+  <h3>Relacionamentos</h3>
+  <table class="dupla">
+    <colgroup><col class="a"><col></colgroup>
+    <thead><tr><th>Tipo</th><th>Classes</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Generalização</td><td>UsuarioAdmin (abstrata) → Dono, Socio, Funcionario</td></tr>
+      <tr><td class="k">Composição</td><td>Empresa ◆ ConfiguracaoAgenda; Empresa ◆ TrabalhoPortfolio; ConfiguracaoAgenda ◆ BloqueioAgenda; TrabalhoPortfolio ◆ Foto; Agendamento ◆ Notificacao</td></tr>
+      <tr><td class="k">Agregação</td><td>Empresa ◇ UsuarioAdmin; Empresa ◇ Servico</td></tr>
+      <tr><td class="k">Classe associativa</td><td>ItemAgendamento, entre Agendamento e Servico (preço e duração praticados)</td></tr>
+      <tr><td class="k">Associação</td><td>Cliente — Agendamento; UsuarioAdmin — Agendamento; TrabalhoPortfolio — Servico</td></tr>
+      <tr><td class="k">Dependência</td><td>Notificacao e Cliente → ServicoWhatsApp (interface); Agendamento → StatusAgendamento (enumeração)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Restrições</h3>
+  <ul>
+    <li><code>Cliente.telefone</code> e <code>Agendamento.codigo</code> : <code>{unique}</code>.</li>
+    <li><code>UsuarioAdmin.podeExecutar()</code> : <code>{abstract}</code>, implementado em cada perfil conforme a matriz de permissões.</li>
+  </ul>
+  <p><strong>Notação:</strong> <code>+</code> público, <code>-</code> privado, <code>#</code> protegido.</p>
+</section>
+
+</body>
+</html>
