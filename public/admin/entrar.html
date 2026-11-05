@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7ed" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Entrar | Painel</title>
+    <link rel="icon" href="data:," data-empresa-icone />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+    <script src="../js/admin/api-admin-exemplo.js" defer></script>
+    <script src="../js/admin/marca.js" defer></script>
+    <script src="../js/admin/entrar.js" defer></script>
+  </head>
+  <body class="corpo-entrar">
+    <main id="conteudo" class="entrar">
+      <div class="entrar__cartao">
+        <a class="marca" href="../index.html" translate="no">
+          <img data-empresa-logo alt="" width="34" height="34" hidden />
+          <span data-empresa-nome></span>
+        </a>
+
+        <h1>Painel da equipe</h1>
+        <p class="entrar__apoio">Entre com o e-mail e a senha cadastrados pelo dono da estética.</p>
+
+        <p id="aviso-entrar" class="aviso" role="status"></p>
+
+        <form id="form-entrar" class="entrar__form" action="/admin/entrar" method="post" novalidate>
+          <div class="campo">
+            <label for="email">E-mail</label>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="username" spellcheck="false" autocapitalize="none" required aria-describedby="email-erro" />
+            <span id="email-erro" class="campo__erro"></span>
+          </div>
+          <div class="campo">
+            <label for="senha">Senha</label>
+            <div class="campo-senha">
+              <input id="senha" name="senha" type="password" autocomplete="current-password" required aria-describedby="senha-erro" />
+              <button id="alternar-senha" class="campo-senha__alternar" type="button" aria-pressed="false" aria-controls="senha">Mostrar</button>
+            </div>
+            <span id="senha-erro" class="campo__erro"></span>
+          </div>
+          <p id="alerta-entrar" class="alerta" role="alert"></p>
+          <button id="botao-entrar" class="botao botao--grande" type="submit">Entrar</button>
+        </form>
+
+        <p class="entrar__rodape">Esqueceu a senha? Peça ao dono da estética para cadastrar uma nova.</p>
+      </div>
+
+      <a class="ligacao" href="../index.html">Voltar ao site</a>
+    </main>
+  </body>
+</html>

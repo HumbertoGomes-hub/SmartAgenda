@@ -1,0 +1,614 @@
+/* ==========================================================================
+   Painel administrativo
+   Usa tokens.css e a base de site.css (botões, campos, alertas, etiquetas).
+   ========================================================================== */
+:root {
+  --lateral: 264px;
+
+  /* Status do agendamento (RN-16). O texto do status sempre acompanha a cor. */
+  --status-pendente: #7a4d00;
+  --status-pendente-fundo: #fbf0d9;
+  --status-aguardando: #1d4a85;
+  --status-aguardando-fundo: #e7eff9;
+  --status-confirmado: #1d6236;
+  --status-confirmado-fundo: #e5f2e9;
+}
+
+/* Evita mostrar o painel por um instante antes de conferir a sessão. */
+html[data-sessao='verificando'] body {
+  visibility: hidden;
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.botao--pequeno {
+  min-height: 40px;
+  padding: 0.375rem 0.875rem;
+  font-size: var(--texto-p);
+}
+
+/* ==========================================================================
+   Estrutura: menu lateral + conteúdo
+   ========================================================================== */
+.corpo-painel {
+  display: block;
+}
+
+.painel {
+  display: grid;
+  grid-template-columns: var(--lateral) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.lateral {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: var(--e5) var(--e4);
+  overflow-y: auto;
+  background: var(--creme);
+}
+
+.lateral__topo {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  padding-inline: var(--e2);
+}
+
+.lateral .marca {
+  font-size: var(--texto-m);
+  line-height: 1.2;
+}
+
+.marca__apoio {
+  display: block;
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.lateral__alternar {
+  display: none;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  border: 1.5px solid var(--borda-forte);
+  border-radius: var(--raio-m);
+  background: transparent;
+  cursor: pointer;
+}
+
+.lateral__gaveta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin-top: var(--e6);
+}
+
+.menu-painel ul {
+  display: grid;
+  gap: 2px;
+}
+
+.menu-painel__link {
+  display: flex;
+  align-items: center;
+  gap: var(--e3);
+  min-height: 44px;
+  padding: 0.25rem var(--e3);
+  border-radius: var(--raio-p);
+  text-decoration: none;
+}
+
+.menu-painel__link svg {
+  flex: none;
+}
+
+a.menu-painel__link:hover {
+  background: rgb(31 31 31 / 0.06);
+}
+
+.menu-painel__link[aria-current='page'] {
+  background: var(--marca);
+  color: var(--marca-texto);
+  font-weight: 500;
+}
+
+.menu-painel__link[aria-current='page']:hover {
+  background: var(--marca);
+}
+
+.menu-painel__link[aria-disabled='true'] {
+  color: var(--texto-suave);
+  cursor: default;
+}
+
+.menu-painel__breve {
+  margin-left: auto;
+  padding: 0 0.375rem;
+  border: 1px solid var(--borda-forte);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.lateral__usuario {
+  margin-top: auto;
+  padding: var(--e4) var(--e2) 0;
+  border-top: 1.5px solid var(--borda);
+}
+
+.lateral__nome {
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.lateral__perfil {
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.lateral__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e2) var(--e4);
+  margin-top: var(--e3);
+}
+
+.lateral__site {
+  font-size: var(--texto-p);
+}
+
+.painel__principal {
+  width: min(100%, 72rem);
+  padding: var(--e6) var(--margem) var(--e8);
+}
+
+.painel__aviso {
+  margin-bottom: var(--e5);
+}
+
+@media (max-width: 900px) {
+  .painel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lateral {
+    z-index: 10;
+    height: auto;
+    padding: var(--e3) var(--margem);
+    overflow: visible;
+    border-bottom: 1.5px solid var(--borda);
+  }
+
+  .lateral__topo {
+    padding: 0;
+  }
+
+  .lateral__alternar {
+    display: grid;
+  }
+
+  .lateral__gaveta {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    max-height: calc(100vh - 70px);
+    margin: 0;
+    padding: var(--e2) var(--margem) var(--e5);
+    overflow-y: auto;
+    border-bottom: 1.5px solid var(--borda);
+    background: var(--creme);
+  }
+
+  .lateral__gaveta[data-aberta='true'] {
+    display: flex;
+  }
+
+  .lateral__usuario {
+    margin-top: var(--e4);
+  }
+
+  .painel__principal {
+    padding-top: var(--e5);
+  }
+}
+
+/* ==========================================================================
+   Topo da página e blocos
+   ========================================================================== */
+.painel-topo {
+  margin-bottom: var(--e6);
+}
+
+.painel-topo h1 {
+  font-size: var(--titulo-m);
+}
+
+.painel-topo p {
+  margin-top: var(--e2);
+  color: var(--texto-suave);
+  font-size: var(--texto-g);
+}
+
+.bloco {
+  margin-top: var(--e7);
+}
+
+.bloco__topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--e1) var(--e5);
+  margin-bottom: var(--e3);
+}
+
+.bloco__topo h2 {
+  font-size: var(--titulo-p);
+}
+
+.bloco__topo p {
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.vazio {
+  padding: var(--e4);
+  border-radius: var(--raio-m);
+  background: var(--cinza);
+  color: var(--texto-suave);
+}
+
+/* ==========================================================================
+   Indicadores do dia
+   ========================================================================== */
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--e4);
+}
+
+.indicador {
+  display: flex;
+  flex-direction: column;
+  padding: var(--e5);
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-g);
+}
+
+.indicador[data-destaque='true'] {
+  border-color: var(--marca);
+  background: var(--marca);
+  color: var(--marca-texto);
+}
+
+.indicador__rotulo {
+  font-weight: 500;
+}
+
+.indicador__numero {
+  order: -1;
+  margin-bottom: var(--e2);
+  font-size: var(--titulo-m);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.indicador__apoio {
+  margin-top: var(--e1);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.indicador[data-destaque='true'] .indicador__apoio {
+  color: var(--sobre-marca-suave);
+}
+
+@media (max-width: 760px) {
+  .indicadores {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--e3);
+  }
+
+  .indicador {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    column-gap: var(--e3);
+    padding: var(--e4);
+    border-radius: var(--raio-m);
+  }
+
+  .indicador__numero {
+    grid-row: 1 / 3;
+    align-self: center;
+    margin: 0;
+    font-size: var(--titulo-p);
+  }
+}
+
+/* ==========================================================================
+   Listas de agendamentos
+   ========================================================================== */
+.lista-agendamentos {
+  border-top: 1.5px solid var(--borda);
+}
+
+.lista-agendamentos .vazio {
+  margin-top: var(--e3);
+}
+
+.linha-agendamento {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr) auto;
+  gap: var(--e1) var(--e5);
+  align-items: start;
+  padding-block: var(--e4);
+  border-bottom: 1.5px solid var(--borda);
+}
+
+.linha-agendamento[data-agora='true'] {
+  box-shadow: inset 3px 0 0 var(--marca);
+  padding-left: var(--e4);
+}
+
+.linha-agendamento__quando {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+}
+
+.linha-agendamento__quando small {
+  display: block;
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  font-weight: 400;
+}
+
+.linha-agendamento__principal {
+  min-width: 0;
+}
+
+.linha-agendamento__cliente {
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.linha-agendamento__detalhe,
+.linha-agendamento__telefone,
+.linha-agendamento__obs {
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.linha-agendamento__telefone {
+  display: inline-block;
+  margin-top: var(--e1);
+  font-variant-numeric: tabular-nums;
+  text-underline-offset: 3px;
+}
+
+.linha-agendamento__obs {
+  margin-top: var(--e1);
+  font-style: italic;
+}
+
+.linha-agendamento__lado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--e1);
+  text-align: right;
+}
+
+.linha-agendamento__valor {
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.prazo {
+  font-size: var(--texto-p);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.prazo[data-urgente='true'] {
+  color: var(--erro);
+}
+
+@media (max-width: 640px) {
+  .linha-agendamento {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .linha-agendamento__quando small {
+    display: inline;
+    margin-left: var(--e2);
+  }
+
+  .linha-agendamento__principal {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .linha-agendamento__lado {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+/* ==========================================================================
+   Status do agendamento
+   ========================================================================== */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 26px;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--raio-p);
+  background: var(--cinza);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status::before {
+  content: '';
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status[data-status='PENDENTE'] {
+  background: var(--status-pendente-fundo);
+  color: var(--status-pendente);
+}
+
+.status[data-status='AGUARDANDO_CLIENTE'] {
+  background: var(--status-aguardando-fundo);
+  color: var(--status-aguardando);
+}
+
+.status[data-status='CONFIRMADO'] {
+  background: var(--status-confirmado-fundo);
+  color: var(--status-confirmado);
+}
+
+.status[data-status='CONCLUIDO'] {
+  color: var(--tinta);
+}
+
+.status[data-status='NAO_COMPARECEU'] {
+  background: var(--erro-fundo);
+  color: var(--erro);
+}
+
+/* ==========================================================================
+   Login
+   ========================================================================== */
+.corpo-entrar {
+  background: var(--creme);
+}
+
+.entrar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e5);
+  min-height: 100vh;
+  padding: var(--e6) var(--margem);
+}
+
+.entrar__cartao {
+  width: min(100%, 27rem);
+  padding: var(--e6);
+  border-radius: var(--raio-g);
+  background: var(--branco);
+}
+
+.entrar__cartao .marca {
+  margin-bottom: var(--e6);
+}
+
+.entrar h1 {
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+}
+
+.entrar__apoio {
+  margin-top: var(--e2);
+  color: var(--texto-suave);
+}
+
+.aviso {
+  margin-top: var(--e4);
+  padding: var(--e3) var(--e4);
+  border-radius: var(--raio-m);
+  background: var(--cinza);
+}
+
+.aviso:empty {
+  display: none;
+}
+
+.entrar__form {
+  margin-top: var(--e5);
+}
+
+.entrar__form .alerta {
+  margin-top: var(--e4);
+}
+
+.entrar__form .botao {
+  width: 100%;
+  margin-top: var(--e5);
+}
+
+.campo-senha {
+  position: relative;
+}
+
+.campo-senha input {
+  padding-right: 6rem;
+}
+
+.campo-senha__alternar {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  padding: 0 var(--e3);
+  border: 0;
+  border-radius: var(--raio-p);
+  background: transparent;
+  font-size: var(--texto-p);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.campo-senha__alternar:hover {
+  background: var(--cinza);
+}
+
+.entrar__rodape {
+  margin-top: var(--e5);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+@media (max-width: 480px) {
+  .entrar {
+    justify-content: flex-start;
+  }
+
+  .entrar__cartao {
+    padding: var(--e5);
+  }
+}

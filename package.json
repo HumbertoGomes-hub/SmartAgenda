@@ -1,0 +1,27 @@
+{
+  "name": "smartagenda",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vitrine e agenda online para estéticas automotivas, com confirmação de horários pelo WhatsApp.",
+  "license": "SEE LICENSE IN LICENSE",
+  "type": "commonjs",
+  "main": "src/servidor.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/servidor.js",
+    "dev": "node --watch src/servidor.js",
+    "criar-dono": "node scripts/criar-dono.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.1.0",
+    "memorystore": "^1.6.7"
+  }
+}

@@ -1,0 +1,26 @@
+/*
+ * Dados do painel. Toda rota aqui exige sessão e declara a permissão que
+ * pede (RN-13).
+ *
+ *   GET /api/admin/resumo -> resumo da tela inicial (pedidos, hoje, aguardando cliente)
+ *
+ * Próximas etapas entram aqui ou em arquivos próprios em src/rotas/:
+ * pedidos (RF-16), agenda (RF-17 a RF-19), serviços (RF-20), portfólio (RF-21),
+ * configurações (RF-22, RF-23), usuários (RF-15) e relatório (RF-24).
+ */
+'use strict';
+
+const express = require('express');
+const agendamentos = require('../repositorios/agendamentos');
+const { exigirSessao, exigirPermissao } = require('../middlewares/autenticacao');
+const { ACOES } = require('../auth/permissoes');
+
+const rotas = express.Router();
+
+// Proteção por rota (e não rotas.use) porque este router fica montado em
+// /api/admin: um rotas.use consultaria a sessão para qualquer endereço ali.
+rotas.get('/resumo', exigirSessao, exigirPermissao(ACOES.AGENDA), async (req, res) => {
+  res.json(await agendamentos.resumoDoDia());
+});
+
+module.exports = rotas;
