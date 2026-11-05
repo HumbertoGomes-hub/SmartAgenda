@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Serviços | Estética Modelo</title>
+    <meta name="description" content="Serviços de lavagem, polimento e proteção de pintura, com preço inicial e duração." />
+    <link rel="icon" href="img/exemplo/logotipo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/site.css" />
+    <script src="js/site.js" defer></script>
+  </head>
+  <body>
+    <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
+
+    <!-- início: cabeçalho (vira partial no EJS) -->
+    <header class="cabecalho">
+      <div class="conteudo cabecalho__linha">
+        <a class="marca" href="index.html" translate="no">
+          <img src="img/exemplo/logotipo.svg" alt="" width="34" height="34" />
+          Estética Modelo
+        </a>
+        <nav id="navegacao" class="navegacao" aria-label="Principal">
+          <ul>
+            <li><a href="servicos.html" aria-current="page">Serviços</a></li>
+            <li><a href="portfolio.html">Portfólio</a></li>
+            <li><a href="desmarcar.html">Desmarcar horário</a></li>
+          </ul>
+        </nav>
+        <a class="botao" href="agendar.html">Agendar</a>
+        <button class="alternar-menu" type="button" aria-expanded="false" aria-controls="navegacao" aria-label="Abrir menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+    <!-- fim: cabeçalho -->
+
+    <main id="conteudo">
+      <div class="pagina-topo pagina-topo--creme">
+        <div class="conteudo">
+          <h1>Serviços</h1>
+          <p>Os preços são o valor inicial de cada serviço. O valor final é definido depois da avaliação do veículo.</p>
+        </div>
+      </div>
+
+      <div class="conteudo secao">
+        <section class="categoria">
+          <h2>Lavagem</h2>
+          <ul class="servicos-lista">
+            <li>
+              <article class="servico">
+                <div class="servico__texto">
+                  <h3>Lavagem detalhada</h3>
+                  <p>Carroceria, rodas, frisos, vidros e caixas de roda limpos um a um.</p>
+                </div>
+                <span class="etiqueta">1h</span>
+                <p class="servico__preco"><small>a partir de</small> <strong>R$ 80</strong></p>
+                <a class="botao botao--contorno" href="agendar.html?servico=lavagem-detalhada" aria-label="Agendar Lavagem detalhada">Agendar</a>
+              </article>
+            </li>
+            <li>
+              <article class="servico">
+                <div class="servico__texto">
+                  <h3>Higienização interna</h3>
+                  <p>Bancos, carpetes, teto e painel limpos e sem odor.</p>
+                </div>
+                <span class="etiqueta">2h30</span>
+                <p class="servico__preco"><small>a partir de</small> <strong>R$ 180</strong></p>
+                <a class="botao botao--contorno" href="agendar.html?servico=higienizacao-interna" aria-label="Agendar Higienização interna">Agendar</a>
+              </article>
+            </li>
+          </ul>
+        </section>
+        <section class="categoria">
+          <h2>Polimento</h2>
+          <ul class="servicos-lista">
+            <li>
+              <article class="servico">
+                <div class="servico__texto">
+                  <h3>Polimento comercial</h3>
+                  <p>Devolve o brilho e disfarça riscos leves da pintura.</p>
+                </div>
+                <span class="etiqueta">3h</span>
+                <p class="servico__preco"><small>a partir de</small> <strong>R$ 250</strong></p>
+                <a class="botao botao--contorno" href="agendar.html?servico=polimento-comercial" aria-label="Agendar Polimento comercial">Agendar</a>
+              </article>
+            </li>
+            <li>
+              <article class="servico">
+                <div class="servico__texto">
+                  <h3>Polimento técnico</h3>
+                  <p>Remove riscos e marcas de lavagem, em duas ou mais etapas.</p>
+                </div>
+                <span class="etiqueta">5h</span>
+                <p class="servico__preco"><small>a partir de</small> <strong>R$ 450</strong></p>
+                <a class="botao botao--contorno" href="agendar.html?servico=polimento-tecnico" aria-label="Agendar Polimento técnico">Agendar</a>
+              </article>
+            </li>
+          </ul>
+        </section>
+        <section class="categoria">
+          <h2>Proteção</h2>
+          <ul class="servicos-lista">
+            <li>
+              <article class="servico">
+                <div class="servico__texto">
+                  <h3>Vitrificação de pintura</h3>
+                  <p>Camada que protege a pintura e facilita a limpeza por até dois anos.</p>
+                </div>
+                <span class="etiqueta">8h</span>
+                <p class="servico__preco"><small>a partir de</small> <strong>R$ 900</strong></p>
+                <a class="botao botao--contorno" href="agendar.html?servico=vitrificacao-pintura" aria-label="Agendar Vitrificação de pintura">Agendar</a>
+              </article>
+            </li>
+            <li>
+              <article class="servico">
+                <div class="servico__texto">
+                  <h3>Cristalização de vidros</h3>
+                  <p>A água escorre do para-brisa e a visão melhora na chuva.</p>
+                </div>
+                <span class="etiqueta">1h</span>
+                <p class="servico__preco"><small>a partir de</small> <strong>R$ 120</strong></p>
+                <a class="botao botao--contorno" href="agendar.html?servico=cristalizacao-vidros" aria-label="Agendar Cristalização de vidros">Agendar</a>
+              </article>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <!-- início: rodapé (vira partial no EJS) -->
+    <footer class="rodape">
+      <div class="conteudo rodape__grade">
+        <div class="rodape__empresa">
+          <a class="marca" href="index.html" translate="no">
+            <img src="img/exemplo/logotipo.svg" alt="" width="34" height="34" />
+            Estética Modelo
+          </a>
+          <p class="rodape__descricao">Rua das Oficinas, 120, Vila Exemplo, São Paulo. Segunda a sábado, das 8h às 18h.</p>
+        </div>
+        <div>
+          <h2>Contato</h2>
+          <ul>
+            <li><a href="tel:+551130000000">(11) 3000-0000</a></li>
+            <li><a href="https://www.instagram.com/" rel="noopener">Instagram</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Site</h2>
+          <ul>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="portfolio.html">Portfólio</a></li>
+            <li><a href="desmarcar.html">Desmarcar horário</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+    <!-- fim: rodapé -->
+  </body>
+</html>

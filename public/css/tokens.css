@@ -1,0 +1,65 @@
+/*
+ * Tokens de design do SmartAgenda.
+ *
+ * --marca e --marca-texto vêm de empresa.cor_primaria (RF-23). Na etapa do
+ * back-end, basta sobrescrever essas duas variáveis no layout para que botões,
+ * seleções e blocos sólidos acompanhem a identidade de cada estética.
+ */
+:root {
+  /* Paleta base */
+  --tinta: #1f1f1f;
+  --creme: #f6f7ed;
+  --cinza: #f4f4f4;
+  --branco: #ffffff;
+
+  /* Identidade configurável */
+  --marca: #1f1f1f;
+  --marca-texto: #ffffff;
+
+  /* Papéis derivados */
+  --texto-suave: #5c5d56;
+  --borda: #e2e3d8;
+  --borda-forte: #c4c5b8;
+  --sobre-marca-suave: #c9c9c2;
+  --erro: #a12b1e;
+  --erro-fundo: #fbefec;
+
+  /* Hachura: ocupado, indisponível ou "antes" */
+  --hachura: repeating-linear-gradient(
+    135deg,
+    transparent 0 4px,
+    rgb(31 31 31 / 0.2) 4px 5px
+  );
+
+  /* Tipografia */
+  --fonte: 'General Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --texto-p: 0.875rem;
+  --texto-m: 1rem;
+  --texto-g: 1.1875rem;
+  --titulo-p: 1.5rem;
+  --titulo-m: clamp(1.875rem, 1.5rem + 1.6vw, 2.75rem);
+  --titulo-g: clamp(2.5rem, 1.9rem + 3vw, 4.25rem);
+  --titulo-abertura: clamp(3.25rem, 11.4vw, 11rem);
+
+  /* Espaçamento */
+  --e1: 0.25rem;
+  --e2: 0.5rem;
+  --e3: 0.75rem;
+  --e4: 1rem;
+  --e5: 1.5rem;
+  --e6: 2rem;
+  --e7: 3rem;
+  --e8: 4.5rem;
+  --e9: clamp(4rem, 3rem + 5vw, 7rem);
+
+  /* Raios: quanto maior o bloco, maior a curva */
+  --raio-p: 8px;
+  --raio-m: 12px;
+  --raio-g: 22px;
+  --raio-pilula: 999px;
+
+  /* Medidas */
+  --largura: 1320px;
+  --margem: clamp(1rem, 0.5rem + 2.4vw, 2.5rem);
+  --leitura: 62ch;
+}

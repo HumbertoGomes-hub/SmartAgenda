@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Pedido enviado | Estética Modelo</title>
+    <meta name="description" content="Seu pedido de agendamento foi enviado para a estética." />
+    <link rel="icon" href="img/exemplo/logotipo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/site.css" />
+    <script src="js/api-exemplo.js" defer></script>
+    <script src="js/site.js" defer></script>
+    <script src="js/sucesso.js" defer></script>
+  </head>
+  <body>
+    <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
+
+    <!-- início: cabeçalho (vira partial no EJS) -->
+    <header class="cabecalho">
+      <div class="conteudo cabecalho__linha">
+        <a class="marca" href="index.html" translate="no">
+          <img src="img/exemplo/logotipo.svg" alt="" width="34" height="34" />
+          Estética Modelo
+        </a>
+        <nav id="navegacao" class="navegacao" aria-label="Principal">
+          <ul>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="portfolio.html">Portfólio</a></li>
+            <li><a href="desmarcar.html">Desmarcar horário</a></li>
+          </ul>
+        </nav>
+        <a class="botao" href="agendar.html">Agendar</a>
+        <button class="alternar-menu" type="button" aria-expanded="false" aria-controls="navegacao" aria-label="Abrir menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+    <!-- fim: cabeçalho -->
+
+    <main id="conteudo">
+      <div class="conteudo">
+        <div class="painel-central">
+          <h1>Pedido enviado</h1>
+          <p class="painel-central__apoio">Seu horário está reservado, mas ainda não está confirmado. A estética responde pelo WhatsApp em até 12 horas.</p>
+
+          <div class="placa">
+            <span class="placa__faixa">Código do agendamento</span>
+            <strong id="codigo" class="placa__codigo" translate="no">K7M2QX</strong>
+          </div>
+          <div class="copiar">
+            <button id="copiar-codigo" class="botao botao--contorno" type="button">Copiar código</button>
+            <span id="copiar-aviso" class="copiar__aviso" role="status">Guarde o código para desmarcar, se precisar.</span>
+          </div>
+
+          <dl class="ficha">
+            <div>
+              <dt>Quando</dt>
+              <dd id="ficha-quando">Sexta, 13 de novembro, às 14:00</dd>
+            </div>
+            <div>
+              <dt>Serviços</dt>
+              <dd id="ficha-servicos">Lavagem detalhada, Cristalização de vidros</dd>
+            </div>
+            <div>
+              <dt>Duração</dt>
+              <dd id="ficha-duracao">2h</dd>
+            </div>
+            <div>
+              <dt>Valor</dt>
+              <dd id="ficha-valor">A partir de R$ 200</dd>
+            </div>
+          </dl>
+
+          <div class="proximos__acoes">
+            <a class="botao" href="index.html">Voltar ao início</a>
+            <a class="botao botao--contorno" href="desmarcar.html">Desmarcar horário</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- início: rodapé (vira partial no EJS) -->
+    <footer class="rodape">
+      <div class="conteudo rodape__grade">
+        <div class="rodape__empresa">
+          <a class="marca" href="index.html" translate="no">
+            <img src="img/exemplo/logotipo.svg" alt="" width="34" height="34" />
+            Estética Modelo
+          </a>
+          <p class="rodape__descricao">Rua das Oficinas, 120, Vila Exemplo, São Paulo. Segunda a sábado, das 8h às 18h.</p>
+        </div>
+        <div>
+          <h2>Contato</h2>
+          <ul>
+            <li><a href="tel:+551130000000">(11) 3000-0000</a></li>
+            <li><a href="https://www.instagram.com/" rel="noopener">Instagram</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Site</h2>
+          <ul>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="portfolio.html">Portfólio</a></li>
+            <li><a href="desmarcar.html">Desmarcar horário</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+    <!-- fim: rodapé -->
+  </body>
+</html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Agendar horário | Estética Modelo</title>
+    <meta name="description" content="Escolha os serviços, o dia e o horário e envie seu pedido em poucos minutos." />
+    <link rel="icon" href="img/exemplo/logotipo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/site.css" />
+    <script src="js/api-exemplo.js" defer></script>
+    <script src="js/site.js" defer></script>
+    <script src="js/agendar.js" defer></script>
+  </head>
+  <body>
+    <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
+
+    <!-- início: cabeçalho (vira partial no EJS) -->
+    <header class="cabecalho">
+      <div class="conteudo cabecalho__linha">
+        <a class="marca" href="index.html" translate="no">
+          <img src="img/exemplo/logotipo.svg" alt="" width="34" height="34" />
+          Estética Modelo
+        </a>
+        <nav id="navegacao" class="navegacao" aria-label="Principal">
+          <ul>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="portfolio.html">Portfólio</a></li>
+            <li><a href="desmarcar.html">Desmarcar horário</a></li>
+          </ul>
+        </nav>
+        <a class="botao" href="agendar.html">Agendar</a>
+        <button class="alternar-menu" type="button" aria-expanded="false" aria-controls="navegacao" aria-label="Abrir menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+    <!-- fim: cabeçalho -->
+
+    <main id="conteudo">
+      <div class="pagina-topo">
+        <div class="conteudo">
+          <h1>Agendar horário</h1>
+        </div>
+      </div>
+
+      <div class="conteudo">
+        <noscript><p class="alerta">Ative o JavaScript para agendar pelo site, ou ligue para (11) 3000-0000.</p></noscript>
+
+        <ol class="etapas" aria-label="Etapas do agendamento">
+          <li data-estado="atual" aria-current="step">Serviços</li>
+          <li data-estado="futura">Data e horário</li>
+          <li data-estado="futura">Seus dados</li>
+          <li data-estado="futura">Confirmação</li>
+        </ol>
+
+        <form id="form-agendar" class="fluxo" action="/agendar" method="post" novalidate>
+          <div>
+            <!-- Passo 1: serviços. Os data-* vêm da tabela de serviços. -->
+            <section class="fluxo__passo" aria-labelledby="passo-servicos">
+              <h2 id="passo-servicos" tabindex="-1">Quais serviços você quer?</h2>
+              <p class="fluxo__apoio">Escolha um ou mais. Os horários livres dependem da duração total.</p>
+              <fieldset class="opcoes-grupo">
+                <legend>Lavagem</legend>
+                <div class="opcoes">
+                  <label class="opcao">
+                    <input type="checkbox" name="servicos" value="lavagem-detalhada" data-nome="Lavagem detalhada" data-preco="80" data-duracao="60" />
+                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="opcao__nome">Lavagem detalhada</span>
+                    <span class="opcao__dados">
+                      <span class="etiqueta">1h</span>
+                      <span>a partir de R$ 80</span>
+                    </span>
+                  </label>
+                  <label class="opcao">
+                    <input type="checkbox" name="servicos" value="higienizacao-interna" data-nome="Higienização interna" data-preco="180" data-duracao="150" />
+                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="opcao__nome">Higienização interna</span>
+                    <span class="opcao__dados">
+                      <span class="etiqueta">2h30</span>
+                      <span>a partir de R$ 180</span>
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset class="opcoes-grupo">
+                <legend>Polimento</legend>
+                <div class="opcoes">
+                  <label class="opcao">
+                    <input type="checkbox" name="servicos" value="polimento-comercial" data-nome="Polimento comercial" data-preco="250" data-duracao="180" />
+                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="opcao__nome">Polimento comercial</span>
+                    <span class="opcao__dados">
+                      <span class="etiqueta">3h</span>
+                      <span>a partir de R$ 250</span>
+                    </span>
+                  </label>
+                  <label class="opcao">
+                    <input type="checkbox" name="servicos" value="polimento-tecnico" data-nome="Polimento técnico" data-preco="450" data-duracao="300" />
+                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="opcao__nome">Polimento técnico</span>
+                    <span class="opcao__dados">
+                      <span class="etiqueta">5h</span>
+                      <span>a partir de R$ 450</span>
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
+              <fieldset class="opcoes-grupo">
+                <legend>Proteção</legend>
+                <div class="opcoes">
+                  <label class="opcao">
+                    <input type="checkbox" name="servicos" value="vitrificacao-pintura" data-nome="Vitrificação de pintura" data-preco="900" data-duracao="480" />
+                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="opcao__nome">Vitrificação de pintura</span>
+                    <span class="opcao__dados">
+                      <span class="etiqueta">8h</span>
+                      <span>a partir de R$ 900</span>
+                    </span>
+                  </label>
+                  <label class="opcao">
+                    <input type="checkbox" name="servicos" value="cristalizacao-vidros" data-nome="Cristalização de vidros" data-preco="120" data-duracao="60" />
+                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="opcao__nome">Cristalização de vidros</span>
+                    <span class="opcao__dados">
+                      <span class="etiqueta">1h</span>
+                      <span>a partir de R$ 120</span>
+                    </span>
+                  </label>
+                </div>
+              </fieldset>
+            </section>
+
+            <!-- Passo 2: data e horário. Os data-* vêm de ConfiguracaoAgenda e BloqueioAgenda. -->
+            <section class="fluxo__passo" aria-labelledby="passo-data" hidden>
+              <h2 id="passo-data" tabindex="-1">Qual dia fica melhor?</h2>
+              <p class="fluxo__apoio">Escolha o dia e depois o horário. Dias apagados não têm atendimento.</p>
+              <div class="agenda">
+                <div
+                  id="calendario"
+                  data-dias-funcionamento="1,2,3,4,5,6"
+                  data-limite-dias="30"
+                  data-bloqueios="2026-11-20,2026-12-25"
+                  data-abertura="08:00"
+                  data-fechamento="18:00"
+                  data-intervalo="30"
+                >
+                  <div class="calendario__topo">
+                    <button id="mes-anterior" class="calendario__seta" type="button" aria-label="Mês anterior">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M11 4 6 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div id="calendario-mes" class="calendario__mes" aria-live="polite"></div>
+                    <button id="mes-seguinte" class="calendario__seta" type="button" aria-label="Próximo mês">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m7 4 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                  </div>
+                  <div class="calendario__semana" aria-hidden="true">
+                    <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+                  </div>
+                  <div id="calendario-dias" class="calendario__dias"></div>
+                </div>
+                <div aria-live="polite">
+                  <h3 id="horarios-titulo" class="horarios__titulo">Horários</h3>
+                  <div id="horarios-grade" class="horarios__grade">
+                    <p class="horarios__mensagem">Escolha um dia para ver os horários livres.</p>
+                  </div>
+                  <ul id="legenda" class="legenda" hidden>
+                    <li>Livre</li>
+                    <li>Ocupado</li>
+                    <li>Escolhido</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <!-- Passo 3: dados -->
+            <section class="fluxo__passo" aria-labelledby="passo-dados" hidden>
+              <h2 id="passo-dados" tabindex="-1">Como falamos com você?</h2>
+              <p class="fluxo__apoio">A confirmação chega por WhatsApp neste número.</p>
+              <div class="dados">
+                <div class="campo">
+                  <label for="nome">Nome</label>
+                  <input id="nome" name="nome" type="text" autocomplete="name" spellcheck="false" required aria-describedby="nome-erro" />
+                  <span id="nome-erro" class="campo__erro"></span>
+                </div>
+                <div class="campo">
+                  <label for="telefone">Celular com WhatsApp</label>
+                  <input id="telefone" name="telefone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="(11) 90000-0000" data-telefone required aria-describedby="telefone-erro" />
+                  <span id="telefone-erro" class="campo__erro"></span>
+                </div>
+                <div class="campo">
+                  <label for="modelo">Modelo do veículo <span class="campo__opcional">(opcional)</span></label>
+                  <input id="modelo" name="modeloVeiculo" type="text" autocomplete="off" />
+                </div>
+                <div class="campo">
+                  <label for="observacoes">Observações <span class="campo__opcional">(opcional)</span></label>
+                  <textarea id="observacoes" name="observacoes" rows="3"></textarea>
+                </div>
+                <div class="consentimento">
+                  <label>
+                    <input id="consentimento" name="consentimentoLgpd" type="checkbox" required aria-describedby="consentimento-erro" />
+                    <span>Autorizo o uso do meu nome e telefone para tratar este agendamento, conforme a <a class="ligacao" href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a>.</span>
+                  </label>
+                  <span id="consentimento-erro" class="consentimento__erro"></span>
+                </div>
+              </div>
+            </section>
+
+            <p id="alerta-fluxo" class="alerta fluxo__alerta" role="alert"></p>
+
+            <div class="fluxo__acoes">
+              <p id="resumo-curto" class="resumo-curto" aria-live="polite"></p>
+              <button id="botao-voltar" class="botao botao--contorno" type="button" hidden>Voltar</button>
+              <button id="botao-avancar" class="botao" type="submit">Continuar</button>
+            </div>
+          </div>
+
+          <aside class="resumo" aria-labelledby="resumo-titulo">
+            <h2 id="resumo-titulo">Seu pedido</h2>
+            <p id="resumo-vazio" class="resumo__vazio">Os serviços escolhidos aparecem aqui.</p>
+            <ul id="resumo-itens" class="resumo__itens"></ul>
+            <dl id="resumo-totais" hidden>
+              <div>
+                <dt>Duração</dt>
+                <dd id="resumo-duracao"></dd>
+              </div>
+              <div>
+                <dt>Valor</dt>
+                <dd id="resumo-preco"></dd>
+              </div>
+              <div>
+                <dt>Quando</dt>
+                <dd id="resumo-quando"></dd>
+              </div>
+            </dl>
+            <p class="resumo__nota">O valor final é definido depois da avaliação do veículo.</p>
+          </aside>
+        </form>
+      </div>
+    </main>
+
+    <!-- início: rodapé (vira partial no EJS) -->
+    <footer class="rodape">
+      <div class="conteudo rodape__grade">
+        <div class="rodape__empresa">
+          <a class="marca" href="index.html" translate="no">
+            <img src="img/exemplo/logotipo.svg" alt="" width="34" height="34" />
+            Estética Modelo
+          </a>
+          <p class="rodape__descricao">Rua das Oficinas, 120, Vila Exemplo, São Paulo. Segunda a sábado, das 8h às 18h.</p>
+        </div>
+        <div>
+          <h2>Contato</h2>
+          <ul>
+            <li><a href="tel:+551130000000">(11) 3000-0000</a></li>
+            <li><a href="https://www.instagram.com/" rel="noopener">Instagram</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Site</h2>
+          <ul>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="portfolio.html">Portfólio</a></li>
+            <li><a href="desmarcar.html">Desmarcar horário</a></li>
+            <li><a href="privacidade.html">Privacidade</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+    <!-- fim: rodapé -->
+  </body>
+</html>
