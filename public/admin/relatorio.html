@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR" data-sessao="verificando">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7ed" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Relatório | Painel</title>
+    <link rel="icon" href="data:," data-empresa-icone />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+    <link rel="stylesheet" href="../css/painel-comum.css" />
+    <link rel="stylesheet" href="../css/agenda.css" />
+    <link rel="stylesheet" href="../css/relatorio.css" />
+    <script src="../js/dados-exemplo.js" defer></script>
+    <script src="../js/admin/api-admin-exemplo.js" defer></script>
+    <script src="../js/admin/marca.js" defer></script>
+    <script src="../js/admin/painel.js" defer></script>
+    <script src="../js/admin/relatorio.js" defer></script>
+  </head>
+  <body class="corpo-painel" data-permissao="relatorio">
+    <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
+
+    <div class="painel">
+      <!-- início: menu lateral do painel (vira partial no EJS; cada item com
+           data-permissao só é desenhado se o perfil puder executar a ação) -->
+      <aside class="lateral">
+        <div class="lateral__topo">
+          <a class="marca" href="index.html" translate="no">
+            <img data-empresa-logo alt="" width="34" height="34" hidden />
+            <span><span data-empresa-nome></span><span class="marca__apoio">Painel da equipe</span></span>
+          </a>
+          <button class="lateral__alternar" type="button" aria-expanded="false" aria-controls="gaveta" aria-label="Abrir menu">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div id="gaveta" class="lateral__gaveta">
+          <nav class="menu-painel" aria-label="Painel">
+            <ul>
+              <li>
+                <a class="menu-painel__link" href="index.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5v-4.5h-5V17H4a1 1 0 0 1-1-1z"/></svg>
+                  Início
+                </a>
+              </li>
+              <li data-permissao="agenda">
+                <a class="menu-painel__link" href="pedidos.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 5 4h10l2 7.5V16H3z"/><path d="M3 11.5h4l1 2h4l1-2h4"/></svg>
+                  Pedidos
+                </a>
+              </li>
+              <li data-permissao="agenda">
+                <a class="menu-painel__link" href="agenda.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
+                  Agenda
+                </a>
+              </li>
+              <li data-permissao="servicos">
+                <a class="menu-painel__link" href="servicos.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l7 7-7 7-7-7z"/><circle cx="7" cy="7" r="1.3"/></svg>
+                  Serviços
+                </a>
+              </li>
+              <li data-permissao="portfolio">
+                <a class="menu-painel__link" href="portfolio.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="m3 13 4-4 4 4 2-2 4 4"/><circle cx="13" cy="8" r="1.3"/></svg>
+                  Portfólio
+                </a>
+              </li>
+              <li data-permissao="relatorio">
+                <a class="menu-painel__link" href="relatorio.html" aria-current="page">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h14M5.5 14V9M10 14V5M14.5 14v-3"/></svg>
+                  Relatório
+                </a>
+              </li>
+              <li data-permissao="configuracao">
+                <span class="menu-painel__link" aria-disabled="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h8M15 6h2M3 14h2M9 14h8"/><circle cx="13" cy="6" r="2"/><circle cx="7" cy="14" r="2"/></svg>
+                  Configurações <span class="menu-painel__breve">Em breve</span>
+                </span>
+              </li>
+              <li data-permissao="usuarios">
+                <span class="menu-painel__link" aria-disabled="true">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M2.5 17c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5M13.5 4.2a3 3 0 0 1 0 5.6M15.5 12.8c1.2.7 2 2 2.2 4.2"/></svg>
+                  Usuários <span class="menu-painel__breve">Em breve</span>
+                </span>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="lateral__usuario">
+            <p class="lateral__nome" data-usuario-nome></p>
+            <p class="lateral__perfil" data-usuario-perfil></p>
+            <div class="lateral__acoes">
+              <button class="botao botao--contorno botao--pequeno" type="button" data-sair>Sair</button>
+              <a class="ligacao lateral__site" href="../index.html">Ver o site</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <!-- fim: menu lateral do painel -->
+
+      <main id="conteudo" class="painel__principal">
+        <p class="alerta painel__aviso" data-aviso-painel role="alert"></p>
+
+        <header class="relatorio-topo">
+          <div>
+            <h1 id="relatorio-titulo" tabindex="-1">Relatório</h1>
+            <p>Agendamentos do mês, pela data do horário marcado.</p>
+          </div>
+          <div class="agenda-controles relatorio-controles">
+            <button id="mes-atual" class="controle" type="button">Este mês</button>
+            <button id="mes-anterior" class="controle" type="button" aria-label="Mês anterior">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M11 4 6 9l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="mes-seguinte" class="controle" type="button" aria-label="Próximo mês">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m7 4 5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="imprimir" class="botao botao--contorno" type="button">Imprimir</button>
+          </div>
+        </header>
+
+        <p id="erro-relatorio" class="alerta painel__aviso" role="alert"></p>
+
+        <div id="relatorio" aria-busy="true" aria-live="polite">
+          <section aria-labelledby="resumo-titulo">
+            <h2 id="resumo-titulo" class="visualmente-oculto">Resumo do mês</h2>
+            <dl id="indicadores" class="indicadores indicadores--quatro">
+              <div class="indicador">
+                <dt class="indicador__rotulo">Agendamentos no mês</dt>
+                <dd class="indicador__numero">–</dd>
+                <dd class="indicador__apoio">Carregando…</dd>
+              </div>
+              <div class="indicador">
+                <dt class="indicador__rotulo">Atendimentos concluídos</dt>
+                <dd class="indicador__numero">–</dd>
+                <dd class="indicador__apoio">Carregando…</dd>
+              </div>
+              <div class="indicador">
+                <dt class="indicador__rotulo">Comparecimento</dt>
+                <dd class="indicador__numero">–</dd>
+                <dd class="indicador__apoio">Carregando…</dd>
+              </div>
+              <div class="indicador">
+                <dt class="indicador__rotulo">Valor estimado</dt>
+                <dd class="indicador__numero">–</dd>
+                <dd class="indicador__apoio">Carregando…</dd>
+              </div>
+            </dl>
+            <p class="relatorio-nota">O valor estimado soma os preços "a partir de" dos atendimentos concluídos. O valor final de cada serviço é combinado depois da avaliação do veículo.</p>
+          </section>
+
+          <p id="relatorio-vazio" class="vazio" hidden></p>
+
+          <div id="relatorio-detalhes">
+            <section class="bloco" aria-labelledby="status-titulo">
+              <div class="bloco__topo">
+                <h2 id="status-titulo">Por status</h2>
+                <p id="status-apoio"></p>
+              </div>
+              <ul id="lista-status" class="barras"></ul>
+            </section>
+
+            <section class="bloco" aria-labelledby="servicos-titulo">
+              <div class="bloco__topo">
+                <h2 id="servicos-titulo">Por serviço</h2>
+                <p>Um agendamento com dois serviços conta nos dois.</p>
+              </div>
+              <div class="tabela-rolagem">
+                <table class="tabela-relatorio">
+                  <caption class="visualmente-oculto">Agendamentos, atendimentos concluídos e valor estimado por serviço</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Serviço</th>
+                      <th scope="col" class="numero"><span class="so-largo">Agendamentos</span><abbr class="so-curto" title="Agendamentos">Agend.</abbr></th>
+                      <th scope="col" class="numero"><span class="so-largo">Concluídos</span><abbr class="so-curto" title="Concluídos">Concl.</abbr></th>
+                      <th scope="col" class="numero"><span class="so-largo">Valor estimado</span><abbr class="so-curto" title="Valor estimado">Valor</abbr></th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabela-servicos"></tbody>
+                  <tfoot id="tabela-servicos-total"></tfoot>
+                </table>
+              </div>
+            </section>
+
+            <section class="bloco" aria-labelledby="origem-titulo">
+              <div class="bloco__topo">
+                <h2 id="origem-titulo">De onde vieram</h2>
+                <p>Pedidos feitos no site ou marcados pela equipe, por telefone ou no balcão.</p>
+              </div>
+              <ul id="lista-origem" class="barras"></ul>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

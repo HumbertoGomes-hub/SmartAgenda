@@ -31,6 +31,7 @@
  *   editarFotoTrabalho  -> PATCH /api/admin/portfolio/:id/fotos/:fotoId
  *   removerFotoTrabalho -> DELETE /api/admin/portfolio/:id/fotos/:fotoId
  *   ordenarFotosTrabalho-> PUT   /api/admin/portfolio/:id/fotos/ordem
+ *   relatorio           -> GET   /api/admin/relatorio?mes=AAAA-MM
  * As rotas reais estão em src/rotas/.
  *
  * Serviços e portfólio vêm de ../dados-exemplo.js, os mesmos dados que o site
@@ -1135,6 +1136,94 @@
     return gravarDados(dados) || aguardar(completo(dados, trabalho));
   }
 
+  /* Relatório (RF-24) ----------------------------------------------------- */
+
+  // Mesmas regras de src/dominio/relatorio.js.
+  var STATUS_RELATORIO = ['PENDENTE', 'AGUARDANDO_CLIENTE', 'CONFIRMADO', 'CONCLUIDO', 'NAO_COMPARECEU', 'CANCELADO', 'RECUSADO', 'EXPIRADO'];
+
+  function centavos(valor) {
+    return Math.round(valor * 100) / 100;
+  }
+
+  // mes: "AAAA-MM". Os agendamentos entram pelo mês do horário marcado.
+  function relatorio(mes) {
+    var bloqueio = exigirPermissao('relatorio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var partes = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(mes || '');
+    if (!partes) {
+      return invalido('Informe o mês no formato AAAA-MM.');
+    }
+    var inicio = new Date(Number(partes[1]), Number(partes[2]) - 1, 1);
+    var fim = new Date(Number(partes[1]), Number(partes[2]), 1);
+    var doMes = estadoAtual().agendamentos.filter(function (a) {
+      var momento = new Date(a.dataHoraInicio);
+      return momento >= inicio && momento < fim;
+    });
+
+    var porStatus = {};
+    STATUS_RELATORIO.forEach(function (status) {
+      porStatus[status] = 0;
+    });
+    var servicos = {};
+    var porOrigem = { site: 0, painel: 0 };
+    var valorConcluidos = 0;
+
+    doMes.forEach(function (a) {
+      if (porStatus[a.status] !== undefined) {
+        porStatus[a.status] += 1;
+      }
+      porOrigem[a.origem === 'painel' ? 'painel' : 'site'] += 1;
+      a.itens.forEach(function (item) {
+        var linha = servicos[item.servicoId] || (servicos[item.servicoId] = {
+          servicoId: item.servicoId,
+          nome: item.nome,
+          agendamentos: 0,
+          concluidos: 0,
+          valorConcluidos: 0,
+        });
+        linha.agendamentos += 1;
+        if (a.status === 'CONCLUIDO') {
+          linha.concluidos += 1;
+          linha.valorConcluidos += item.precoPraticado;
+          valorConcluidos += item.precoPraticado;
+        }
+      });
+    });
+
+    var concluidos = porStatus.CONCLUIDO;
+    var registrados = concluidos + porStatus.NAO_COMPARECEU;
+    return aguardar({
+      mes: partes[0],
+      geradoEm: new Date().toISOString(),
+      totais: {
+        agendamentos: doMes.length,
+        naAgenda: porStatus.PENDENTE + porStatus.AGUARDANDO_CLIENTE + porStatus.CONFIRMADO,
+        concluidos: concluidos,
+        naoCompareceu: porStatus.NAO_COMPARECEU,
+        comparecimento: registrados ? Math.round((concluidos / registrados) * 10000) / 10000 : null,
+        valorConcluidos: centavos(valorConcluidos),
+        ticketMedio: concluidos ? centavos(valorConcluidos / concluidos) : null,
+      },
+      porStatus: STATUS_RELATORIO.map(function (status) {
+        return { status: status, quantidade: porStatus[status] };
+      }).sort(function (a, b) {
+        return b.quantidade - a.quantidade || STATUS_RELATORIO.indexOf(a.status) - STATUS_RELATORIO.indexOf(b.status);
+      }),
+      porServico: Object.keys(servicos)
+        .map(function (id) {
+          var linha = servicos[id];
+          linha.valorConcluidos = centavos(linha.valorConcluidos);
+          return linha;
+        })
+        .sort(function (a, b) {
+          return b.valorConcluidos - a.valorConcluidos || b.agendamentos - a.agendamentos || a.nome.localeCompare(b.nome, 'pt-BR');
+        }),
+      porOrigem: porOrigem,
+    });
+  }
+
   function empresa() {
     return aguardar({ nome: EMPRESA.nome, logotipoUrl: EMPRESA.logotipoUrl, corPrimaria: EMPRESA.corPrimaria });
   }
@@ -1168,6 +1257,7 @@
     editarFotoTrabalho: editarFotoTrabalho,
     removerFotoTrabalho: removerFotoTrabalho,
     ordenarFotosTrabalho: ordenarFotosTrabalho,
+    relatorio: relatorio,
     // Só para testes: faz a sessão parecer parada há N minutos.
     envelhecerSessao: function (minutos) {
       var atual = lerSessao();

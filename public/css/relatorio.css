@@ -1,0 +1,287 @@
+/* ==========================================================================
+   Relatório mensal do painel (RF-24)
+   Usa tokens.css, admin.css (indicadores, status) e os controles de agenda.css.
+   ========================================================================== */
+.relatorio-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--e4);
+  margin-bottom: var(--e5);
+}
+
+.relatorio-topo h1 {
+  font-size: var(--titulo-m);
+}
+
+.relatorio-topo h1::first-letter {
+  text-transform: uppercase;
+}
+
+.relatorio-topo h1:focus {
+  outline: none;
+}
+
+.relatorio-topo p {
+  margin-top: var(--e2);
+  color: var(--texto-suave);
+}
+
+.relatorio-controles .controle:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.relatorio-controles .controle:disabled:hover {
+  border-color: var(--borda-forte);
+}
+
+#relatorio {
+  transition: opacity 0.2s ease;
+}
+
+#relatorio[aria-busy='true'] {
+  opacity: 0.55;
+}
+
+/* Quatro números de destaque: 4 colunas, 2 no tablet, 1 no celular. */
+.indicadores--quatro {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .indicadores--quatro {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* No celular, o número fica em cima do rótulo: valores como "R$ 1.330" não
+   cabem na coluna estreita que admin.css usa nos outros indicadores. */
+@media (max-width: 760px) {
+  .indicadores--quatro {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .indicadores--quatro .indicador {
+    display: flex;
+    flex-direction: column;
+    padding: var(--e4);
+  }
+
+  .indicadores--quatro .indicador__numero {
+    align-self: flex-start;
+    margin-bottom: var(--e2);
+    font-size: var(--titulo-p);
+  }
+}
+
+@media (max-width: 480px) {
+  .indicadores--quatro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.relatorio-nota {
+  max-width: 72ch;
+  margin-top: var(--e3);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+#relatorio-vazio {
+  margin-top: var(--e6);
+}
+
+/* ==========================================================================
+   Barras: uma cor só, da maior para a menor, presas à mesma linha de base,
+   com a ponta do dado arredondada.
+   ========================================================================== */
+.barras {
+  display: grid;
+  gap: var(--e2);
+  padding-top: var(--e3);
+  border-top: 1.5px solid var(--borda);
+}
+
+.barra {
+  display: grid;
+  grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr) 4rem;
+  align-items: center;
+  gap: var(--e3);
+  min-height: 34px;
+}
+
+.barra__rotulo {
+  min-width: 0;
+}
+
+.barra__trilho {
+  display: block;
+  height: 12px;
+}
+
+.barra__valor {
+  display: block;
+  width: var(--tamanho, 0%);
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--tinta);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.barra[data-zero='false'] .barra__valor {
+  min-width: 3px;
+}
+
+.barra__numero {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.barra[data-zero='true'] .barra__numero {
+  color: var(--texto-suave);
+  font-weight: 400;
+}
+
+@media (max-width: 560px) {
+  .barra {
+    grid-template-columns: minmax(0, 1fr) 3rem;
+    row-gap: var(--e1);
+    padding-block: var(--e1);
+  }
+
+  .barra__trilho {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+/* ==========================================================================
+   Tabela por serviço
+   ========================================================================== */
+.tabela-rolagem {
+  overflow-x: auto;
+}
+
+.tabela-relatorio {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabela-relatorio th,
+.tabela-relatorio td {
+  padding: var(--e3) var(--e2);
+  border-bottom: 1.5px solid var(--borda);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.tabela-relatorio thead th {
+  border-top: 1.5px solid var(--borda);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  font-weight: 500;
+}
+
+.tabela-relatorio tbody th {
+  font-weight: 500;
+}
+
+.tabela-relatorio .numero {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tabela-relatorio tfoot th,
+.tabela-relatorio tfoot td {
+  border-bottom: 0;
+  font-weight: 600;
+}
+
+.valor-celula {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e3);
+}
+
+.valor-celula__trilho {
+  display: block;
+  width: 5rem;
+  height: 8px;
+}
+
+/* Rótulo curto das colunas só no celular. */
+.tabela-relatorio .so-curto {
+  display: none;
+  text-decoration: none;
+}
+
+@media (max-width: 560px) {
+  .valor-celula__trilho {
+    display: none;
+  }
+
+  .tabela-relatorio {
+    font-size: var(--texto-p);
+  }
+
+  .tabela-relatorio th,
+  .tabela-relatorio td {
+    padding: var(--e3) var(--e1);
+  }
+
+  .tabela-relatorio .so-largo {
+    display: none;
+  }
+
+  .tabela-relatorio .so-curto {
+    display: inline;
+  }
+}
+
+/* ==========================================================================
+   Impressão: só o relatório, sem o menu e os botões.
+   ========================================================================== */
+@media print {
+  .lateral,
+  .relatorio-controles,
+  .pular-conteudo,
+  .painel__aviso {
+    display: none !important;
+  }
+
+  .painel {
+    display: block;
+  }
+
+  .painel__principal {
+    width: 100%;
+    padding: 0;
+  }
+
+  #relatorio[aria-busy='true'] {
+    opacity: 1;
+  }
+
+  .indicadores--quatro {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .indicador[data-destaque='true'] {
+    border-color: var(--tinta);
+    background: none;
+    color: var(--tinta);
+  }
+
+  .indicador[data-destaque='true'] .indicador__apoio {
+    color: var(--texto-suave);
+  }
+
+  .bloco {
+    break-inside: avoid;
+  }
+}

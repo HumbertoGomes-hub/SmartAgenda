@@ -4,10 +4,10 @@
  *
  *   GET /api/admin/resumo -> resumo da tela inicial (pedidos, hoje, aguardando cliente)
  *
- * Pedidos e agenda (RF-16 a RF-19) estão em rotas/agenda.js. As próximas
- * etapas entram aqui ou em arquivos próprios em src/rotas/:
- * serviços (RF-20), portfólio (RF-21),
- * configurações (RF-22, RF-23), usuários (RF-15) e relatório (RF-24).
+ * Pedidos e agenda (RF-16 a RF-19) estão em rotas/agenda.js, serviços e
+ * portfólio (RF-20, RF-21) em rotas/catalogo.js e o relatório (RF-24) em
+ * rotas/relatorio.js. As próximas etapas entram aqui ou em arquivos próprios
+ * em src/rotas/: configurações (RF-22, RF-23) e usuários (RF-15).
  */
 'use strict';
 
