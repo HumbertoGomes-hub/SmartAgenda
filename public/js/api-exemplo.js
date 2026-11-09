@@ -5,13 +5,10 @@
  * troque cada função pela chamada real e mantenha o formato de retorno:
  *   buscarHorarios   -> GET  /api/horarios?data=AAAA-MM-DD&servicos=id1,id2
  *   criarAgendamento -> POST /agendar
- *   desmarcar        -> POST /desmarcar
  *
  * Situações de erro para testar a interface:
  *   Telefone terminado em 0000    -> número sem WhatsApp (RN-02)
  *   Telefone terminado em 1111    -> limite de 2 agendamentos ativos (RN-09)
- *   Código ABC234 ao desmarcar    -> cancelado com sucesso
- *   Código PRZ234 ao desmarcar    -> fora do prazo de cancelamento (RN-12)
  */
 (function () {
   'use strict';
@@ -144,32 +141,10 @@
     }
   }
 
-  function desmarcar(telefone, codigo) {
-    var pedido = ultimoPedido();
-    var doPedido = pedido && pedido.codigo === codigo && pedido.telefone === telefone;
-
-    if (codigo === 'PRZ234') {
-      return falhar(
-        'FORA_DO_PRAZO',
-        'O prazo para desmarcar pelo site terminou: faltam menos de 2 horas para o horário. Fale com a estética pelo telefone (11) 3000-0000.',
-      );
-    }
-    if (doPedido || codigo === 'ABC234') {
-      return aguardar({
-        codigo: codigo,
-        dataHora: doPedido ? pedido.dataHoraTexto : 'Sexta, 13 de novembro, às 14:00',
-      });
-    }
-    return falhar(
-      'NAO_ENCONTRADO',
-      'Nenhum agendamento em aberto com este telefone e código. Confira os dados na mensagem de confirmação.',
-    );
-  }
 
   window.SmartAgendaAPI = {
     buscarHorarios: buscarHorarios,
     criarAgendamento: criarAgendamento,
-    desmarcar: desmarcar,
     ultimoPedido: ultimoPedido,
     guardarPedido: function (pedido) {
       try {

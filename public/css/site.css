@@ -14,7 +14,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  /* Mantém o item focado visível acima da barra fixa do agendamento. */
+  /* Mantém o item focado visível entre o cabeçalho fixo e a barra fixa do agendamento. */
+  scroll-padding-top: calc(var(--altura-cabecalho) + var(--e4));
   scroll-padding-bottom: 96px;
 }
 
@@ -207,17 +208,48 @@ textarea {
 /* ==========================================================================
    Cabeçalho e rodapé
    ========================================================================== */
+/*
+ * O cabeçalho fica preso no topo. site.js marca dois estados:
+ *   data-rolado: a página saiu do topo, então o fundo vira vidro fosco com borda;
+ *   data-oculto: rolando para baixo, ele sobe e libera a tela; volta ao rolar para cima.
+ */
 .cabecalho {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 10;
+  border-bottom: 1.5px solid transparent;
   background: var(--branco);
+  transition:
+    transform 0.4s var(--curva-saida),
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.cabecalho[data-rolado='true'] {
+  border-bottom-color: var(--borda);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .cabecalho[data-rolado='true'] {
+    background: rgb(255 255 255 / 0.78);
+    backdrop-filter: saturate(1.6) blur(16px);
+  }
+}
+
+.cabecalho[data-oculto='true'] {
+  transform: translateY(-100%);
+}
+
+.cabecalho[data-oculto='true'] ~ main .resumo,
+.cabecalho[data-oculto='true'] ~ main .categoria h2 {
+  top: var(--e5);
 }
 
 .cabecalho__linha {
   display: flex;
   align-items: center;
   gap: var(--e5);
-  min-height: 76px;
+  min-height: var(--altura-cabecalho);
 }
 
 .marca {
@@ -238,25 +270,72 @@ textarea {
 
 .navegacao ul {
   display: flex;
+  align-items: center;
   gap: var(--e1);
 }
 
 .navegacao a {
+  position: relative;
   display: flex;
   align-items: center;
+  gap: var(--e3);
   min-height: 44px;
   padding: 0.25rem 0.875rem;
-  border-radius: var(--raio-p);
   text-decoration: none;
 }
 
-.navegacao a:hover {
-  background: var(--cinza);
+/* Sublinhado que cresce da esquerda ao passar o mouse; fixo na página atual. */
+.navegacao a:not(.navegacao__whatsapp)::after {
+  content: '';
+  position: absolute;
+  right: 0.875rem;
+  bottom: 8px;
+  left: 0.875rem;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s var(--curva-saida);
+}
+
+.navegacao a:hover::after,
+.navegacao a:focus-visible::after,
+.navegacao a[aria-current='page']::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .navegacao a[aria-current='page'] {
-  background: var(--creme);
   font-weight: 500;
+}
+
+.navegacao__whatsapp svg {
+  flex: none;
+  transition: transform 0.35s var(--curva-saida);
+}
+
+.navegacao__whatsapp:hover svg {
+  transform: scale(1.12) rotate(-8deg);
+}
+
+/* No computador o WhatsApp aparece só como ícone; o nome acessível vem do aria-label. */
+@media (min-width: 761px) {
+  .navegacao__whatsapp {
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+    border: 1.5px solid var(--borda);
+    border-radius: 50%;
+    transition: border-color 0.2s ease;
+  }
+
+  .navegacao__whatsapp:hover {
+    border-color: var(--tinta);
+  }
+
+  .navegacao__rotulo {
+    display: none;
+  }
 }
 
 .alternar-menu {
@@ -271,10 +350,41 @@ textarea {
   cursor: pointer;
 }
 
+/* Duas linhas que giram e formam um X quando o menu abre. */
+.alternar-menu__linhas,
+.alternar-menu__linhas::before {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.35s var(--curva-saida);
+}
+
+.alternar-menu__linhas {
+  transform: translateY(-4px);
+}
+
+.alternar-menu__linhas::before {
+  content: '';
+  transform: translateY(8px);
+}
+
+.alternar-menu[aria-expanded='true'] .alternar-menu__linhas {
+  transform: rotate(45deg);
+}
+
+.alternar-menu[aria-expanded='true'] .alternar-menu__linhas::before {
+  transform: rotate(-90deg);
+}
+
 @media (max-width: 760px) {
+  :root {
+    --altura-cabecalho: 68px;
+  }
+
   .cabecalho__linha {
     gap: var(--e2);
-    min-height: 68px;
   }
 
   .marca {
@@ -293,8 +403,8 @@ textarea {
     order: 3;
   }
 
+  /* O menu desce e aparece; visibility mantém os links fora do Tab enquanto fechado. */
   .navegacao {
-    display: none;
     position: absolute;
     top: 100%;
     right: 0;
@@ -302,14 +412,35 @@ textarea {
     padding: var(--e2) var(--margem) var(--e4);
     border-bottom: 1.5px solid var(--borda);
     background: var(--branco);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.3s var(--curva-saida),
+      visibility 0s linear 0.3s;
   }
 
   .navegacao[data-aberta='true'] {
-    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.3s var(--curva-saida);
   }
 
   .navegacao ul {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navegacao a {
+    padding-inline: 0;
+  }
+
+  .navegacao a::after {
+    display: none;
   }
 }
 
@@ -598,7 +729,8 @@ textarea {
 
 .categoria h2 {
   position: sticky;
-  top: var(--e5);
+  top: calc(var(--altura-cabecalho) + var(--e5));
+  transition: top 0.4s var(--curva-saida);
   align-self: start;
   font-size: var(--titulo-p);
 }
@@ -609,10 +741,6 @@ textarea {
   align-items: center;
   gap: var(--e2) var(--e5);
   padding-block: var(--e4);
-}
-
-.servico + .servico {
-  border-top: 1.5px solid var(--borda);
 }
 
 .servicos-lista > li:first-child .servico {
@@ -814,8 +942,42 @@ textarea {
    Como funciona
    ========================================================================== */
 .passos-faixa {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   background: var(--marca);
   color: var(--marca-texto);
+}
+
+/* Roda decorativa: site.js move e gira conforme a rolagem (paralaxe). */
+.passos-faixa__roda {
+  --desloc: 0px;
+  --giro: 0deg;
+  position: absolute;
+  top: 50%;
+  right: -9rem;
+  z-index: -1;
+  width: min(44rem, 70vw);
+  aspect-ratio: 1;
+  opacity: 0.13;
+  transform: translate3d(0, calc(-50% + var(--desloc)), 0) rotate(var(--giro));
+  pointer-events: none;
+  will-change: transform;
+}
+
+.passos-faixa__roda svg {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 860px) {
+  .passos-faixa__roda {
+    top: auto;
+    right: -40vw;
+    bottom: -10rem;
+    width: 100vw;
+    transform: translate3d(0, var(--desloc), 0) rotate(var(--giro));
+  }
 }
 
 .passos-faixa h2 {
@@ -1092,7 +1254,8 @@ textarea {
 /* Resumo lateral */
 .resumo {
   position: sticky;
-  top: var(--e5);
+  top: calc(var(--altura-cabecalho) + var(--e5));
+  transition: top 0.4s var(--curva-saida);
   padding: var(--e5);
   border-radius: var(--raio-g);
   background: var(--creme);
@@ -1468,7 +1631,7 @@ textarea {
 }
 
 /* ==========================================================================
-   Confirmação e cancelamento
+   Confirmação do pedido
    ========================================================================== */
 .painel-central {
   width: min(100%, 44rem);
@@ -1557,40 +1720,6 @@ textarea {
   flex-wrap: wrap;
   gap: var(--e3);
   margin-top: var(--e5);
-}
-
-.campo-codigo input {
-  max-width: 13rem;
-  font-size: var(--titulo-p);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.campo-codigo input::placeholder {
-  color: var(--texto-suave);
-  opacity: 0.7;
-  font-weight: 500;
-}
-
-.desmarcar-form {
-  margin-top: var(--e6);
-}
-
-.desmarcar-form .alerta {
-  margin-top: var(--e4);
-}
-
-.desmarcar-form .botao {
-  margin-top: var(--e5);
-}
-
-.resultado[hidden] {
-  display: none;
-}
-
-.resultado:focus {
-  outline: none;
 }
 
 /* ==========================================================================

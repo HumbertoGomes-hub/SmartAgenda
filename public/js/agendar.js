@@ -438,7 +438,6 @@
       .then(function (resposta) {
         API.guardarPedido({
           codigo: resposta.codigo,
-          telefone: telefone,
           dataHoraTexto: formatarData(estado.data) + ', às ' + estado.horario,
           servicosTexto: escolhidos
             .map(function (servico) {

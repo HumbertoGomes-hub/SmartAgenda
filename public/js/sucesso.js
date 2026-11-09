@@ -9,6 +9,9 @@
 
   if (codigo) {
     campoCodigo.textContent = codigo;
+    var whatsapp = document.getElementById('falar-whatsapp');
+    whatsapp.href +=
+      '?text=' + encodeURIComponent('Olá! Fiz o pedido ' + codigo + ' pelo site e quero falar sobre ele.');
   }
 
   if (pedido && pedido.codigo === codigo) {

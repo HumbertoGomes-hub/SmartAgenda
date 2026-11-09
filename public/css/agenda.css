@@ -1,0 +1,1148 @@
+/* ==========================================================================
+   Pedidos e Agenda do painel
+   Usa tokens.css, a base de site.css e as cores de status de admin.css.
+   Mesma regra visual do site: hachurado = ainda não confirmado; sólido = confirmado.
+   ========================================================================== */
+
+/* Botões ----------------------------------------------------------------- */
+.botao-whatsapp svg {
+  flex: none;
+}
+
+.botao-perigo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.625rem 1.125rem;
+  border: 1.5px solid var(--erro);
+  border-radius: var(--raio-m);
+  background: transparent;
+  color: var(--erro);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.botao-perigo:hover {
+  background: var(--erro-fundo);
+}
+
+.botao-perigo--cheio {
+  background: var(--erro);
+  color: var(--branco);
+}
+
+.botao-perigo--cheio:hover {
+  background: var(--erro);
+  opacity: 0.88;
+}
+
+/* Aviso depois de uma ação ------------------------------------------------ */
+.aviso-acao {
+  position: fixed;
+  right: var(--margem);
+  bottom: var(--e5);
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e3);
+  width: min(calc(100% - 2 * var(--margem)), 34rem);
+  padding: var(--e4);
+  border-radius: var(--raio-m);
+  background: var(--tinta);
+  color: var(--branco);
+  box-shadow: 0 12px 32px rgb(31 31 31 / 0.22);
+}
+
+.aviso-acao__texto {
+  flex: 1 1 16rem;
+}
+
+.aviso-acao .botao-whatsapp {
+  border-color: rgb(255 255 255 / 0.4);
+  color: var(--branco);
+}
+
+.aviso-acao__fechar {
+  min-height: 44px;
+  padding: 0 var(--e3);
+  border: 0;
+  border-radius: var(--raio-p);
+  background: transparent;
+  color: var(--sobre-marca-suave);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.aviso-acao__fechar:hover {
+  color: var(--branco);
+}
+
+/* ==========================================================================
+   Pedidos
+   ========================================================================== */
+.pedidos {
+  display: grid;
+  gap: var(--e4);
+}
+
+.pedido__cartao {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--e5);
+  padding: var(--e5);
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-g);
+}
+
+/* Folha de calendário com o dia pedido */
+.folha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: start;
+  overflow: hidden;
+  border: 1.5px solid var(--tinta);
+  border-radius: var(--raio-m);
+  text-align: center;
+}
+
+.folha__semana {
+  width: 100%;
+  padding: 0.125rem 0;
+  background: var(--tinta);
+  color: var(--branco);
+  font-size: var(--texto-p);
+  font-weight: 500;
+}
+
+.folha__numero {
+  padding-top: 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.folha__mes {
+  padding-bottom: 0.375rem;
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.pedido__cabeca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--e2) var(--e4);
+}
+
+.pedido__cliente {
+  font-size: var(--titulo-p);
+  letter-spacing: -0.02em;
+}
+
+.pedido__contato {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e1) var(--e4);
+  margin-top: var(--e1);
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
+.pedido__contato a {
+  color: var(--tinta);
+  text-underline-offset: 3px;
+}
+
+.pedido__quando {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e2) var(--e3);
+  margin-top: var(--e4);
+  font-size: var(--texto-g);
+  font-weight: 500;
+}
+
+.pedido__servicos {
+  margin-top: var(--e3);
+  border-top: 1.5px solid var(--borda);
+}
+
+.pedido__servicos li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e4);
+  padding-block: var(--e2);
+  border-bottom: 1.5px solid var(--borda);
+}
+
+.pedido__valor {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pedido__total {
+  font-weight: 500;
+}
+
+.pedido__total span:first-child {
+  color: var(--texto-suave);
+  font-weight: 400;
+}
+
+.pedido__obs {
+  margin-top: var(--e3);
+  color: var(--texto-suave);
+  font-style: italic;
+}
+
+.pedido__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e3) var(--e4);
+  margin-top: var(--e5);
+}
+
+.pedido[data-aceito] .pedido__aceito {
+  padding: var(--e5);
+  border-radius: var(--raio-g);
+  background: var(--status-confirmado-fundo);
+  color: var(--status-confirmado);
+  font-weight: 500;
+}
+
+.pedido[data-aceito] .pedido__acoes {
+  margin-top: var(--e3);
+}
+
+.pedido[data-aceito] .ligacao {
+  color: var(--tinta);
+}
+
+@media (max-width: 560px) {
+  .pedido__cartao {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--e4);
+    padding: var(--e4);
+    border-radius: var(--raio-m);
+  }
+
+  .folha {
+    flex-direction: row;
+    align-self: start;
+    gap: var(--e2);
+    padding-right: var(--e3);
+  }
+
+  .folha__semana {
+    width: auto;
+    padding: 0.375rem var(--e3);
+  }
+
+  .folha__numero,
+  .folha__mes {
+    padding: 0;
+    font-size: var(--texto-m);
+  }
+
+  .pedido__acoes .botao {
+    flex: 1 1 100%;
+  }
+}
+
+/* ==========================================================================
+   Agenda: barra de controles e filtros
+   ========================================================================== */
+.agenda-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e4);
+  margin-bottom: var(--e4);
+}
+
+.agenda-topo h1 {
+  font-size: var(--titulo-m);
+}
+
+.agenda-topo h1:focus {
+  outline: none;
+}
+
+.agenda-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e2);
+}
+
+.controle {
+  display: inline-grid;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--e3);
+  place-items: center;
+  border: 1.5px solid var(--borda-forte);
+  border-radius: var(--raio-m);
+  background: var(--branco);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.controle:hover {
+  border-color: var(--tinta);
+}
+
+.segmentado {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--raio-m);
+  background: var(--cinza);
+}
+
+.segmentado button {
+  min-height: 38px;
+  padding: 0 var(--e3);
+  border: 0;
+  border-radius: var(--raio-p);
+  background: transparent;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.segmentado button[aria-pressed='true'] {
+  background: var(--branco);
+  box-shadow: 0 1px 2px rgb(31 31 31 / 0.12);
+}
+
+.agenda-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e3) var(--e5);
+  margin-bottom: var(--e5);
+}
+
+.filtro-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+}
+
+.filtro-status legend {
+  float: left;
+  margin-right: var(--e2);
+  padding: 0;
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  line-height: 36px;
+}
+
+/* Cada status do filtro mostra a própria cor, e serve de legenda. */
+.filtro-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e2);
+  min-height: 36px;
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-pilula);
+  font-size: var(--texto-p);
+  cursor: pointer;
+}
+
+.filtro-chip input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.filtro-chip:has(input:focus-visible) {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
+}
+
+.filtro-chip:has(input:not(:checked)) {
+  color: var(--texto-suave);
+  text-decoration: line-through;
+}
+
+.filtro-chip:has(input:checked) {
+  border-color: var(--tinta);
+}
+
+.filtro-chip__amostra {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.filtro-servico {
+  display: flex;
+  align-items: center;
+  gap: var(--e2);
+  font-size: var(--texto-p);
+}
+
+.filtro-servico select,
+.campo select {
+  min-height: 44px;
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--borda-forte);
+  border-radius: var(--raio-m);
+  background: var(--branco);
+  font: inherit;
+}
+
+/* ==========================================================================
+   Cores dos agendamentos por status
+   ========================================================================== */
+.evento,
+.filtro-chip__amostra {
+  --evento-fundo: var(--cinza);
+  --evento-texto: var(--tinta);
+  --evento-borda: var(--borda-forte);
+  border-left: 3px solid var(--evento-borda);
+  background: var(--evento-fundo);
+  color: var(--evento-texto);
+}
+
+[data-status='PENDENTE'] {
+  --evento-fundo: var(--status-pendente-fundo);
+  --evento-texto: var(--status-pendente);
+  --evento-borda: var(--status-pendente);
+}
+
+[data-status='AGUARDANDO_CLIENTE'] {
+  --evento-fundo: var(--status-aguardando-fundo);
+  --evento-texto: var(--status-aguardando);
+  --evento-borda: var(--status-aguardando);
+}
+
+.evento[data-status='PENDENTE'],
+.evento[data-status='AGUARDANDO_CLIENTE'],
+.filtro-chip__amostra[data-status='PENDENTE'],
+.filtro-chip__amostra[data-status='AGUARDANDO_CLIENTE'] {
+  background: var(--hachura), var(--evento-fundo);
+}
+
+[data-status='CONFIRMADO'] {
+  --evento-fundo: var(--marca);
+  --evento-texto: var(--marca-texto);
+  --evento-borda: var(--marca);
+}
+
+[data-status='CONCLUIDO'] {
+  --evento-fundo: var(--cinza);
+  --evento-texto: var(--texto-suave);
+  --evento-borda: var(--borda-forte);
+}
+
+[data-status='NAO_COMPARECEU'] {
+  --evento-fundo: var(--erro-fundo);
+  --evento-texto: var(--erro);
+  --evento-borda: var(--erro);
+}
+
+[data-status='CANCELADO'],
+[data-status='EXPIRADO'],
+[data-status='RECUSADO'],
+.filtro-chip__amostra[data-status='LIBERADOS'] {
+  --evento-fundo: var(--branco);
+  --evento-texto: var(--texto-suave);
+  --evento-borda: var(--borda-forte);
+  border-style: dashed;
+}
+
+.evento[data-status='CANCELADO'] .evento__nome,
+.evento[data-status='EXPIRADO'] .evento__nome,
+.evento[data-status='RECUSADO'] .evento__nome {
+  text-decoration: line-through;
+}
+
+.evento {
+  display: flex;
+  min-width: 0;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.evento:hover {
+  filter: brightness(0.96);
+}
+
+.evento:focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
+}
+
+.evento__hora {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.evento__nome,
+.evento__servicos {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Visão mensal
+   ========================================================================== */
+.calendario-painel[aria-busy='true'] {
+  opacity: 0.6;
+  transition: opacity 0.2s ease 0.15s;
+}
+
+.mes {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.mes th {
+  padding-bottom: var(--e2);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  font-weight: 400;
+  text-align: left;
+}
+
+.mes__dia {
+  height: 8.5rem;
+  padding: var(--e2);
+  border: 1.5px solid var(--borda);
+  vertical-align: top;
+}
+
+.mes__dia[data-fora-do-mes] {
+  background: var(--cinza);
+}
+
+.mes__dia[data-fora-do-mes] .mes__numero {
+  color: var(--texto-suave);
+}
+
+.mes__dia[data-fechado] {
+  background: var(--hachura), var(--cinza);
+}
+
+.mes__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e1);
+}
+
+.mes__numero {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.mes__numero:hover {
+  background: var(--cinza);
+}
+
+.mes__dia[data-hoje] .mes__numero {
+  background: var(--marca);
+  color: var(--marca-texto);
+}
+
+.mes__contagem {
+  display: none;
+}
+
+.mes__nota {
+  margin-top: var(--e1);
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+}
+
+.mes__eventos {
+  display: grid;
+  gap: 3px;
+  margin-top: var(--e1);
+}
+
+.evento--linha {
+  gap: var(--e2);
+  width: 100%;
+  padding: 0.125rem 0.375rem;
+  border-radius: 5px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.mes__mais {
+  padding: 0.125rem 0.375rem;
+  border: 0;
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.mes__mais:hover {
+  color: var(--tinta);
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .mes__dia {
+    height: 3.75rem;
+    padding: 2px;
+  }
+
+  .mes__topo {
+    flex-direction: column;
+  }
+
+  .mes__numero {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* No celular o dia mostra só a quantidade; tocar no número abre o dia. */
+  .mes__eventos,
+  .mes__nota {
+    display: none;
+  }
+
+  .mes__contagem {
+    display: block;
+    min-width: 1.25rem;
+    border-radius: var(--raio-pilula);
+    background: var(--tinta);
+    color: var(--branco);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    text-align: center;
+  }
+
+  .mes th {
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   Visões semanal e diária: grade de horários
+   ========================================================================== */
+.grade-rolagem {
+  overflow-x: auto;
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-g);
+}
+
+.grade {
+  --regua: 3.5rem;
+  min-width: calc(var(--regua) + var(--colunas) * 7.5rem);
+}
+
+.grade--dia {
+  min-width: 0;
+}
+
+.grade__cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: var(--regua) repeat(var(--colunas), minmax(0, 1fr));
+  border-bottom: 1.5px solid var(--borda);
+  background: var(--branco);
+}
+
+.grade__dia {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--e2);
+  min-height: 52px;
+  border: 0;
+  border-left: 1.5px solid var(--borda);
+  background: transparent;
+  cursor: pointer;
+}
+
+.grade__dia:hover {
+  background: var(--cinza);
+}
+
+.grade__semana {
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.grade__numero {
+  font-size: var(--texto-g);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.grade__dia[data-hoje] .grade__numero {
+  display: inline-grid;
+  min-width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--marca);
+  color: var(--marca-texto);
+}
+
+.grade__corpo {
+  display: grid;
+  grid-template-columns: var(--regua) repeat(var(--colunas), minmax(0, 1fr));
+}
+
+.grade__regua {
+  position: relative;
+}
+
+.grade__regua span {
+  position: absolute;
+  right: var(--e2);
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  transform: translateY(-50%);
+}
+
+.grade__regua span:first-child {
+  transform: none;
+}
+
+.grade__coluna {
+  position: relative;
+  border-left: 1.5px solid var(--borda);
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--borda) 0 1px,
+    transparent 1px var(--hora)
+  );
+  cursor: copy;
+}
+
+.grade__fechado {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--e2);
+  background: var(--hachura), rgb(244 244 244 / 0.7);
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.grade__agora {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  height: 2px;
+  background: var(--erro);
+  pointer-events: none;
+}
+
+.grade__agora::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--erro);
+}
+
+.evento--bloco {
+  position: absolute;
+  z-index: 1;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.evento--bloco .evento__nome {
+  font-weight: 500;
+}
+
+.evento--bloco .evento__status {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+/* Linhas visíveis conforme a altura: curto (1 linha), médio (horário e nome),
+   normal (+ serviços) e grande (+ status). */
+.evento--bloco[data-tamanho='curto'] {
+  flex-direction: row;
+  gap: var(--e2);
+  align-items: center;
+  padding-block: 0;
+}
+
+.evento--bloco[data-tamanho='curto'] .evento__servicos,
+.evento--bloco[data-tamanho='curto'] .evento__status,
+.evento--bloco[data-tamanho='medio'] .evento__servicos,
+.evento--bloco[data-tamanho='medio'] .evento__status,
+.evento--bloco[data-tamanho='normal'] .evento__status {
+  display: none;
+}
+
+.grade--dia .evento--bloco {
+  font-size: var(--texto-p);
+}
+
+/* Lista da semana: só aparece no celular */
+.lista-semana {
+  display: none;
+}
+
+.lista-dia + .lista-dia {
+  margin-top: var(--e5);
+}
+
+.lista-dia__titulo {
+  margin-bottom: var(--e2);
+  font-size: var(--texto-g);
+}
+
+.lista-dia__eventos {
+  display: grid;
+  gap: var(--e2);
+}
+
+.evento--item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0 var(--e3);
+  width: 100%;
+  padding: var(--e3);
+  border-radius: var(--raio-p);
+}
+
+.evento--item .evento__servicos,
+.evento--item .evento__status {
+  grid-column: 2;
+  font-size: var(--texto-p);
+}
+
+.lista-dia__vazio {
+  padding: var(--e3);
+  border-radius: var(--raio-p);
+  background: var(--cinza);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+@media (max-width: 760px) {
+  .calendario-painel[data-visao='semana'] .grade-rolagem {
+    display: none;
+  }
+
+  .calendario-painel[data-visao='semana'] .lista-semana {
+    display: block;
+  }
+}
+
+/* ==========================================================================
+   Diálogos
+   ========================================================================== */
+.dialogo {
+  width: min(calc(100% - 2rem), 34rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  border-radius: var(--raio-g);
+  background: var(--branco);
+  color: var(--tinta);
+  box-shadow: 0 24px 64px rgb(31 31 31 / 0.25);
+}
+
+.dialogo--largo {
+  width: min(calc(100% - 2rem), 44rem);
+}
+
+.dialogo::backdrop {
+  background: rgb(31 31 31 / 0.45);
+}
+
+.dialogo[open] {
+  animation: dialogo-entrar 0.25s var(--curva-saida);
+}
+
+@keyframes dialogo-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogo[open] {
+    animation: none;
+  }
+}
+
+.dialogo__forma {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+
+.dialogo__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--e4);
+  padding: var(--e5) var(--e5) var(--e3);
+}
+
+.dialogo__topo h2 {
+  font-size: var(--titulo-p);
+}
+
+.dialogo__fechar {
+  display: grid;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cinza);
+  cursor: pointer;
+}
+
+.dialogo__fechar:hover {
+  background: var(--borda);
+}
+
+.dialogo__corpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--e5) var(--e4);
+}
+
+.dialogo__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+  padding: var(--e4) var(--e5) var(--e5);
+  border-top: 1.5px solid var(--borda);
+}
+
+.dialogo__acoes--fim {
+  justify-content: flex-end;
+}
+
+.dialogo .alerta {
+  margin-top: var(--e3);
+}
+
+@media (max-width: 560px) {
+  .dialogo,
+  .dialogo--largo {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    margin: auto 0 0;
+    border-radius: var(--raio-g) var(--raio-g) 0 0;
+  }
+
+  .dialogo__acoes > * {
+    flex: 1 1 auto;
+  }
+}
+
+/* Detalhe */
+.detalhe__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e2) var(--e3);
+  margin-top: var(--e2);
+}
+
+.detalhe__codigo {
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+  letter-spacing: 0.04em;
+}
+
+.detalhe__ficha {
+  display: grid;
+  gap: var(--e3);
+}
+
+.detalhe__ficha div {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: var(--e3);
+}
+
+.detalhe__ficha dt {
+  color: var(--texto-suave);
+}
+
+.detalhe__ficha a {
+  text-underline-offset: 3px;
+}
+
+.detalhe__servicos li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--e3);
+  font-variant-numeric: tabular-nums;
+}
+
+.detalhe__nota {
+  margin-top: var(--e4);
+  color: var(--texto-suave);
+}
+
+@media (max-width: 480px) {
+  .detalhe__ficha div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+/* Formulário */
+.form-agenda .dialogo__corpo > .campo {
+  margin-top: var(--e4);
+}
+
+.form-linha {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e4);
+  margin-top: var(--e4);
+}
+
+.form-linha .campo + .campo {
+  margin-top: 0;
+}
+
+.cliente-fixo {
+  padding: var(--e3) var(--e4);
+  border-radius: var(--raio-m);
+  background: var(--cinza);
+  font-weight: 500;
+}
+
+.form-servicos {
+  margin-top: var(--e4);
+}
+
+.form-servicos legend {
+  margin-bottom: var(--e2);
+  padding: 0;
+  font-weight: 500;
+}
+
+.servicos-grupo + .servicos-grupo {
+  margin-top: var(--e3);
+}
+
+.servicos-grupo__titulo {
+  margin-bottom: var(--e1);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.servicos-grupo__opcoes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e2);
+}
+
+.servico-opcao {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 0 var(--e2);
+  padding: var(--e2) var(--e3);
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-m);
+  cursor: pointer;
+}
+
+.servico-opcao:has(input:checked) {
+  border-color: var(--marca);
+  background: var(--creme);
+}
+
+.servico-opcao input {
+  width: 18px;
+  height: 18px;
+  margin: 3px 0 0;
+  accent-color: var(--marca);
+}
+
+.servico-opcao__nome {
+  font-weight: 500;
+}
+
+.servico-opcao__dados {
+  grid-column: 2;
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.form-resumo {
+  margin-top: var(--e3);
+  font-weight: 500;
+}
+
+.form-resumo:empty {
+  display: none;
+}
+
+.form-agenda .aviso {
+  margin-top: var(--e3);
+  background: var(--status-pendente-fundo);
+  color: var(--status-pendente);
+}
+
+@media (max-width: 560px) {
+  .form-linha,
+  .servicos-grupo__opcoes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

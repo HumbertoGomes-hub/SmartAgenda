@@ -14,6 +14,7 @@ const SELECAO = `
   modelo_veiculo,
   observacoes,
   status,
+  origem,
   criado_em,
   cliente:cliente_id ( nome, telefone ),
   itens:item_agendamento ( servico_id, preco_praticado, duracao_minutos, servico:servico_id ( nome ) )
@@ -42,6 +43,7 @@ function paraResposta(linha, prazoRespostaHoras) {
     modeloVeiculo: linha.modelo_veiculo || '',
     observacoes: linha.observacoes || '',
     status: linha.status,
+    origem: linha.origem || 'site',
     criadoEm: new Date(linha.criado_em).toISOString(),
     itens,
     duracaoMinutos: itens.reduce((total, item) => total + item.duracaoMinutos, 0),
@@ -108,4 +110,4 @@ async function resumoDoDia(agora = new Date()) {
   };
 }
 
-module.exports = { paraResposta, resumoDoDia, STATUS_DA_AGENDA, STATUS_EM_ABERTO };
+module.exports = { SELECAO, paraResposta, prazoRespostaHoras, resumoDoDia, STATUS_DA_AGENDA, STATUS_EM_ABERTO };

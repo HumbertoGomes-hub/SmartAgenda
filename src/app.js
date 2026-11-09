@@ -13,6 +13,7 @@ const { naoEncontrado, tratarErros } = require('./middlewares/erros');
 const rotasAutenticacao = require('./rotas/autenticacao');
 const rotasEmpresa = require('./rotas/empresa');
 const rotasPainel = require('./rotas/painel');
+const rotasAgenda = require('./rotas/agenda');
 
 const PASTA_PUBLICA = path.join(__dirname, '..', 'public');
 
@@ -43,7 +44,7 @@ function criarApp() {
 
   // Painel administrativo. As rotas de sessão vêm antes, porque o login
   // não exige sessão; as demais (rotasPainel) exigem.
-  app.use('/api/admin', sessao, rotasAutenticacao, rotasPainel);
+  app.use('/api/admin', sessao, rotasAutenticacao, rotasPainel, rotasAgenda);
 
   // Site público e páginas do painel (HTML, CSS, JS e imagens).
   // As páginas não trazem dados: tudo que é sensível vem da API, que exige sessão.
