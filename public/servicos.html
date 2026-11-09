@@ -12,9 +12,12 @@
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/site.css" />
+    <script src="js/dados-exemplo.js" defer></script>
+    <script src="js/api-exemplo.js" defer></script>
     <script src="js/site.js" defer></script>
+    <script src="js/vitrine.js" defer></script>
   </head>
-  <body>
+  <body data-pagina="servicos">
     <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
 
     <!-- início: cabeçalho (vira partial no EJS) -->
@@ -52,89 +55,7 @@
         </div>
       </div>
 
-      <div class="conteudo secao">
-        <section class="categoria">
-          <h2>Lavagem</h2>
-          <ul class="servicos-lista">
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Lavagem detalhada</h3>
-                  <p>Carroceria, rodas, frisos, vidros e caixas de roda limpos um a um.</p>
-                </div>
-                <span class="etiqueta">1h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 80</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=lavagem-detalhada" aria-label="Agendar Lavagem detalhada">Agendar</a>
-              </article>
-            </li>
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Higienização interna</h3>
-                  <p>Bancos, carpetes, teto e painel limpos e sem odor.</p>
-                </div>
-                <span class="etiqueta">2h30</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 180</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=higienizacao-interna" aria-label="Agendar Higienização interna">Agendar</a>
-              </article>
-            </li>
-          </ul>
-        </section>
-        <section class="categoria">
-          <h2>Polimento</h2>
-          <ul class="servicos-lista">
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Polimento comercial</h3>
-                  <p>Devolve o brilho e disfarça riscos leves da pintura.</p>
-                </div>
-                <span class="etiqueta">3h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 250</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=polimento-comercial" aria-label="Agendar Polimento comercial">Agendar</a>
-              </article>
-            </li>
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Polimento técnico</h3>
-                  <p>Remove riscos e marcas de lavagem, em duas ou mais etapas.</p>
-                </div>
-                <span class="etiqueta">5h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 450</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=polimento-tecnico" aria-label="Agendar Polimento técnico">Agendar</a>
-              </article>
-            </li>
-          </ul>
-        </section>
-        <section class="categoria">
-          <h2>Proteção</h2>
-          <ul class="servicos-lista">
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Vitrificação de pintura</h3>
-                  <p>Camada que protege a pintura e facilita a limpeza por até dois anos.</p>
-                </div>
-                <span class="etiqueta">8h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 900</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=vitrificacao-pintura" aria-label="Agendar Vitrificação de pintura">Agendar</a>
-              </article>
-            </li>
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Cristalização de vidros</h3>
-                  <p>A água escorre do para-brisa e a visão melhora na chuva.</p>
-                </div>
-                <span class="etiqueta">1h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 120</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=cristalizacao-vidros" aria-label="Agendar Cristalização de vidros">Agendar</a>
-              </article>
-            </li>
-          </ul>
-        </section>
-      </div>
+      <div id="catalogo" class="conteudo secao" aria-busy="true"></div>
     </main>
 
     <!-- início: rodapé (vira partial no EJS) -->

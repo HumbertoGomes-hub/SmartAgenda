@@ -14,6 +14,8 @@ const rotasAutenticacao = require('./rotas/autenticacao');
 const rotasEmpresa = require('./rotas/empresa');
 const rotasPainel = require('./rotas/painel');
 const rotasAgenda = require('./rotas/agenda');
+const rotasCatalogo = require('./rotas/catalogo');
+const rotasVitrine = require('./rotas/vitrine');
 
 const PASTA_PUBLICA = path.join(__dirname, '..', 'public');
 
@@ -32,6 +34,8 @@ function criarApp() {
         directives: {
           // Em desenvolvimento (http://localhost) não força HTTPS nos recursos.
           upgradeInsecureRequests: config.producao ? [] : null,
+          // Fotos do Supabase Storage; blob: é a prévia da foto escolhida no painel.
+          imgSrc: ["'self'", 'data:', 'blob:', new URL(config.supabase.url).origin],
         },
       },
     }),
@@ -42,9 +46,12 @@ function criarApp() {
   // Nome, logotipo e cor da estética para as páginas (RF-23, RNF-12).
   app.use('/api/empresa', rotasEmpresa);
 
+  // Serviços ativos e trabalhos publicados, para o site (RF-01 a RF-03).
+  app.use('/api/vitrine', rotasVitrine);
+
   // Painel administrativo. As rotas de sessão vêm antes, porque o login
   // não exige sessão; as demais (rotasPainel) exigem.
-  app.use('/api/admin', sessao, rotasAutenticacao, rotasPainel, rotasAgenda);
+  app.use('/api/admin', sessao, rotasAutenticacao, rotasPainel, rotasAgenda, rotasCatalogo);
 
   // Site público e páginas do painel (HTML, CSS, JS e imagens).
   // As páginas não trazem dados: tudo que é sensível vem da API, que exige sessão.

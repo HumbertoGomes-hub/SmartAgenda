@@ -12,9 +12,12 @@
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/site.css" />
+    <script src="js/dados-exemplo.js" defer></script>
+    <script src="js/api-exemplo.js" defer></script>
     <script src="js/site.js" defer></script>
+    <script src="js/vitrine.js" defer></script>
   </head>
-  <body>
+  <body data-pagina="inicio">
     <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
 
     <!-- início: cabeçalho (vira partial no EJS) -->
@@ -52,20 +55,9 @@
             <p>Lavagem detalhada, polimento e proteção de pintura para seu carro voltar a ter cara de novo.</p>
             <a class="botao botao--grande" href="agendar.html">Agendar horário</a>
           </div>
-          <figure>
-            <div class="comparador" data-apresentar="true">
-              <img class="comparador__camada comparador__camada--depois ilustracao" fetchpriority="high" src="img/exemplo/seda-depois.svg" alt="Sedã depois do polimento, com a pintura brilhante" width="1200" height="520" />
-              <img class="comparador__camada comparador__camada--antes ilustracao" fetchpriority="high" src="img/exemplo/seda-antes.svg" alt="Sedã antes do polimento, com a pintura riscada" width="1200" height="520" />
-              <span class="comparador__rotulo comparador__rotulo--antes">Antes</span>
-              <span class="comparador__rotulo comparador__rotulo--depois">Depois</span>
-              <div class="comparador__divisor"><span class="comparador__alca"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8.5 6 3.5 11l5 5M13.5 6l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-              <input class="comparador__controle" type="range" min="0" max="100" value="58" aria-label="Arraste para comparar o carro antes e depois do serviço" />
-            </div>
-            <figcaption class="comparador__legenda">
-              <span>Polimento técnico em sedã preto</span>
-              <a class="ligacao" href="portfolio.html">Ver mais trabalhos</a>
-            </figcaption>
-          </figure>
+          <!-- Comparador antes/depois do trabalho escolhido como capa no painel.
+               Sem capa, a abertura fica só com o nome e a descrição. -->
+          <figure id="capa" class="abertura__capa" hidden></figure>
         </div>
       </section>
 
@@ -89,69 +81,21 @@
       <section class="secao secao--creme" aria-labelledby="titulo-servicos">
         <div class="conteudo">
           <div class="secao__topo">
-            <h2 id="titulo-servicos">Serviços mais pedidos</h2>
+            <h2 id="titulo-servicos">Serviços</h2>
             <a class="ligacao" href="servicos.html">Ver todos os serviços</a>
           </div>
-          <ul class="servicos-lista">
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Lavagem detalhada</h3>
-                  <p>Carroceria, rodas, frisos, vidros e caixas de roda limpos um a um.</p>
-                </div>
-                <span class="etiqueta">1h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 80</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=lavagem-detalhada" aria-label="Agendar Lavagem detalhada">Agendar</a>
-              </article>
-            </li>
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Polimento técnico</h3>
-                  <p>Remove riscos e marcas de lavagem, em duas ou mais etapas.</p>
-                </div>
-                <span class="etiqueta">5h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 450</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=polimento-tecnico" aria-label="Agendar Polimento técnico">Agendar</a>
-              </article>
-            </li>
-            <li>
-              <article class="servico">
-                <div class="servico__texto">
-                  <h3>Vitrificação de pintura</h3>
-                  <p>Camada que protege a pintura e facilita a limpeza por até dois anos.</p>
-                </div>
-                <span class="etiqueta">8h</span>
-                <p class="servico__preco"><small>a partir de</small> <strong>R$ 900</strong></p>
-                <a class="botao botao--contorno" href="agendar.html?servico=vitrificacao-pintura" aria-label="Agendar Vitrificação de pintura">Agendar</a>
-              </article>
-            </li>
-          </ul>
+          <div id="servicos-inicio" aria-busy="true"></div>
         </div>
       </section>
 
-      <section class="secao" aria-labelledby="titulo-portfolio">
+      <!-- Trabalhos marcados como destaque no painel. Sem destaque, a seção some. -->
+      <section id="secao-destaques" class="secao" aria-labelledby="titulo-portfolio" hidden>
         <div class="conteudo">
           <div class="secao__topo">
             <h2 id="titulo-portfolio">Trabalhos recentes</h2>
             <a class="ligacao" href="portfolio.html">Ver portfólio</a>
           </div>
-          <ul class="galeria">
-            <li>
-              <a class="trabalho" href="trabalho.html?id=suv-familia">
-                <div class="trabalho__foto"><img class="ilustracao" src="img/exemplo/suv-depois.svg" alt="SUV preto com a pintura vitrificada" width="1200" height="520" loading="lazy" /></div>
-                <h3>Vitrificação em SUV de família</h3>
-                <p class="trabalho__meta">Vitrificação de pintura, setembro de 2026</p>
-              </a>
-            </li>
-            <li>
-              <a class="trabalho" href="trabalho.html?id=hatch-diario">
-                <div class="trabalho__foto"><img class="ilustracao" src="img/exemplo/hatch-depois.svg" alt="Hatch preto depois da lavagem detalhada" width="1200" height="520" loading="lazy" /></div>
-                <h3>Lavagem detalhada em hatch de uso diário</h3>
-                <p class="trabalho__meta">Lavagem detalhada, setembro de 2026</p>
-              </a>
-            </li>
-          </ul>
+          <div id="galeria-inicio"></div>
         </div>
       </section>
 

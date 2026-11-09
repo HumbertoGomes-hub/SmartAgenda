@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/site.css" />
+    <script src="js/dados-exemplo.js" defer></script>
     <script src="js/api-exemplo.js" defer></script>
     <script src="js/site.js" defer></script>
     <script src="js/agendar.js" defer></script>
@@ -65,79 +66,11 @@
 
         <form id="form-agendar" class="fluxo" action="/agendar" method="post" novalidate>
           <div>
-            <!-- Passo 1: serviços. Os data-* vêm da tabela de serviços. -->
+            <!-- Passo 1: serviços ativos, montados por agendar.js. -->
             <section class="fluxo__passo" aria-labelledby="passo-servicos">
               <h2 id="passo-servicos" tabindex="-1">Quais serviços você quer?</h2>
               <p class="fluxo__apoio">Escolha um ou mais. Os horários livres dependem da duração total.</p>
-              <fieldset class="opcoes-grupo">
-                <legend>Lavagem</legend>
-                <div class="opcoes">
-                  <label class="opcao">
-                    <input type="checkbox" name="servicos" value="lavagem-detalhada" data-nome="Lavagem detalhada" data-preco="80" data-duracao="60" />
-                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="opcao__nome">Lavagem detalhada</span>
-                    <span class="opcao__dados">
-                      <span class="etiqueta">1h</span>
-                      <span>a partir de R$ 80</span>
-                    </span>
-                  </label>
-                  <label class="opcao">
-                    <input type="checkbox" name="servicos" value="higienizacao-interna" data-nome="Higienização interna" data-preco="180" data-duracao="150" />
-                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="opcao__nome">Higienização interna</span>
-                    <span class="opcao__dados">
-                      <span class="etiqueta">2h30</span>
-                      <span>a partir de R$ 180</span>
-                    </span>
-                  </label>
-                </div>
-              </fieldset>
-              <fieldset class="opcoes-grupo">
-                <legend>Polimento</legend>
-                <div class="opcoes">
-                  <label class="opcao">
-                    <input type="checkbox" name="servicos" value="polimento-comercial" data-nome="Polimento comercial" data-preco="250" data-duracao="180" />
-                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="opcao__nome">Polimento comercial</span>
-                    <span class="opcao__dados">
-                      <span class="etiqueta">3h</span>
-                      <span>a partir de R$ 250</span>
-                    </span>
-                  </label>
-                  <label class="opcao">
-                    <input type="checkbox" name="servicos" value="polimento-tecnico" data-nome="Polimento técnico" data-preco="450" data-duracao="300" />
-                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="opcao__nome">Polimento técnico</span>
-                    <span class="opcao__dados">
-                      <span class="etiqueta">5h</span>
-                      <span>a partir de R$ 450</span>
-                    </span>
-                  </label>
-                </div>
-              </fieldset>
-              <fieldset class="opcoes-grupo">
-                <legend>Proteção</legend>
-                <div class="opcoes">
-                  <label class="opcao">
-                    <input type="checkbox" name="servicos" value="vitrificacao-pintura" data-nome="Vitrificação de pintura" data-preco="900" data-duracao="480" />
-                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="opcao__nome">Vitrificação de pintura</span>
-                    <span class="opcao__dados">
-                      <span class="etiqueta">8h</span>
-                      <span>a partir de R$ 900</span>
-                    </span>
-                  </label>
-                  <label class="opcao">
-                    <input type="checkbox" name="servicos" value="cristalizacao-vidros" data-nome="Cristalização de vidros" data-preco="120" data-duracao="60" />
-                    <span class="opcao__marca"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="opcao__nome">Cristalização de vidros</span>
-                    <span class="opcao__dados">
-                      <span class="etiqueta">1h</span>
-                      <span>a partir de R$ 120</span>
-                    </span>
-                  </label>
-                </div>
-              </fieldset>
+              <div id="opcoes-servicos" aria-busy="true"></div>
             </section>
 
             <!-- Passo 2: data e horário. Os data-* vêm de ConfiguracaoAgenda e BloqueioAgenda. -->

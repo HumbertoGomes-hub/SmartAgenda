@@ -18,7 +18,23 @@
  *   aceitar             -> POST  /api/admin/agendamentos/:codigo/aceitar
  *   cancelar            -> POST  /api/admin/agendamentos/:codigo/cancelar
  *   registrarAtendimento-> POST  /api/admin/agendamentos/:codigo/atendimento
+ *   servicosPainel      -> GET   /api/admin/servicos
+ *   criarServico        -> POST  /api/admin/servicos
+ *   editarServico       -> PATCH /api/admin/servicos/:id
+ *   enviarFotoServico   -> PUT   /api/admin/servicos/:id/foto      (corpo: a foto)
+ *   removerFotoServico  -> DELETE /api/admin/servicos/:id/foto
+ *   portfolioPainel     -> GET   /api/admin/portfolio
+ *   criarTrabalho       -> POST  /api/admin/portfolio
+ *   editarTrabalho      -> PATCH /api/admin/portfolio/:id
+ *   excluirTrabalho     -> DELETE /api/admin/portfolio/:id
+ *   enviarFotoTrabalho  -> POST  /api/admin/portfolio/:id/fotos?tipo= (corpo: a foto)
+ *   editarFotoTrabalho  -> PATCH /api/admin/portfolio/:id/fotos/:fotoId
+ *   removerFotoTrabalho -> DELETE /api/admin/portfolio/:id/fotos/:fotoId
+ *   ordenarFotosTrabalho-> PUT   /api/admin/portfolio/:id/fotos/ordem
  * As rotas reais estão em src/rotas/.
+ *
+ * Serviços e portfólio vêm de ../dados-exemplo.js, os mesmos dados que o site
+ * mostra: o que for mudado aqui aparece no site.
  *
  * Os agendamentos ficam salvos no navegador (localStorage), para o que for
  * feito em Pedidos aparecer na Agenda e no Início. Para voltar aos dados de
@@ -70,15 +86,17 @@
     { id: 4, nome: 'Paulo Mendes', email: 'inativo@exemplo.test', perfil: 'FUNCIONARIO', ativo: false },
   ];
 
-  // No banco, cada serviço tem um id numérico; as chaves em texto só deixam
-  // os exemplos abaixo mais fáceis de ler.
-  var SERVICOS = {
-    'lavagem-detalhada': { id: 1, nome: 'Lavagem detalhada', categoria: 'Lavagem', preco: 80, duracao: 60 },
-    'higienizacao-interna': { id: 2, nome: 'Higienização interna', categoria: 'Lavagem', preco: 180, duracao: 150 },
-    'polimento-comercial': { id: 3, nome: 'Polimento comercial', categoria: 'Polimento', preco: 250, duracao: 180 },
-    'polimento-tecnico': { id: 4, nome: 'Polimento técnico', categoria: 'Polimento', preco: 450, duracao: 300 },
-    'vitrificacao-pintura': { id: 5, nome: 'Vitrificação de pintura', categoria: 'Proteção', preco: 900, duracao: 480 },
-    'cristalizacao-vidros': { id: 6, nome: 'Cristalização de vidros', categoria: 'Proteção', preco: 120, duracao: 60 },
+  // Serviços e portfólio ficam em ../dados-exemplo.js, compartilhados com o site.
+  var Dados = window.SmartAgendaDadosExemplo;
+
+  // Os agendamentos de exemplo citam o serviço por um nome curto; no banco é o id.
+  var ID_DO_SERVICO = {
+    'lavagem-detalhada': 1,
+    'higienizacao-interna': 2,
+    'polimento-comercial': 3,
+    'polimento-tecnico': 4,
+    'vitrificacao-pintura': 5,
+    'cristalizacao-vidros': 6,
   };
 
   // ConfiguracaoAgenda (RF-22). Dias: 0 = domingo ... 6 = sábado.
@@ -244,13 +262,9 @@
   };
 
   function servicoPorId(id) {
-    return Object.keys(SERVICOS)
-      .map(function (chave) {
-        return SERVICOS[chave];
-      })
-      .filter(function (servico) {
-        return servico.id === Number(id);
-      })[0];
+    return Dados.ler().servicos.filter(function (servico) {
+      return servico.id === Number(id);
+    })[0];
   }
 
   function totalizar(agendamento) {
@@ -281,8 +295,8 @@
       origem: base.origem || 'site',
       criadoEm: criadoEm.toISOString(),
       itens: base.servicos.map(function (chave) {
-        var servico = SERVICOS[chave];
-        return { servicoId: servico.id, nome: servico.nome, precoPraticado: servico.preco, duracaoMinutos: servico.duracao };
+        var servico = servicoPorId(ID_DO_SERVICO[chave]);
+        return { servicoId: servico.id, nome: servico.nome, precoPraticado: servico.precoBase, duracaoMinutos: servico.duracaoMinutos };
       }),
     });
 
@@ -400,10 +414,10 @@
         return item.servicoId === Number(ids[i]);
       })[0];
       var servico = servicoPorId(ids[i]);
-      if (!servico) {
+      if (!servico || (!mantido && !servico.ativo)) {
         return null;
       }
-      itens.push(mantido || { servicoId: servico.id, nome: servico.nome, precoPraticado: servico.preco, duracaoMinutos: servico.duracao });
+      itens.push(mantido || { servicoId: servico.id, nome: servico.nome, precoPraticado: servico.precoBase, duracaoMinutos: servico.duracaoMinutos });
     }
     return itens;
   }
@@ -518,10 +532,13 @@
     var hoje = dataISO(new Date());
     return aguardar(
       copia({
-        servicos: Object.keys(SERVICOS).map(function (chave) {
-          var s = SERVICOS[chave];
-          return { id: s.id, nome: s.nome, categoria: s.categoria, precoBase: s.preco, duracaoMinutos: s.duracao };
-        }),
+        servicos: Dados.ler()
+          .servicos.filter(function (s) {
+            return s.ativo;
+          })
+          .map(function (s) {
+            return { id: s.id, nome: s.nome, categoria: s.categoria, precoBase: s.precoBase, duracaoMinutos: s.duracaoMinutos };
+          }),
         configuracao: CONFIGURACAO,
         bloqueios: estadoAtual().bloqueios.filter(function (b) {
           return b.data >= hoje;
@@ -677,6 +694,447 @@
     return aguardar(copia(novo));
   }
 
+  /* Serviços (RF-20) e portfólio (RF-21) ------------------------------------- */
+
+  var MAXIMO_DESTAQUES = 4;
+  var MAXIMO_FOTOS_GERAIS = 12;
+
+  function exigirPermissao(acao) {
+    var semSessao = exigirSessao();
+    if (semSessao) {
+      return semSessao;
+    }
+    if (sessao().usuario.permissoes.indexOf(acao) === -1) {
+      return falhar('SEM_PERMISSAO', 'Seu perfil não tem acesso a essa área do painel.');
+    }
+    return null;
+  }
+
+  function invalido(mensagem) {
+    return falhar('DADOS_INVALIDOS', mensagem);
+  }
+
+  function gravarDados(dados) {
+    return Dados.gravar(dados)
+      ? null
+      : falhar(
+          'SEM_ESPACO',
+          'A demonstração guarda as fotos no navegador e o espaço acabou. Remova algumas fotos para enviar outras.',
+        );
+  }
+
+  function textoLimpo(valor) {
+    return typeof valor === 'string' ? valor.trim().replace(/\s+/g, ' ') : valor;
+  }
+
+  // Mesmas regras de src/dominio/catalogo.js. Devolve { campos } ou { erro }.
+  function lerServico(corpo, completo) {
+    var campos = {};
+    var tem = function (campo) {
+      return completo || corpo[campo] !== undefined;
+    };
+    if (tem('nome')) {
+      var nome = textoLimpo(corpo.nome);
+      if (typeof nome !== 'string' || nome.length < 2 || nome.length > 80) {
+        return { erro: 'O nome precisa ter de 2 a 80 caracteres.' };
+      }
+      campos.nome = nome;
+    }
+    if (tem('categoria')) {
+      var categoria = textoLimpo(corpo.categoria);
+      if (typeof categoria !== 'string' || categoria.length < 2 || categoria.length > 40) {
+        return { erro: 'A categoria precisa ter de 2 a 40 caracteres.' };
+      }
+      campos.categoria = categoria;
+    }
+    if (corpo.descricao !== undefined) {
+      var descricao = textoLimpo(corpo.descricao || '');
+      if (descricao.length > 300) {
+        return { erro: 'A descrição pode ter até 300 caracteres.' };
+      }
+      campos.descricao = descricao;
+    }
+    if (tem('precoBase')) {
+      if (typeof corpo.precoBase !== 'number' || !isFinite(corpo.precoBase) || corpo.precoBase < 0 || corpo.precoBase > 100000) {
+        return { erro: 'Informe o preço inicial em reais, de 0 a 100.000.' };
+      }
+      campos.precoBase = Math.round(corpo.precoBase * 100) / 100;
+    }
+    if (tem('duracaoMinutos')) {
+      var minutos = corpo.duracaoMinutos;
+      if (!Number.isInteger(minutos) || minutos < 5 || minutos > 1440 || minutos % 5 !== 0) {
+        return { erro: 'Informe a duração em minutos, de 5 em 5, até 24 horas.' };
+      }
+      campos.duracaoMinutos = minutos;
+    }
+    if (corpo.ativo !== undefined) {
+      campos.ativo = Boolean(corpo.ativo);
+    }
+    return { campos: campos };
+  }
+
+  function servicoDe(dados, id) {
+    return dados.servicos.filter(function (s) {
+      return s.id === Number(id);
+    })[0];
+  }
+
+  function servicosPainel() {
+    var bloqueio = exigirPermissao('servicos');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var lista = Dados.ler().servicos.slice().sort(function (a, b) {
+      return a.categoria.localeCompare(b.categoria, 'pt-BR') || a.nome.localeCompare(b.nome, 'pt-BR');
+    });
+    return aguardar(copia({ servicos: lista }));
+  }
+
+  function criarServico(corpo) {
+    var bloqueio = exigirPermissao('servicos');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var lido = lerServico(corpo || {}, true);
+    if (lido.erro) {
+      return invalido(lido.erro);
+    }
+    var dados = Dados.ler();
+    var servico = Object.assign({ id: Dados.proximoId(dados.servicos), descricao: '', ativo: true, fotoUrl: '' }, lido.campos);
+    dados.servicos.push(servico);
+    return gravarDados(dados) || aguardar(copia(servico));
+  }
+
+  function editarServico(id, corpo) {
+    var bloqueio = exigirPermissao('servicos');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var lido = lerServico(corpo || {}, false);
+    if (lido.erro) {
+      return invalido(lido.erro);
+    }
+    var dados = Dados.ler();
+    var servico = servicoDe(dados, id);
+    if (!servico) {
+      return falhar('NAO_ENCONTRADO', 'Serviço não encontrado.');
+    }
+    Object.assign(servico, lido.campos);
+    return gravarDados(dados) || aguardar(copia(servico));
+  }
+
+  /*
+   * A foto chega como Blob (já em WebP, até 1600 px, por imagem.js). Aqui ela
+   * vira data: URL, menor ainda, porque o localStorage tem pouco espaço.
+   */
+  function fotoParaDemonstracao(blob) {
+    return createImageBitmap(blob).then(function (bitmap) {
+      var escala = Math.min(1, 960 / Math.max(bitmap.width, bitmap.height));
+      var tela = document.createElement('canvas');
+      tela.width = Math.round(bitmap.width * escala);
+      tela.height = Math.round(bitmap.height * escala);
+      tela.getContext('2d').drawImage(bitmap, 0, 0, tela.width, tela.height);
+      return tela.toDataURL('image/webp', 0.72);
+    });
+  }
+
+  function enviarFotoServico(id, blob) {
+    var bloqueio = exigirPermissao('servicos');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    return fotoParaDemonstracao(blob).then(function (url) {
+      var dados = Dados.ler();
+      var servico = servicoDe(dados, id);
+      if (!servico) {
+        return falhar('NAO_ENCONTRADO', 'Serviço não encontrado.');
+      }
+      servico.fotoUrl = url;
+      return gravarDados(dados) || aguardar(copia(servico));
+    });
+  }
+
+  function removerFotoServico(id) {
+    var bloqueio = exigirPermissao('servicos');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var dados = Dados.ler();
+    var servico = servicoDe(dados, id);
+    if (!servico) {
+      return falhar('NAO_ENCONTRADO', 'Serviço não encontrado.');
+    }
+    servico.fotoUrl = '';
+    return gravarDados(dados) || aguardar(copia(servico));
+  }
+
+  /* Portfólio --------------------------------------------------------------- */
+
+  function trabalhoDe(dados, id) {
+    return dados.trabalhos.filter(function (t) {
+      return t.id === Number(id);
+    })[0];
+  }
+
+  function completo(dados, trabalho) {
+    return Dados.trabalhoCompleto(trabalho, dados.servicos);
+  }
+
+  function temAntesEDepois(trabalho) {
+    var tipos = trabalho.fotos.map(function (f) {
+      return f.tipo;
+    });
+    return tipos.indexOf('ANTES') !== -1 && tipos.indexOf('DEPOIS') !== -1;
+  }
+
+  // Mesmas regras de src/dominio/catalogo.js e src/repositorios/portfolio.js.
+  function lerTrabalho(corpo, novo) {
+    var campos = {};
+    if (novo || corpo.titulo !== undefined) {
+      var titulo = textoLimpo(corpo.titulo);
+      if (typeof titulo !== 'string' || titulo.length < 3 || titulo.length > 100) {
+        return { erro: 'O título precisa ter de 3 a 100 caracteres.' };
+      }
+      campos.titulo = titulo;
+    }
+    if (corpo.descricao !== undefined) {
+      var descricao = textoLimpo(corpo.descricao || '');
+      if (descricao.length > 1000) {
+        return { erro: 'A descrição pode ter até 1000 caracteres.' };
+      }
+      campos.descricao = descricao;
+    }
+    if (corpo.servicoId !== undefined) {
+      campos.servicoId = corpo.servicoId === null ? null : Number(corpo.servicoId);
+    }
+    if (corpo.dataRealizacao !== undefined) {
+      if (corpo.dataRealizacao !== null && !/^\d{4}-\d{2}-\d{2}$/.test(corpo.dataRealizacao)) {
+        return { erro: 'Informe a data no formato AAAA-MM-DD.' };
+      }
+      campos.dataRealizacao = corpo.dataRealizacao;
+    }
+    ['publicado', 'emDestaque', 'naCapa'].forEach(function (campo) {
+      if (corpo[campo] !== undefined) {
+        campos[campo] = Boolean(corpo[campo]);
+      }
+    });
+    return { campos: campos };
+  }
+
+  function portfolioPainel() {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var dados = Dados.ler();
+    var trabalhos = dados.trabalhos
+      .slice()
+      .sort(function (a, b) {
+        return String(b.dataRealizacao || '').localeCompare(String(a.dataRealizacao || '')) || b.id - a.id;
+      })
+      .map(function (t) {
+        return completo(dados, t);
+      });
+    var servicos = dados.servicos.map(function (s) {
+      return { id: s.id, nome: s.nome, ativo: s.ativo };
+    });
+    return aguardar(copia({ trabalhos: trabalhos, servicos: servicos }));
+  }
+
+  function criarTrabalho(corpo) {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var lido = lerTrabalho(corpo || {}, true);
+    if (lido.erro) {
+      return invalido(lido.erro);
+    }
+    var dados = Dados.ler();
+    var trabalho = Object.assign(
+      { id: Dados.proximoId(dados.trabalhos), descricao: '', servicoId: null, dataRealizacao: null, publicado: false, naCapa: false, emDestaque: false, fotos: [] },
+      lido.campos,
+      { naCapa: false, emDestaque: false },
+    );
+    dados.trabalhos.push(trabalho);
+    return gravarDados(dados) || aguardar(completo(dados, trabalho));
+  }
+
+  function editarTrabalho(id, corpo) {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var lido = lerTrabalho(corpo || {}, false);
+    if (lido.erro) {
+      return invalido(lido.erro);
+    }
+    var dados = Dados.ler();
+    var trabalho = trabalhoDe(dados, id);
+    if (!trabalho) {
+      return falhar('NAO_ENCONTRADO', 'Trabalho não encontrado.');
+    }
+    var c = lido.campos;
+    var publicado = c.publicado !== undefined ? c.publicado : trabalho.publicado;
+
+    if (c.emDestaque === true && !publicado) {
+      return falhar('NAO_PUBLICADO', 'Publique o trabalho antes de colocá-lo no início.');
+    }
+    if (c.emDestaque === true && !trabalho.emDestaque) {
+      var destaques = dados.trabalhos.filter(function (t) {
+        return t.emDestaque;
+      }).length;
+      if (destaques >= MAXIMO_DESTAQUES) {
+        return falhar('LIMITE_DESTAQUES', 'O início mostra até ' + MAXIMO_DESTAQUES + ' trabalhos. Tire um dos destaques antes de escolher outro.');
+      }
+    }
+    if (c.naCapa === true && !(publicado && temAntesEDepois(trabalho))) {
+      return falhar('CAPA_SEM_FOTOS', 'Para ir para a capa, o trabalho precisa estar publicado e ter a foto de antes e a de depois.');
+    }
+
+    ['titulo', 'descricao', 'servicoId', 'dataRealizacao', 'publicado', 'emDestaque'].forEach(function (campo) {
+      if (c[campo] !== undefined) {
+        trabalho[campo] = c[campo];
+      }
+    });
+    if (!publicado) {
+      trabalho.emDestaque = false;
+      trabalho.naCapa = false;
+    }
+    if (c.naCapa === true) {
+      dados.trabalhos.forEach(function (t) {
+        t.naCapa = t === trabalho;
+      });
+    } else if (c.naCapa === false) {
+      trabalho.naCapa = false;
+    }
+    return gravarDados(dados) || aguardar(completo(dados, trabalho));
+  }
+
+  function excluirTrabalho(id) {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var dados = Dados.ler();
+    var trabalho = trabalhoDe(dados, id);
+    if (!trabalho) {
+      return falhar('NAO_ENCONTRADO', 'Trabalho não encontrado.');
+    }
+    dados.trabalhos.splice(dados.trabalhos.indexOf(trabalho), 1);
+    return gravarDados(dados) || aguardar(true);
+  }
+
+  // ANTES e DEPOIS substituem a anterior; GERAL entra no fim da lista.
+  function enviarFotoTrabalho(id, blob, tipo) {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    if (['ANTES', 'DEPOIS', 'GERAL'].indexOf(tipo) === -1) {
+      return invalido('O tipo da foto deve ser ANTES, DEPOIS ou GERAL.');
+    }
+    return fotoParaDemonstracao(blob).then(function (url) {
+      var dados = Dados.ler();
+      var trabalho = trabalhoDe(dados, id);
+      if (!trabalho) {
+        return falhar('NAO_ENCONTRADO', 'Trabalho não encontrado.');
+      }
+      var doTipo = trabalho.fotos.filter(function (f) {
+        return f.tipo === tipo;
+      });
+      if (tipo === 'GERAL' && doTipo.length >= MAXIMO_FOTOS_GERAIS) {
+        return falhar('LIMITE_FOTOS', 'Cada trabalho pode ter até ' + MAXIMO_FOTOS_GERAIS + ' fotos extras.');
+      }
+      if (tipo !== 'GERAL' && doTipo.length) {
+        doTipo[0].url = url;
+      } else {
+        var todasAsFotos = dados.trabalhos.reduce(function (lista, t) {
+          return lista.concat(t.fotos);
+        }, []);
+        trabalho.fotos.push({
+          id: Dados.proximoId(todasAsFotos),
+          url: url,
+          tipo: tipo,
+          legenda: '',
+          ordem: doTipo.reduce(function (maior, f) {
+            return Math.max(maior, f.ordem + 1);
+          }, 0),
+        });
+      }
+      return gravarDados(dados) || aguardar(completo(dados, trabalho));
+    });
+  }
+
+  function fotoDe(trabalho, fotoId) {
+    return trabalho.fotos.filter(function (f) {
+      return f.id === Number(fotoId);
+    })[0];
+  }
+
+  function editarFotoTrabalho(id, fotoId, corpo) {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var legenda = textoLimpo((corpo && corpo.legenda) || '');
+    if (legenda.length > 140) {
+      return invalido('A legenda pode ter até 140 caracteres.');
+    }
+    var dados = Dados.ler();
+    var trabalho = trabalhoDe(dados, id);
+    var foto = trabalho && fotoDe(trabalho, fotoId);
+    if (!foto) {
+      return falhar('NAO_ENCONTRADO', 'Foto não encontrada.');
+    }
+    foto.legenda = legenda;
+    return gravarDados(dados) || aguardar(completo(dados, trabalho));
+  }
+
+  // Apagar a foto ANTES ou DEPOIS tira o trabalho da capa (como o gatilho do banco).
+  function removerFotoTrabalho(id, fotoId) {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var dados = Dados.ler();
+    var trabalho = trabalhoDe(dados, id);
+    var foto = trabalho && fotoDe(trabalho, fotoId);
+    if (!foto) {
+      return falhar('NAO_ENCONTRADO', 'Foto não encontrada.');
+    }
+    trabalho.fotos.splice(trabalho.fotos.indexOf(foto), 1);
+    if (foto.tipo !== 'GERAL') {
+      trabalho.naCapa = false;
+    }
+    return gravarDados(dados) || aguardar(completo(dados, trabalho));
+  }
+
+  function ordenarFotosTrabalho(id, ids) {
+    var bloqueio = exigirPermissao('portfolio');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var dados = Dados.ler();
+    var trabalho = trabalhoDe(dados, id);
+    if (!trabalho) {
+      return falhar('NAO_ENCONTRADO', 'Trabalho não encontrado.');
+    }
+    var gerais = trabalho.fotos.filter(function (f) {
+      return f.tipo === 'GERAL';
+    });
+    var mesmas = ids.length === gerais.length && gerais.every(function (f) {
+      return ids.indexOf(f.id) !== -1;
+    });
+    if (!mesmas) {
+      return falhar('FOTOS_MUDARAM', 'As fotos deste trabalho mudaram. Recarregue a página.');
+    }
+    gerais.forEach(function (f) {
+      f.ordem = ids.indexOf(f.id);
+    });
+    return gravarDados(dados) || aguardar(completo(dados, trabalho));
+  }
+
   function empresa() {
     return aguardar({ nome: EMPRESA.nome, logotipoUrl: EMPRESA.logotipoUrl, corPrimaria: EMPRESA.corPrimaria });
   }
@@ -697,6 +1155,19 @@
     aceitar: aceitar,
     cancelar: cancelar,
     registrarAtendimento: registrarAtendimento,
+    servicosPainel: servicosPainel,
+    criarServico: criarServico,
+    editarServico: editarServico,
+    enviarFotoServico: enviarFotoServico,
+    removerFotoServico: removerFotoServico,
+    portfolioPainel: portfolioPainel,
+    criarTrabalho: criarTrabalho,
+    editarTrabalho: editarTrabalho,
+    excluirTrabalho: excluirTrabalho,
+    enviarFotoTrabalho: enviarFotoTrabalho,
+    editarFotoTrabalho: editarFotoTrabalho,
+    removerFotoTrabalho: removerFotoTrabalho,
+    ordenarFotosTrabalho: ordenarFotosTrabalho,
     // Só para testes: faz a sessão parecer parada há N minutos.
     envelhecerSessao: function (minutos) {
       var atual = lerSessao();
@@ -705,13 +1176,14 @@
         gravarSessao(atual);
       }
     },
-    // Só para testes: volta aos agendamentos de exemplo.
+    // Só para testes: volta aos agendamentos, serviços e trabalhos de exemplo.
     reiniciarDemonstracao: function () {
       try {
         localStorage.removeItem(CHAVE_AGENDA);
       } catch (erro) {
         // Nada a apagar.
       }
+      Dados.reiniciar();
     },
   };
 })();

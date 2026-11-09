@@ -12,9 +12,12 @@
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/site.css" />
+    <script src="js/dados-exemplo.js" defer></script>
+    <script src="js/api-exemplo.js" defer></script>
     <script src="js/site.js" defer></script>
+    <script src="js/vitrine.js" defer></script>
   </head>
-  <body>
+  <body data-pagina="portfolio">
     <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
 
     <!-- início: cabeçalho (vira partial no EJS) -->
@@ -52,38 +55,7 @@
         </div>
       </div>
 
-      <div class="conteudo secao">
-        <ul class="galeria">
-          <li>
-            <a class="trabalho" href="trabalho.html?id=seda-preto">
-              <div class="trabalho__foto"><img class="ilustracao" src="img/exemplo/seda-depois.svg" alt="Sedã preto com a pintura polida" width="1200" height="520" loading="lazy" /></div>
-              <h3>Polimento técnico em sedã preto</h3>
-              <p class="trabalho__meta">Polimento técnico, outubro de 2026</p>
-            </a>
-          </li>
-          <li>
-            <a class="trabalho" href="trabalho.html?id=suv-familia">
-              <div class="trabalho__foto"><img class="ilustracao" src="img/exemplo/suv-depois.svg" alt="SUV preto com a pintura vitrificada" width="1200" height="520" loading="lazy" /></div>
-              <h3>Vitrificação em SUV de família</h3>
-              <p class="trabalho__meta">Vitrificação de pintura, setembro de 2026</p>
-            </a>
-          </li>
-          <li>
-            <a class="trabalho" href="trabalho.html?id=hatch-diario">
-              <div class="trabalho__foto"><img class="ilustracao" src="img/exemplo/hatch-depois.svg" alt="Hatch preto depois da lavagem detalhada" width="1200" height="520" loading="lazy" /></div>
-              <h3>Lavagem detalhada em hatch de uso diário</h3>
-              <p class="trabalho__meta">Lavagem detalhada, setembro de 2026</p>
-            </a>
-          </li>
-          <li>
-            <a class="trabalho" href="trabalho.html?id=rodas-seda">
-              <div class="trabalho__foto"><img class="ilustracao" src="img/exemplo/seda-detalhe.svg" alt="Detalhe da roda dianteira de um sedã" width="1200" height="520" loading="lazy" /></div>
-              <h3>Polimento comercial em sedã de frota</h3>
-              <p class="trabalho__meta">Polimento comercial, agosto de 2026</p>
-            </a>
-          </li>
-        </ul>
-      </div>
+      <div id="galeria-portfolio" class="conteudo secao" aria-busy="true"></div>
     </main>
 
     <!-- início: rodapé (vira partial no EJS) -->

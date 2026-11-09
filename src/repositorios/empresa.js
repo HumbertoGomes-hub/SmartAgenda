@@ -28,4 +28,14 @@ async function buscarIdentidade() {
   return identidadeParaResposta(empresa);
 }
 
-module.exports = { buscarIdentidade, identidadeParaResposta };
+// Id da linha única da empresa, para criar serviços e trabalhos.
+async function buscarId() {
+  const resposta = await supabase.from('empresa').select('id').order('id').limit(1).maybeSingle();
+  const linha = exigirSucesso(resposta, 'empresa.buscarId');
+  if (!linha) {
+    throw new ErroHttp(404, 'EMPRESA_NAO_CONFIGURADA', 'A estética ainda não foi configurada.');
+  }
+  return linha.id;
+}
+
+module.exports = { buscarIdentidade, buscarId, identidadeParaResposta };

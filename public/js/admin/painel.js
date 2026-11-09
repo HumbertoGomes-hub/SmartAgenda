@@ -218,8 +218,10 @@
     return '(' + digitos.slice(0, 2) + ') ' + digitos.slice(2, 7) + '-' + digitos.slice(7);
   }
 
+  // Centavos só quando existem: R$ 80, R$ 95,50.
   function preco(valor) {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+    var casas = valor % 1 ? 2 : 0;
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: casas, maximumFractionDigits: casas });
   }
 
   /* Montagem de elementos ------------------------------------------------- */

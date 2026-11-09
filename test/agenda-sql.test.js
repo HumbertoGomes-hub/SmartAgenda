@@ -4,42 +4,11 @@
  * Testa as funções SQL da agenda (supabase/migrations) num PostgreSQL de
  * verdade rodando em memória, sem precisar do Supabase.
  *
- * Precisa do PGlite. Sem ele, os testes são pulados:
- *   npm install --save-dev @electric-sql/pglite
+ * Precisa do PGlite (ver test/apoio/banco.js). Sem ele, os testes são pulados.
  */
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-
-let PGlite = null;
-try {
-  ({ PGlite } = require('@electric-sql/pglite'));
-} catch (erro) {
-  // Sem PGlite instalado: os testes abaixo ficam marcados como pulados.
-}
-
-const PASTA_MIGRACOES = path.join(__dirname, '..', 'supabase', 'migrations');
-const pular = PGlite ? false : 'instale @electric-sql/pglite para testar o SQL';
-
-async function bancoNovo({ capacidade = 1 } = {}) {
-  const db = new PGlite();
-  for (const arquivo of fs.readdirSync(PASTA_MIGRACOES).sort()) {
-    await db.exec(fs.readFileSync(path.join(PASTA_MIGRACOES, arquivo), 'utf8'));
-  }
-  await db.exec(`
-    insert into empresa (nome) values ('Estética de Teste');
-    insert into configuracao_agenda (empresa_id, capacidade_simultanea) values (1, ${capacidade});
-    insert into usuario_admin (empresa_id, nome, email, senha_hash, perfil)
-      values (1, 'Dono', 'dono@teste.test', 'x', 'DONO');
-    insert into servico (empresa_id, nome, categoria, preco_base, duracao_minutos, ativo) values
-      (1, 'Lavagem', 'Lavagem', 80, 60, true),            -- 1
-      (1, 'Polimento', 'Polimento', 450, 120, true),      -- 2
-      (1, 'Vidros', 'Proteção', 120, 30, true),           -- 3
-      (1, 'Serviço antigo', 'Lavagem', 50, 60, false);    -- 4
-  `);
-  return db;
-}
+const { bancoNovo, falhaCom: falhaComBase, pular } = require('./apoio/banco');
 
 // Horários no fuso da estética, como o servidor envia.
 const em = (dataHora) => `${dataHora}:00-03:00`;
@@ -65,12 +34,7 @@ async function buscar(db, codigo) {
   return r.rows[0];
 }
 
-async function falhaCom(promessa, codigo) {
-  await assert.rejects(promessa, (erro) => {
-    assert.match(erro.message, new RegExp(codigo));
-    return true;
-  });
-}
+const falhaCom = (promessa, codigo) => falhaComBase(assert, promessa, codigo);
 
 test('agendamento manual nasce confirmado, com origem painel e preços copiados (RF-18)', { skip: pular }, async () => {
   const db = await bancoNovo();

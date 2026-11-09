@@ -6,83 +6,24 @@
  * validação dos dados e a tradução dos erros. O SQL tem os próprios testes
  * (agenda-sql.test.js).
  */
-process.env.SESSION_SECRET = process.env.SESSION_SECRET || 'segredo-de-teste';
-process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'http://localhost:54321';
-process.env.SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || 'chave-de-teste';
-process.env.TZ = 'America/Sao_Paulo';
-
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const bcrypt = require('bcrypt');
-const usuarios = require('../src/repositorios/usuarios');
+const app = require('./apoio/app');
 const agenda = require('../src/repositorios/agenda');
 const { ErroHttp } = require('../src/util/erros');
-const { criarApp } = require('../src/app');
 
-const SENHA = 'senha-de-teste';
-const HASH = bcrypt.hashSync(SENHA, 4);
-let perfilAtual = 'FUNCIONARIO';
+const falso = app.substituir(agenda);
+const { pedir, entrar } = app;
+const ultima = falso.ultima;
 
-// Usuário de teste: o perfil muda conforme o caso.
-usuarios.buscarParaLogin = async () => ({ id: 7, nome: 'Lucas', email: 'lucas@teste.test', perfil: perfilAtual, ativo: true, senha_hash: HASH });
-usuarios.buscarPorId = async () => ({ id: 7, nome: 'Lucas', email: 'lucas@teste.test', perfil: perfilAtual, ativo: true });
-
-// Repositório falso: guarda a última chamada e responde o que o teste pedir.
-const chamadas = [];
-let proximaResposta = null;
-for (const nome of Object.keys(agenda)) {
-  agenda[nome] = async (...argumentos) => {
-    chamadas.push({ nome, argumentos });
-    if (proximaResposta instanceof Error) {
-      throw proximaResposta;
-    }
-    return proximaResposta ?? { ok: nome };
-  };
-}
-
-let servidor;
-let base;
-let cookie = '';
-
-async function pedir(metodo, caminho, corpo) {
-  const resposta = await fetch(base + caminho, {
-    method: metodo,
-    headers: { 'content-type': 'application/json', cookie },
-    body: corpo === undefined ? undefined : JSON.stringify(corpo),
-  });
-  const definido = resposta.headers.get('set-cookie');
-  if (definido) {
-    cookie = definido.split(';')[0];
-  }
-  const texto = await resposta.text();
-  return { status: resposta.status, corpo: texto ? JSON.parse(texto) : null };
-}
-
-async function entrar(perfil) {
-  perfilAtual = perfil;
-  cookie = '';
-  const r = await pedir('POST', '/api/admin/entrar', { email: 'lucas@teste.test', senha: SENHA });
-  assert.equal(r.status, 200);
-}
-
-function ultima(nome) {
-  return chamadas.filter((c) => c.nome === nome).pop();
-}
-
-test.before(async () => {
-  servidor = criarApp().listen(0);
-  await new Promise((resolver) => servidor.once('listening', resolver));
-  base = `http://127.0.0.1:${servidor.address().port}`;
-});
-
-test.after(() => servidor.close());
-
+test.before(app.iniciar);
+test.after(app.parar);
 test.beforeEach(() => {
-  proximaResposta = null;
+  falso.resposta = null;
 });
 
 test('sem sessão, pedidos e agenda respondem 401', async () => {
-  cookie = '';
+  app.sair();
   assert.equal((await pedir('GET', '/api/admin/pedidos')).status, 401);
   assert.equal((await pedir('GET', '/api/admin/agenda?de=2026-11-01&ate=2026-11-30')).status, 401);
   assert.equal((await pedir('POST', '/api/admin/agendamentos/K7M2QX/aceitar')).status, 401);
@@ -97,10 +38,10 @@ test('perfil sem a permissão de agenda recebe 403 (RN-13)', async () => {
 
 test('funcionário vê os pedidos', async () => {
   await entrar('FUNCIONARIO');
-  proximaResposta = { prazoRespostaHoras: 12, pendentes: [], aguardandoCliente: [] };
+  falso.resposta = { prazoRespostaHoras: 12, pendentes: [], aguardandoCliente: [] };
   const r = await pedir('GET', '/api/admin/pedidos');
   assert.equal(r.status, 200);
-  assert.deepEqual(r.corpo, proximaResposta);
+  assert.deepEqual(r.corpo, falso.resposta);
 });
 
 test('agenda exige um período válido de até 62 dias', async () => {
@@ -125,9 +66,9 @@ test('aceitar registra quem respondeu', async () => {
 
 test('código inválido responde 404 sem consultar o banco', async () => {
   await entrar('FUNCIONARIO');
-  const antes = chamadas.length;
+  const antes = falso.chamadas.length;
   assert.equal((await pedir('POST', '/api/admin/agendamentos/K7M0QX/cancelar')).status, 404);
-  assert.equal(chamadas.length, antes);
+  assert.equal(falso.chamadas.length, antes);
 });
 
 test('agendamento manual valida os dados e grava no fuso da estética (RF-18)', async () => {
@@ -151,7 +92,7 @@ test('agendamento manual valida os dados e grava no fuso da estética (RF-18)', 
 
 test('horário ocupado chega ao painel como 409 com o código do erro', async () => {
   await entrar('FUNCIONARIO');
-  proximaResposta = new ErroHttp(409, 'HORARIO_OCUPADO', 'Esse horário já está ocupado.');
+  falso.resposta = new ErroHttp(409, 'HORARIO_OCUPADO', 'Esse horário já está ocupado.');
   const r = await pedir('PATCH', '/api/admin/agendamentos/K7M2QX', { data: '2026-11-10', hora: '09:00' });
   assert.equal(r.status, 409);
   assert.equal(r.corpo.erro.codigo, 'HORARIO_OCUPADO');

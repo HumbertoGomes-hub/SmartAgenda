@@ -174,11 +174,13 @@
     requestAnimationFrame(quadro);
   }
 
-  document.querySelectorAll('.comparador').forEach(function (comparador) {
+  // Liga o controle deslizante. vitrine.js chama de novo para os comparadores que monta.
+  function iniciarComparador(comparador) {
     var controle = comparador.querySelector('.comparador__controle');
-    if (!controle) {
+    if (!controle || comparador.dataset.iniciado) {
       return;
     }
+    comparador.dataset.iniciado = 'true';
 
     aplicarPosicao(comparador, controle.value);
     controle.addEventListener('input', function () {
@@ -188,7 +190,25 @@
     if (comparador.dataset.apresentar === 'true' && !movimentoReduzido) {
       apresentar(comparador, controle);
     }
-  });
+  }
+
+  document.querySelectorAll('.comparador').forEach(iniciarComparador);
+
+  /* Formatação compartilhada (vitrine e agendamento) */
+  // Centavos só quando existem: R$ 80, R$ 95,50.
+  function formatarPreco(valor) {
+    var casas = valor % 1 ? 2 : 0;
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: casas, maximumFractionDigits: casas });
+  }
+
+  function formatarDuracao(minutos) {
+    var h = Math.floor(minutos / 60);
+    var m = minutos % 60;
+    if (!h) {
+      return m + ' min';
+    }
+    return m ? h + 'h' + String(m).padStart(2, '0') : h + 'h';
+  }
 
   /* Máscara de telefone, compartilhada com os formulários */
   function formatarTelefone(valor) {
@@ -213,6 +233,8 @@
   });
 
   window.SmartAgendaSite = {
+    iniciarComparador: iniciarComparador,
+    formatar: { preco: formatarPreco, duracao: formatarDuracao },
     telefoneValido: telefoneValido,
     telefoneE164: function (valor) {
       return '+55' + valor.replace(/\D/g, '');

@@ -12,7 +12,7 @@
   var botaoAvancar = document.getElementById('botao-avancar');
   var passos = Array.prototype.slice.call(document.querySelectorAll('.fluxo__passo'));
   var marcadores = Array.prototype.slice.call(document.querySelectorAll('.etapas li'));
-  var caixas = Array.prototype.slice.call(formulario.querySelectorAll('input[name="servicos"]'));
+  var caixas = []; // montadas a partir dos serviços ativos (montarOpcoes)
 
   var ROTULOS_PASSO = ['Serviços', 'Data e horário', 'Seus dados'];
   var agenda = {
@@ -52,22 +52,8 @@
     return new Date(partes[0], partes[1] - 1, partes[2]);
   }
 
-  function formatarDuracao(minutos) {
-    var h = Math.floor(minutos / 60);
-    var m = minutos % 60;
-    if (!h) {
-      return m + ' min';
-    }
-    return m ? h + 'h' + String(m).padStart(2, '0') : h + 'h';
-  }
-
-  function formatarPreco(valor) {
-    return valor.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      maximumFractionDigits: 0,
-    });
-  }
+  var formatarDuracao = Site.formatar.duracao;
+  var formatarPreco = Site.formatar.preco;
 
   function formatarData(iso) {
     var texto = dataDeISO(iso).toLocaleDateString('pt-BR', {
@@ -498,15 +484,6 @@
     avancar();
   });
 
-  caixas.forEach(function (caixa) {
-    caixa.addEventListener('change', function () {
-      // Mudar os serviços muda a duração, então o horário precisa ser revisto.
-      estado.horario = null;
-      atualizarResumo();
-      mostrarAlerta('');
-    });
-  });
-
   document.getElementById('mes-anterior').addEventListener('click', function () {
     estado.mes = new Date(estado.mes.getFullYear(), estado.mes.getMonth() - 1, 1);
     desenharCalendario();
@@ -527,15 +504,96 @@
     marcarCampo('consentimento', '');
   });
 
-  /* Serviço já escolhido quando a pessoa vem da vitrine */
-  var servicoInicial = new URLSearchParams(window.location.search).get('servico');
-  caixas.forEach(function (caixa) {
-    if (caixa.value === servicoInicial) {
-      caixa.checked = true;
-    }
-  });
+  /* Passo 1: opções a partir dos serviços ativos, agrupadas por categoria */
+  var ICONE_MARCA =
+    '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function opcao(servico) {
+    var rotulo = document.createElement('label');
+    rotulo.className = 'opcao';
+    var caixa = document.createElement('input');
+    caixa.type = 'checkbox';
+    caixa.name = 'servicos';
+    caixa.value = String(servico.id);
+    caixa.dataset.nome = servico.nome;
+    caixa.dataset.preco = String(servico.precoBase);
+    caixa.dataset.duracao = String(servico.duracaoMinutos);
+    caixa.addEventListener('change', function () {
+      // Mudar os serviços muda a duração, então o horário precisa ser revisto.
+      estado.horario = null;
+      atualizarResumo();
+      mostrarAlerta('');
+    });
+
+    var marca = document.createElement('span');
+    marca.className = 'opcao__marca';
+    marca.innerHTML = ICONE_MARCA; // ícone fixo, sem dado do usuário
+    var nome = document.createElement('span');
+    nome.className = 'opcao__nome';
+    nome.textContent = servico.nome;
+    var dados = document.createElement('span');
+    dados.className = 'opcao__dados';
+    var etiqueta = document.createElement('span');
+    etiqueta.className = 'etiqueta';
+    etiqueta.textContent = formatarDuracao(servico.duracaoMinutos);
+    var preco = document.createElement('span');
+    preco.textContent = 'a partir de ' + formatarPreco(servico.precoBase);
+    dados.append(etiqueta, preco);
+
+    rotulo.append(caixa, marca, nome, dados);
+    caixas.push(caixa);
+    return rotulo;
+  }
+
+  function montarOpcoes(servicos) {
+    var area = document.getElementById('opcoes-servicos');
+    var categorias = [];
+    servicos.forEach(function (s) {
+      if (categorias.indexOf(s.categoria) === -1) {
+        categorias.push(s.categoria);
+      }
+    });
+    area.replaceChildren.apply(
+      area,
+      categorias.map(function (categoria) {
+        var grupo = document.createElement('fieldset');
+        grupo.className = 'opcoes-grupo';
+        var legenda = document.createElement('legend');
+        legenda.textContent = categoria;
+        var lista = document.createElement('div');
+        lista.className = 'opcoes';
+        servicos
+          .filter(function (s) {
+            return s.categoria === categoria;
+          })
+          .forEach(function (s) {
+            lista.append(opcao(s));
+          });
+        grupo.append(legenda, lista);
+        return grupo;
+      }),
+    );
+    area.removeAttribute('aria-busy');
+
+    // Serviço já escolhido quando a pessoa vem da vitrine (?servico=id)
+    var servicoInicial = new URLSearchParams(window.location.search).get('servico');
+    caixas.forEach(function (caixa) {
+      if (caixa.value === servicoInicial) {
+        caixa.checked = true;
+      }
+    });
+    atualizarResumo();
+  }
 
   window.history.replaceState({ passo: 0 }, '');
   atualizarResumo();
   irPara(0, false);
+
+  API.servicos()
+    .then(function (resposta) {
+      montarOpcoes(resposta.servicos);
+    })
+    .catch(function () {
+      mostrarAlerta('Não foi possível carregar os serviços. Recarregue a página.');
+    });
 })();

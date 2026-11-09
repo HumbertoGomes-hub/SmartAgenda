@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#ffffff" />
-    <title>Polimento técnico em sedã preto | Estética Modelo</title>
+    <title>Trabalho | Estética Modelo</title>
     <meta name="description" content="Fotos de antes e depois de um trabalho realizado pela estética." />
     <link rel="icon" href="img/exemplo/logotipo.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://api.fontshare.com" />
@@ -12,10 +12,12 @@
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/site.css" />
+    <script src="js/dados-exemplo.js" defer></script>
+    <script src="js/api-exemplo.js" defer></script>
     <script src="js/site.js" defer></script>
-    <script src="js/trabalho.js" defer></script>
+    <script src="js/vitrine.js" defer></script>
   </head>
-  <body>
+  <body data-pagina="trabalho">
     <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
 
     <!-- início: cabeçalho (vira partial no EJS) -->
@@ -49,47 +51,12 @@
       <div class="pagina-topo">
         <div class="conteudo">
           <a class="ligacao" href="portfolio.html">Voltar ao portfólio</a>
-          <h1 id="trabalho-titulo">Polimento técnico em sedã preto</h1>
+          <h1 id="trabalho-titulo">Trabalho</h1>
         </div>
       </div>
 
       <div class="conteudo">
-        <div class="obra">
-          <div>
-            <div class="comparador">
-              <img class="comparador__camada comparador__camada--depois ilustracao" id="foto-depois" src="img/exemplo/seda-depois.svg" alt="O sedã depois do serviço" width="1200" height="520" />
-              <img class="comparador__camada comparador__camada--antes ilustracao" id="foto-antes" src="img/exemplo/seda-antes.svg" alt="O sedã antes do serviço" width="1200" height="520" />
-              <span class="comparador__rotulo comparador__rotulo--antes">Antes</span>
-              <span class="comparador__rotulo comparador__rotulo--depois">Depois</span>
-              <div class="comparador__divisor"><span class="comparador__alca"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8.5 6 3.5 11l5 5M13.5 6l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-              <input class="comparador__controle" type="range" min="0" max="100" value="58" aria-label="Arraste para comparar o carro antes e depois do serviço" />
-            </div>
-            <div class="fotos-extras">
-              <figure>
-                <img id="foto-extra-1" class="ilustracao" src="img/exemplo/seda-detalhe.svg" alt="Detalhe da roda dianteira do sedã" width="500" height="300" loading="lazy" />
-                <figcaption>Detalhe</figcaption>
-              </figure>
-              <figure>
-                <img id="foto-extra-2" class="ilustracao" src="img/exemplo/seda-depois.svg" alt="Lateral do sedã finalizado" width="1200" height="520" loading="lazy" />
-                <figcaption>Resultado final</figcaption>
-              </figure>
-            </div>
-          </div>
-          <div class="obra__texto">
-            <p id="trabalho-descricao">Pintura com riscos de lavagem e perda de brilho. Fizemos descontaminação, polimento em duas etapas e aplicamos selante.</p>
-            <dl>
-              <div>
-                <dt>Serviço</dt>
-                <dd id="trabalho-servico">Polimento técnico</dd>
-              </div>
-              <div>
-                <dt>Realizado em</dt>
-                <dd id="trabalho-data">Outubro de 2026</dd>
-              </div>
-            </dl>
-            <a id="trabalho-agendar" class="botao" href="agendar.html?servico=polimento-tecnico">Agendar este serviço</a>
-          </div>
-        </div>
+        <div id="obra" class="obra" aria-busy="true"></div>
       </div>
     </main>
 

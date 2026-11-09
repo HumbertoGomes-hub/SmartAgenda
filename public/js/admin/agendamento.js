@@ -1,7 +1,7 @@
 /*
- * Peças comuns às telas de Pedidos e Agenda: textos de um agendamento,
- * links do WhatsApp com mensagem pronta e o aviso que aparece depois de
- * cada ação. Usa as formatações de painel.js (SmartAgendaPainel.formatar).
+ * Peças comuns às telas de Pedidos e Agenda: textos de um agendamento e
+ * links do WhatsApp com mensagem pronta. Usa as formatações de painel.js
+ * (SmartAgendaPainel.formatar) e o aviso de aviso.js.
  */
 (function () {
   'use strict';
@@ -121,32 +121,12 @@
     return link;
   }
 
-  /* Aviso depois de uma ação ---------------------------------------------- */
-
-  var aviso = document.getElementById('aviso-acao');
-
-  function avisar(texto, extra) {
-    if (!aviso) {
-      return;
-    }
-    var fechar = el('button', {
-      classe: 'aviso-acao__fechar',
-      texto: 'Fechar',
-      atributos: { type: 'button' },
-    });
-    fechar.addEventListener('click', function () {
-      aviso.hidden = true;
-    });
-    aviso.replaceChildren(el('p', { classe: 'aviso-acao__texto', texto: texto }), extra || null, fechar);
-    aviso.hidden = false;
-  }
-
   window.SmartAgendaAgendamento = {
     servicosTexto: servicosTexto,
     intervalo: intervalo,
     quandoTexto: quandoTexto,
     linkWhatsApp: linkWhatsApp,
     botaoWhatsApp: botaoWhatsApp,
-    avisar: avisar,
+    avisar: window.SmartAgendaAviso.mostrar,
   };
 })();

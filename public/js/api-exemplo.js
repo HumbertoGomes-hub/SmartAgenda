@@ -3,8 +3,13 @@
  *
  * Todas as telas falam com o servidor por este objeto. Na etapa do back-end,
  * troque cada função pela chamada real e mantenha o formato de retorno:
+ *   servicos         -> GET  /api/vitrine/servicos        (já existe em src/rotas/vitrine.js)
+ *   portfolio        -> GET  /api/vitrine/portfolio       (já existe)
+ *   trabalho         -> GET  /api/vitrine/portfolio/:id   (já existe)
  *   buscarHorarios   -> GET  /api/horarios?data=AAAA-MM-DD&servicos=id1,id2
  *   criarAgendamento -> POST /agendar
+ *
+ * Serviços e trabalhos vêm de dados-exemplo.js, os mesmos que o painel edita.
  *
  * Situações de erro para testar a interface:
  *   Telefone terminado em 0000    -> número sem WhatsApp (RN-02)
@@ -16,15 +21,8 @@
   var CHAVE_PEDIDO = 'smartagenda:ultimo-pedido';
   var ALFABETO_CODIGO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var ATRASO_MS = 350;
-
-  var DURACOES = {
-    'lavagem-detalhada': 60,
-    'higienizacao-interna': 150,
-    'polimento-comercial': 180,
-    'polimento-tecnico': 300,
-    'vitrificacao-pintura': 480,
-    'cristalizacao-vidros': 60,
-  };
+  var ATRASO_LEITURA_MS = 80;
+  var Dados = window.SmartAgendaDadosExemplo;
 
   var AGENDA = {
     abertura: 8 * 60,
@@ -33,11 +31,11 @@
     antecedenciaHoras: 2,
   };
 
-  function aguardar(valor) {
+  function aguardar(valor, atraso) {
     return new Promise(function (resolver) {
       setTimeout(function () {
         resolver(valor);
-      }, ATRASO_MS);
+      }, atraso === undefined ? ATRASO_MS : atraso);
     });
   }
 
@@ -88,9 +86,61 @@
     return codigo;
   }
 
+  /* Vitrine ------------------------------------------------------------- */
+
+  function copia(valor) {
+    return JSON.parse(JSON.stringify(valor));
+  }
+
+  function servicosAtivos() {
+    return Dados.ler()
+      .servicos.filter(function (s) {
+        return s.ativo;
+      })
+      .sort(function (a, b) {
+        return a.categoria.localeCompare(b.categoria, 'pt-BR') || a.nome.localeCompare(b.nome, 'pt-BR');
+      });
+  }
+
+  function servicos() {
+    return aguardar({ servicos: copia(servicosAtivos()) }, ATRASO_LEITURA_MS);
+  }
+
+  function portfolio() {
+    var dados = Dados.ler();
+    var trabalhos = dados.trabalhos
+      .filter(function (t) {
+        return t.publicado;
+      })
+      .sort(function (a, b) {
+        return String(b.dataRealizacao || '').localeCompare(String(a.dataRealizacao || '')) || b.id - a.id;
+      })
+      .map(function (t) {
+        return Dados.trabalhoCompleto(t, dados.servicos);
+      });
+    return aguardar({ trabalhos: trabalhos }, ATRASO_LEITURA_MS);
+  }
+
+  function trabalho(id) {
+    var dados = Dados.ler();
+    var achado = dados.trabalhos.filter(function (t) {
+      return t.id === Number(id) && t.publicado;
+    })[0];
+    if (!achado) {
+      return falhar('NAO_ENCONTRADO', 'Trabalho não encontrado.');
+    }
+    return aguardar(Dados.trabalhoCompleto(achado, dados.servicos), ATRASO_LEITURA_MS);
+  }
+
+  /* Agendamento --------------------------------------------------------- */
+
   function buscarHorarios(data, servicoIds) {
+    var catalogo = Dados.ler().servicos;
     var duracao = servicoIds.reduce(function (total, id) {
-      return total + (DURACOES[id] || 0);
+      var servico = catalogo.filter(function (s) {
+        return s.id === Number(id);
+      })[0];
+      return total + (servico ? servico.duracaoMinutos : 0);
     }, 0);
     var reservas = reservasDoDia(data);
     var agora = new Date();
@@ -127,7 +177,7 @@
     if (telefone.slice(-4) === '1111') {
       return falhar(
         'LIMITE_ATIVOS',
-        'Este telefone já tem 2 agendamentos em aberto. Desmarque um deles ou aguarde o atendimento para pedir outro.',
+        'Este telefone já tem 2 agendamentos em aberto. Para marcar outro, fale com a estética pelo WhatsApp ou aguarde um dos atendimentos.',
       );
     }
     return aguardar({ codigo: gerarCodigo() });
@@ -141,8 +191,10 @@
     }
   }
 
-
   window.SmartAgendaAPI = {
+    servicos: servicos,
+    portfolio: portfolio,
+    trabalho: trabalho,
     buscarHorarios: buscarHorarios,
     criarAgendamento: criarAgendamento,
     ultimoPedido: ultimoPedido,

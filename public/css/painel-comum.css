@@ -1,0 +1,217 @@
+/* ==========================================================================
+   Peças comuns às telas do painel: botões extras, aviso depois de uma ação,
+   diálogos e linhas de formulário. Usa tokens.css e a base de site.css.
+   ========================================================================== */
+
+/* Botões ----------------------------------------------------------------- */
+.botao-whatsapp svg {
+  flex: none;
+}
+
+.botao-perigo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.625rem 1.125rem;
+  border: 1.5px solid var(--erro);
+  border-radius: var(--raio-m);
+  background: transparent;
+  color: var(--erro);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.botao-perigo:hover {
+  background: var(--erro-fundo);
+}
+
+.botao-perigo--cheio {
+  background: var(--erro);
+  color: var(--branco);
+}
+
+.botao-perigo--cheio:hover {
+  background: var(--erro);
+  opacity: 0.88;
+}
+
+/* Aviso depois de uma ação ------------------------------------------------ */
+.aviso-acao {
+  position: fixed;
+  right: var(--margem);
+  bottom: var(--e5);
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e3);
+  width: min(calc(100% - 2 * var(--margem)), 34rem);
+  padding: var(--e4);
+  border-radius: var(--raio-m);
+  background: var(--tinta);
+  color: var(--branco);
+  box-shadow: 0 12px 32px rgb(31 31 31 / 0.22);
+}
+
+.aviso-acao__texto {
+  flex: 1 1 16rem;
+}
+
+.aviso-acao .botao-whatsapp {
+  border-color: rgb(255 255 255 / 0.4);
+  color: var(--branco);
+}
+
+.aviso-acao__fechar {
+  min-height: 44px;
+  padding: 0 var(--e3);
+  border: 0;
+  border-radius: var(--raio-p);
+  background: transparent;
+  color: var(--sobre-marca-suave);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.aviso-acao__fechar:hover {
+  color: var(--branco);
+}
+
+/* ==========================================================================
+   Diálogos
+   ========================================================================== */
+.dialogo {
+  width: min(calc(100% - 2rem), 34rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  border-radius: var(--raio-g);
+  background: var(--branco);
+  color: var(--tinta);
+  box-shadow: 0 24px 64px rgb(31 31 31 / 0.25);
+}
+
+.dialogo--largo {
+  width: min(calc(100% - 2rem), 44rem);
+}
+
+.dialogo::backdrop {
+  background: rgb(31 31 31 / 0.45);
+}
+
+.dialogo[open] {
+  animation: dialogo-entrar 0.25s var(--curva-saida);
+}
+
+@keyframes dialogo-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogo[open] {
+    animation: none;
+  }
+}
+
+.dialogo__forma {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+
+.dialogo__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--e4);
+  padding: var(--e5) var(--e5) var(--e3);
+}
+
+.dialogo__topo h2 {
+  font-size: var(--titulo-p);
+}
+
+.dialogo__fechar {
+  display: grid;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cinza);
+  cursor: pointer;
+}
+
+.dialogo__fechar:hover {
+  background: var(--borda);
+}
+
+.dialogo__corpo {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--e5) var(--e4);
+}
+
+.dialogo__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+  padding: var(--e4) var(--e5) var(--e5);
+  border-top: 1.5px solid var(--borda);
+}
+
+.dialogo__acoes--fim {
+  justify-content: flex-end;
+}
+
+.dialogo .alerta {
+  margin-top: var(--e3);
+}
+
+@media (max-width: 560px) {
+  .dialogo,
+  .dialogo--largo {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    margin: auto 0 0;
+    border-radius: var(--raio-g) var(--raio-g) 0 0;
+  }
+
+  .dialogo__acoes > * {
+    flex: 1 1 auto;
+  }
+}
+
+/* Formulários ------------------------------------------------------------ */
+.form-linha {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e4);
+  margin-top: var(--e4);
+}
+
+.form-linha .campo + .campo {
+  margin-top: 0;
+}
+
+.campo select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--e3);
+  border: 1.5px solid var(--borda-forte);
+  border-radius: var(--raio-m);
+  background: var(--branco);
+  font: inherit;
+}
+
+@media (max-width: 560px) {
+  .form-linha {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
