@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR" data-sessao="verificando">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7ed" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Usuários | Painel</title>
+    <link rel="icon" href="data:," data-empresa-icone />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+    <link rel="stylesheet" href="../css/painel-comum.css" />
+    <link rel="stylesheet" href="../css/catalogo.css" />
+    <link rel="stylesheet" href="../css/usuarios.css" />
+    <script src="../js/dados-exemplo.js" defer></script>
+    <script src="../js/admin/api-admin-exemplo.js" defer></script>
+    <script src="../js/admin/marca.js" defer></script>
+    <script src="../js/admin/painel.js" defer></script>
+    <script src="../js/admin/aviso.js" defer></script>
+    <script src="../js/admin/usuarios.js" defer></script>
+  </head>
+  <body class="corpo-painel" data-permissao="usuarios">
+    <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
+
+    <div class="painel">
+      <!-- início: menu lateral do painel (vira partial no EJS; cada item com
+           data-permissao só é desenhado se o perfil puder executar a ação) -->
+      <aside class="lateral">
+        <div class="lateral__topo">
+          <a class="marca" href="index.html" translate="no">
+            <img data-empresa-logo alt="" width="34" height="34" hidden />
+            <span><span data-empresa-nome></span><span class="marca__apoio">Painel da equipe</span></span>
+          </a>
+          <button class="lateral__alternar" type="button" aria-expanded="false" aria-controls="gaveta" aria-label="Abrir menu">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div id="gaveta" class="lateral__gaveta">
+          <nav class="menu-painel" aria-label="Painel">
+            <ul>
+              <li>
+                <a class="menu-painel__link" href="index.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5v-4.5h-5V17H4a1 1 0 0 1-1-1z"/></svg>
+                  Início
+                </a>
+              </li>
+              <li data-permissao="agenda">
+                <a class="menu-painel__link" href="pedidos.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 5 4h10l2 7.5V16H3z"/><path d="M3 11.5h4l1 2h4l1-2h4"/></svg>
+                  Pedidos
+                </a>
+              </li>
+              <li data-permissao="agenda">
+                <a class="menu-painel__link" href="agenda.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
+                  Agenda
+                </a>
+              </li>
+              <li data-permissao="servicos">
+                <a class="menu-painel__link" href="servicos.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l7 7-7 7-7-7z"/><circle cx="7" cy="7" r="1.3"/></svg>
+                  Serviços
+                </a>
+              </li>
+              <li data-permissao="portfolio">
+                <a class="menu-painel__link" href="portfolio.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="m3 13 4-4 4 4 2-2 4 4"/><circle cx="13" cy="8" r="1.3"/></svg>
+                  Portfólio
+                </a>
+              </li>
+              <li data-permissao="relatorio">
+                <a class="menu-painel__link" href="relatorio.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h14M5.5 14V9M10 14V5M14.5 14v-3"/></svg>
+                  Relatório
+                </a>
+              </li>
+              <li data-permissao="configuracao">
+                <a class="menu-painel__link" href="configuracoes.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h8M15 6h2M3 14h2M9 14h8"/><circle cx="13" cy="6" r="2"/><circle cx="7" cy="14" r="2"/></svg>
+                  Configurações
+                </a>
+              </li>
+              <li data-permissao="usuarios">
+                <a class="menu-painel__link" href="usuarios.html" aria-current="page">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M2.5 17c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5M13.5 4.2a3 3 0 0 1 0 5.6M15.5 12.8c1.2.7 2 2 2.2 4.2"/></svg>
+                  Usuários
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="lateral__usuario">
+            <p class="lateral__nome" data-usuario-nome></p>
+            <p class="lateral__perfil" data-usuario-perfil></p>
+            <div class="lateral__acoes">
+              <button class="botao botao--contorno botao--pequeno" type="button" data-sair>Sair</button>
+              <a class="ligacao lateral__site" href="../index.html">Ver o site</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <!-- fim: menu lateral do painel -->
+
+      <main id="conteudo" class="painel__principal">
+        <p class="alerta painel__aviso" data-aviso-painel role="alert"></p>
+
+        <header class="painel-topo painel-topo--acoes">
+          <div>
+            <h1>Usuários</h1>
+            <p>Quem entra no painel e o que cada um vê. Ninguém é apagado: desativar tira o acesso e mantém o histórico.</p>
+          </div>
+          <button id="usuario-novo" class="botao" type="button">Novo usuário</button>
+        </header>
+
+        <p id="erro-usuarios" class="alerta painel__aviso" role="alert"></p>
+        <ul id="lista-usuarios" class="itens-catalogo" aria-busy="true"></ul>
+
+        <section class="bloco" aria-labelledby="perfis-titulo">
+          <div class="bloco__topo">
+            <h2 id="perfis-titulo">O que cada perfil vê</h2>
+          </div>
+          <dl class="perfis">
+            <div>
+              <dt>Dono</dt>
+              <dd>Tudo, inclusive Configurações e Usuários.</dd>
+            </div>
+            <div>
+              <dt>Sócio</dt>
+              <dd>Pedidos, Agenda, Serviços, Portfólio e Relatório.</dd>
+            </div>
+            <div>
+              <dt>Funcionário</dt>
+              <dd>Pedidos, Agenda e Portfólio.</dd>
+            </div>
+          </dl>
+        </section>
+      </main>
+
+      <dialog id="dialogo-usuario" class="dialogo" aria-labelledby="usuario-titulo">
+        <form id="form-usuario" class="dialogo__forma" novalidate>
+          <div class="dialogo__topo">
+            <h2 id="usuario-titulo">Novo usuário</h2>
+            <button class="dialogo__fechar" type="button" data-fechar aria-label="Fechar"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m4.5 4.5 9 9m0-9-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="dialogo__corpo">
+            <div class="campo">
+              <label for="usuario-nome">Nome</label>
+              <input id="usuario-nome" type="text" maxlength="80" autocomplete="off" aria-describedby="usuario-nome-erro" />
+              <span id="usuario-nome-erro" class="campo__erro"></span>
+            </div>
+            <div class="campo">
+              <label for="usuario-email">E-mail de acesso</label>
+              <input id="usuario-email" type="email" inputmode="email" maxlength="254" autocomplete="off" spellcheck="false" autocapitalize="none" aria-describedby="usuario-email-erro" />
+              <span id="usuario-email-erro" class="campo__erro"></span>
+            </div>
+            <div class="form-linha">
+              <div class="campo">
+                <label for="usuario-perfil">Perfil</label>
+                <select id="usuario-perfil" aria-describedby="usuario-perfil-ajuda">
+                  <option value="FUNCIONARIO">Funcionário</option>
+                  <option value="SOCIO">Sócio</option>
+                  <option value="DONO">Dono</option>
+                </select>
+              </div>
+              <div class="campo">
+                <label for="usuario-telefone">Telefone <span class="campo__opcional">(opcional)</span></label>
+                <input id="usuario-telefone" type="tel" inputmode="tel" placeholder="(11) 90000-0000" autocomplete="off" aria-describedby="usuario-telefone-erro" />
+                <span id="usuario-telefone-erro" class="campo__erro"></span>
+              </div>
+            </div>
+            <p id="usuario-perfil-ajuda" class="campo__ajuda perfil-ajuda"></p>
+
+            <div id="campo-cargo" class="campo">
+              <label for="usuario-cargo">Cargo <span class="campo__opcional">(opcional)</span></label>
+              <input id="usuario-cargo" type="text" maxlength="60" placeholder="Polidor, lavador…" autocomplete="off" />
+            </div>
+
+            <div id="campo-notificacoes" class="campo">
+              <label class="campo-check">
+                <input id="usuario-notificacoes" type="checkbox" checked />
+                <span class="campo-check__texto">
+                  <strong>Recebe os avisos de pedidos novos</strong>
+                  <span>Pelo WhatsApp, quando o envio de mensagens estiver ligado.</span>
+                </span>
+              </label>
+            </div>
+
+            <div id="campo-senha" class="campo">
+              <label for="usuario-senha">Senha provisória</label>
+              <div class="campo-senha">
+                <input id="usuario-senha" type="password" autocomplete="new-password" aria-describedby="usuario-senha-ajuda usuario-senha-erro" />
+                <button class="campo-senha__alternar" type="button" data-mostrar="usuario-senha" aria-pressed="false">Mostrar</button>
+              </div>
+              <span id="usuario-senha-ajuda" class="campo__ajuda">Pelo menos 8 caracteres. Passe para a pessoa: ela entra com o e-mail e essa senha.</span>
+              <span id="usuario-senha-erro" class="campo__erro"></span>
+            </div>
+
+            <p id="alerta-usuario" class="alerta" role="alert"></p>
+          </div>
+          <div class="dialogo__acoes dialogo__acoes--fim">
+            <button class="botao botao--contorno" type="button" data-fechar>Fechar</button>
+            <button id="usuario-salvar" class="botao" type="submit">Cadastrar</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="dialogo-senha" class="dialogo" aria-labelledby="senha-titulo">
+        <form id="form-senha" class="dialogo__forma" novalidate>
+          <div class="dialogo__topo">
+            <h2 id="senha-titulo">Nova senha</h2>
+            <button class="dialogo__fechar" type="button" data-fechar aria-label="Fechar"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m4.5 4.5 9 9m0-9-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="dialogo__corpo">
+            <p class="senha-apoio">A senha atual deixa de valer na hora. Passe a nova para a pessoa.</p>
+            <div class="campo">
+              <label for="nova-senha">Nova senha</label>
+              <div class="campo-senha">
+                <input id="nova-senha" type="password" autocomplete="new-password" aria-describedby="nova-senha-ajuda nova-senha-erro" />
+                <button class="campo-senha__alternar" type="button" data-mostrar="nova-senha" aria-pressed="false">Mostrar</button>
+              </div>
+              <span id="nova-senha-ajuda" class="campo__ajuda">Pelo menos 8 caracteres.</span>
+              <span id="nova-senha-erro" class="campo__erro"></span>
+            </div>
+            <p id="alerta-senha" class="alerta" role="alert"></p>
+          </div>
+          <div class="dialogo__acoes dialogo__acoes--fim">
+            <button class="botao botao--contorno" type="button" data-fechar>Fechar</button>
+            <button id="senha-salvar" class="botao" type="submit">Salvar senha</button>
+          </div>
+        </form>
+      </dialog>
+    </div>
+
+    <div id="aviso-acao" class="aviso-acao" role="status" hidden></div>
+  </body>
+</html>

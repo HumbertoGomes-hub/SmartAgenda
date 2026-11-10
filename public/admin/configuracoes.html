@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="pt-BR" data-sessao="verificando">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7ed" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Configurações | Painel</title>
+    <link rel="icon" href="data:," data-empresa-icone />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+    <link rel="stylesheet" href="../css/painel-comum.css" />
+    <link rel="stylesheet" href="../css/catalogo.css" />
+    <link rel="stylesheet" href="../css/configuracoes.css" />
+    <script src="../js/dados-exemplo.js" defer></script>
+    <script src="../js/admin/api-admin-exemplo.js" defer></script>
+    <script src="../js/admin/marca.js" defer></script>
+    <script src="../js/admin/painel.js" defer></script>
+    <script src="../js/admin/aviso.js" defer></script>
+    <script src="../js/admin/imagem.js" defer></script>
+    <script src="../js/admin/configuracoes.js" defer></script>
+  </head>
+  <body class="corpo-painel" data-permissao="configuracao">
+    <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
+
+    <div class="painel">
+      <!-- início: menu lateral do painel (vira partial no EJS; cada item com
+           data-permissao só é desenhado se o perfil puder executar a ação) -->
+      <aside class="lateral">
+        <div class="lateral__topo">
+          <a class="marca" href="index.html" translate="no">
+            <img data-empresa-logo alt="" width="34" height="34" hidden />
+            <span><span data-empresa-nome></span><span class="marca__apoio">Painel da equipe</span></span>
+          </a>
+          <button class="lateral__alternar" type="button" aria-expanded="false" aria-controls="gaveta" aria-label="Abrir menu">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6h14M3 14h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div id="gaveta" class="lateral__gaveta">
+          <nav class="menu-painel" aria-label="Painel">
+            <ul>
+              <li>
+                <a class="menu-painel__link" href="index.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5v-4.5h-5V17H4a1 1 0 0 1-1-1z"/></svg>
+                  Início
+                </a>
+              </li>
+              <li data-permissao="agenda">
+                <a class="menu-painel__link" href="pedidos.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 5 4h10l2 7.5V16H3z"/><path d="M3 11.5h4l1 2h4l1-2h4"/></svg>
+                  Pedidos
+                </a>
+              </li>
+              <li data-permissao="agenda">
+                <a class="menu-painel__link" href="agenda.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2"/><path d="M3 8.5h14M7 2.5v4M13 2.5v4"/></svg>
+                  Agenda
+                </a>
+              </li>
+              <li data-permissao="servicos">
+                <a class="menu-painel__link" href="servicos.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l7 7-7 7-7-7z"/><circle cx="7" cy="7" r="1.3"/></svg>
+                  Serviços
+                </a>
+              </li>
+              <li data-permissao="portfolio">
+                <a class="menu-painel__link" href="portfolio.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><path d="m3 13 4-4 4 4 2-2 4 4"/><circle cx="13" cy="8" r="1.3"/></svg>
+                  Portfólio
+                </a>
+              </li>
+              <li data-permissao="relatorio">
+                <a class="menu-painel__link" href="relatorio.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h14M5.5 14V9M10 14V5M14.5 14v-3"/></svg>
+                  Relatório
+                </a>
+              </li>
+              <li data-permissao="configuracao">
+                <a class="menu-painel__link" href="configuracoes.html" aria-current="page">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h8M15 6h2M3 14h2M9 14h8"/><circle cx="13" cy="6" r="2"/><circle cx="7" cy="14" r="2"/></svg>
+                  Configurações
+                </a>
+              </li>
+              <li data-permissao="usuarios">
+                <a class="menu-painel__link" href="usuarios.html">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="7" r="3"/><path d="M2.5 17c.6-3 2.8-4.5 5.5-4.5s4.9 1.5 5.5 4.5M13.5 4.2a3 3 0 0 1 0 5.6M15.5 12.8c1.2.7 2 2 2.2 4.2"/></svg>
+                  Usuários
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="lateral__usuario">
+            <p class="lateral__nome" data-usuario-nome></p>
+            <p class="lateral__perfil" data-usuario-perfil></p>
+            <div class="lateral__acoes">
+              <button class="botao botao--contorno botao--pequeno" type="button" data-sair>Sair</button>
+              <a class="ligacao lateral__site" href="../index.html">Ver o site</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <!-- fim: menu lateral do painel -->
+
+      <main id="conteudo" class="painel__principal">
+        <p class="alerta painel__aviso" data-aviso-painel role="alert"></p>
+
+        <header class="painel-topo">
+          <h1>Configurações</h1>
+          <p>Como a agenda funciona e como a estética aparece no site e no painel.</p>
+        </header>
+
+        <p id="erro-configuracoes" class="alerta painel__aviso" role="alert"></p>
+
+        <div id="configuracoes" class="configuracoes" aria-busy="true">
+          <!-- Agenda (RF-22) -->
+          <section class="cartao-config" aria-labelledby="agenda-titulo">
+            <form id="form-agenda" novalidate>
+              <div class="cartao-config__topo">
+                <h2 id="agenda-titulo">Agenda</h2>
+                <p>Vale para os horários livres do site e para os agendamentos feitos no painel.</p>
+              </div>
+
+              <fieldset class="dias-semana">
+                <legend>Dias de funcionamento</legend>
+                <div id="dias-funcionamento" class="dias-semana__opcoes"></div>
+                <span id="dias-funcionamento-erro" class="campo__erro"></span>
+              </fieldset>
+
+              <div class="form-linha">
+                <div class="campo">
+                  <label for="hora-abertura">Abre às</label>
+                  <input id="hora-abertura" type="time" step="300" required aria-describedby="hora-abertura-erro" />
+                  <span id="hora-abertura-erro" class="campo__erro"></span>
+                </div>
+                <div class="campo">
+                  <label for="hora-fechamento">Fecha às</label>
+                  <input id="hora-fechamento" type="time" step="300" required aria-describedby="hora-fechamento-erro" />
+                  <span id="hora-fechamento-erro" class="campo__erro"></span>
+                </div>
+              </div>
+
+              <div class="form-linha">
+                <div class="campo">
+                  <label for="intervalo">Intervalo entre horários</label>
+                  <select id="intervalo" aria-describedby="intervalo-ajuda"></select>
+                  <span id="intervalo-ajuda" class="campo__ajuda">De quanto em quanto tempo o site oferece um horário.</span>
+                </div>
+                <div class="campo">
+                  <label for="capacidade">Atendimentos ao mesmo tempo</label>
+                  <input id="capacidade" type="number" inputmode="numeric" min="1" max="20" step="1" aria-describedby="capacidade-ajuda capacidade-erro" />
+                  <span id="capacidade-ajuda" class="campo__ajuda">Quantos carros a equipe atende juntos.</span>
+                  <span id="capacidade-erro" class="campo__erro"></span>
+                </div>
+              </div>
+
+              <h3 class="cartao-config__subtitulo">Prazos</h3>
+              <div class="form-linha">
+                <div class="campo">
+                  <label for="antecedencia">Antecedência mínima (horas)</label>
+                  <input id="antecedencia" type="number" inputmode="numeric" min="0" max="168" step="1" aria-describedby="antecedencia-ajuda antecedencia-erro" />
+                  <span id="antecedencia-ajuda" class="campo__ajuda">O cliente não marca horários que começam antes disso.</span>
+                  <span id="antecedencia-erro" class="campo__erro"></span>
+                </div>
+                <div class="campo">
+                  <label for="limite-dias">Agendar até (dias à frente)</label>
+                  <input id="limite-dias" type="number" inputmode="numeric" min="1" max="365" step="1" aria-describedby="limite-dias-ajuda limite-dias-erro" />
+                  <span id="limite-dias-ajuda" class="campo__ajuda">Até quantos dias à frente o site mostra horários.</span>
+                  <span id="limite-dias-erro" class="campo__erro"></span>
+                </div>
+              </div>
+              <div class="form-linha">
+                <div class="campo">
+                  <label for="prazo-resposta">Prazo de resposta (horas)</label>
+                  <input id="prazo-resposta" type="number" inputmode="numeric" min="1" max="168" step="1" aria-describedby="prazo-resposta-ajuda prazo-resposta-erro" />
+                  <span id="prazo-resposta-ajuda" class="campo__ajuda">Sem resposta nesse prazo, o pedido expira e o horário fica livre.</span>
+                  <span id="prazo-resposta-erro" class="campo__erro"></span>
+                </div>
+                <div class="campo">
+                  <label for="prazo-cancelamento">Cliente desmarca até (horas antes)</label>
+                  <input id="prazo-cancelamento" type="number" inputmode="numeric" min="0" max="168" step="1" aria-describedby="prazo-cancelamento-ajuda prazo-cancelamento-erro" />
+                  <span id="prazo-cancelamento-ajuda" class="campo__ajuda">Depois disso, o cliente precisa falar com a estética.</span>
+                  <span id="prazo-cancelamento-erro" class="campo__erro"></span>
+                </div>
+              </div>
+
+              <p id="alerta-agenda" class="alerta" role="alert"></p>
+              <div class="cartao-config__acoes">
+                <button id="salvar-agenda" class="botao" type="submit">Salvar agenda</button>
+              </div>
+            </form>
+          </section>
+
+          <!-- Datas bloqueadas (RF-22) -->
+          <section class="cartao-config" aria-labelledby="bloqueios-titulo">
+            <div class="cartao-config__topo">
+              <h2 id="bloqueios-titulo">Datas bloqueadas</h2>
+              <p>Feriados, férias ou dias sem atendimento. O site não oferece horários nessas datas.</p>
+            </div>
+            <ul id="lista-bloqueios" class="bloqueios"></ul>
+            <form id="form-bloqueio" class="bloqueio-novo" novalidate>
+              <div class="campo">
+                <label for="bloqueio-data">Data</label>
+                <input id="bloqueio-data" type="date" required />
+              </div>
+              <div class="campo">
+                <label for="bloqueio-motivo">Motivo <span class="campo__opcional">(opcional)</span></label>
+                <input id="bloqueio-motivo" type="text" maxlength="80" placeholder="Feriado municipal" autocomplete="off" />
+              </div>
+              <button id="salvar-bloqueio" class="botao botao--contorno" type="submit">Bloquear data</button>
+            </form>
+            <p id="alerta-bloqueio" class="alerta" role="alert"></p>
+          </section>
+
+          <!-- Vitrine (RF-23) -->
+          <section class="cartao-config" aria-labelledby="vitrine-titulo">
+            <form id="form-vitrine" novalidate>
+              <div class="cartao-config__topo">
+                <h2 id="vitrine-titulo">Vitrine</h2>
+                <p>Nome, logotipo, cor e contatos que aparecem no site e no painel.</p>
+              </div>
+
+              <fieldset class="foto-campo logotipo-campo">
+                <legend>Logotipo <span class="campo__opcional">(opcional)</span></legend>
+                <div id="logotipo"></div>
+                <p class="campo__ajuda">Uma imagem quadrada fica melhor. Aparece no topo do site, no painel e na aba do navegador.</p>
+                <input id="logotipo-arquivo" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+              </fieldset>
+
+              <div class="form-linha">
+                <div class="campo">
+                  <label for="vitrine-nome">Nome da estética</label>
+                  <input id="vitrine-nome" type="text" maxlength="80" autocomplete="organization" aria-describedby="vitrine-nome-erro" />
+                  <span id="vitrine-nome-erro" class="campo__erro"></span>
+                </div>
+                <div class="campo">
+                  <label for="vitrine-cor-texto">Cor principal</label>
+                  <div class="cor-campo">
+                    <input id="vitrine-cor" type="color" aria-label="Escolher a cor principal" />
+                    <input id="vitrine-cor-texto" type="text" maxlength="7" spellcheck="false" autocomplete="off" placeholder="#1f1f1f" aria-describedby="vitrine-cor-ajuda vitrine-cor-texto-erro" />
+                  </div>
+                  <span id="vitrine-cor-ajuda" class="campo__ajuda">Botões e destaques. O texto sobre a cor fica claro ou escuro sozinho.</span>
+                  <span id="vitrine-cor-texto-erro" class="campo__erro"></span>
+                </div>
+              </div>
+
+              <div class="campo">
+                <label for="vitrine-descricao">Descrição <span class="campo__opcional">(opcional)</span></label>
+                <textarea id="vitrine-descricao" rows="3" maxlength="300"></textarea>
+              </div>
+
+              <h3 class="cartao-config__subtitulo">Contatos</h3>
+              <div class="campo">
+                <label for="vitrine-endereco">Endereço <span class="campo__opcional">(opcional)</span></label>
+                <input id="vitrine-endereco" type="text" maxlength="200" autocomplete="street-address" />
+              </div>
+              <div class="form-linha">
+                <div class="campo">
+                  <label for="vitrine-telefone">Telefone do site <span class="campo__opcional">(opcional)</span></label>
+                  <input id="vitrine-telefone" type="tel" inputmode="tel" placeholder="(11) 3000-0000" autocomplete="off" aria-describedby="vitrine-telefone-erro" />
+                  <span id="vitrine-telefone-erro" class="campo__erro"></span>
+                </div>
+                <div class="campo">
+                  <label for="vitrine-instagram">Instagram <span class="campo__opcional">(opcional)</span></label>
+                  <input id="vitrine-instagram" type="text" placeholder="@esteticamodelo" autocomplete="off" spellcheck="false" aria-describedby="vitrine-instagram-erro" />
+                  <span id="vitrine-instagram-erro" class="campo__erro"></span>
+                </div>
+              </div>
+              <div class="campo">
+                <label for="vitrine-whatsapp">WhatsApp das notificações</label>
+                <input id="vitrine-whatsapp" type="tel" inputmode="tel" placeholder="(11) 90000-0000" autocomplete="off" aria-describedby="vitrine-whatsapp-ajuda vitrine-whatsapp-erro" />
+                <span id="vitrine-whatsapp-ajuda" class="campo__ajuda">Recebe os avisos de pedidos novos. Precisa ser um celular com WhatsApp.</span>
+                <span id="vitrine-whatsapp-erro" class="campo__erro"></span>
+              </div>
+
+              <p id="alerta-vitrine" class="alerta" role="alert"></p>
+              <div class="cartao-config__acoes">
+                <button id="salvar-vitrine" class="botao" type="submit">Salvar vitrine</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div id="aviso-acao" class="aviso-acao" role="status" hidden></div>
+  </body>
+</html>

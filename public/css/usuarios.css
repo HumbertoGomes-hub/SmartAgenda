@@ -1,0 +1,51 @@
+/* ==========================================================================
+   Usuários do painel (RF-15)
+   Usa admin.css, painel-comum.css (diálogos) e catalogo.css (lista e selos).
+   ========================================================================== */
+.item-usuario .item-servico__dados {
+  overflow-wrap: anywhere;
+}
+
+.perfil-ajuda {
+  margin-top: var(--e2);
+}
+
+#campo-cargo,
+#campo-notificacoes,
+#campo-senha {
+  margin-top: var(--e4);
+}
+
+.senha-apoio {
+  margin-bottom: var(--e4);
+  color: var(--texto-suave);
+}
+
+/* O que cada perfil vê */
+.perfis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--e3);
+}
+
+.perfis div {
+  padding: var(--e4);
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-m);
+}
+
+.perfis dt {
+  font-weight: 500;
+}
+
+.perfis dd {
+  margin-top: var(--e1);
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+@media (max-width: 760px) {
+  .perfis {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

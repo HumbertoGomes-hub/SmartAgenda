@@ -1,0 +1,219 @@
+/* ==========================================================================
+   Configurações do painel (RF-22, RF-23)
+   Usa tokens.css, site.css (campos), admin.css, painel-comum.css (linhas de
+   formulário) e catalogo.css (campo de foto, botões de texto).
+   ========================================================================== */
+.configuracoes {
+  display: grid;
+  gap: var(--e5);
+  transition: opacity 0.2s ease;
+}
+
+.configuracoes[aria-busy='true'] {
+  opacity: 0.55;
+}
+
+.cartao-config {
+  max-width: 52rem;
+  padding: var(--e5);
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-g);
+}
+
+.cartao-config__topo {
+  margin-bottom: var(--e4);
+}
+
+.cartao-config__topo h2 {
+  font-size: var(--titulo-p);
+}
+
+.cartao-config__topo p {
+  margin-top: var(--e1);
+  color: var(--texto-suave);
+}
+
+.cartao-config__subtitulo {
+  margin-top: var(--e6);
+  font-size: var(--texto-g);
+  letter-spacing: -0.015em;
+}
+
+.cartao-config__acoes {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--e5);
+}
+
+.cartao-config .alerta {
+  margin-top: var(--e4);
+}
+
+/* Menu com a mesma altura dos campos de texto (48px, de site.css). */
+.cartao-config .campo select {
+  min-height: 48px;
+}
+
+/* Campos lado a lado com a altura natural, mesmo quando um tem texto de
+   ajuda e o outro não; e respiro entre uma linha dupla e o campo seguinte. */
+.cartao-config .form-linha {
+  align-items: start;
+}
+
+.cartao-config .form-linha + .campo,
+.cartao-config__subtitulo + .campo {
+  margin-top: var(--e4);
+}
+
+.cartao-config__subtitulo + .campo {
+  margin-top: var(--e3);
+}
+
+@media (max-width: 560px) {
+  .cartao-config {
+    padding: var(--e4);
+    border-radius: var(--raio-m);
+  }
+
+  .cartao-config__acoes .botao {
+    width: 100%;
+  }
+}
+
+/* Dias de funcionamento: botões que ligam e desligam ------------------------ */
+.dias-semana legend {
+  margin-bottom: var(--e2);
+  padding: 0;
+  font-weight: 500;
+}
+
+.dias-semana__opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e2);
+}
+
+.dia-opcao {
+  position: relative;
+  cursor: pointer;
+}
+
+.dia-opcao input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dia-opcao span {
+  display: inline-grid;
+  min-width: 3.25rem;
+  min-height: 44px;
+  padding: 0 var(--e3);
+  place-items: center;
+  border: 1.5px solid var(--borda-forte);
+  border-radius: var(--raio-m);
+  background: var(--branco);
+  font-weight: 500;
+}
+
+.dia-opcao:hover span {
+  border-color: var(--tinta);
+}
+
+.dia-opcao input:checked + span {
+  border-color: var(--marca);
+  background: var(--marca);
+  color: var(--marca-texto);
+}
+
+.dia-opcao input:focus-visible + span {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
+}
+
+.dias-semana .campo__erro {
+  display: block;
+  margin-top: var(--e2);
+}
+
+/* Datas bloqueadas ---------------------------------------------------------- */
+.bloqueios {
+  border-top: 1.5px solid var(--borda);
+}
+
+.bloqueios .vazio {
+  margin-top: var(--e3);
+}
+
+.bloqueio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e3);
+  padding-block: var(--e3);
+  border-bottom: 1.5px solid var(--borda);
+}
+
+.bloqueio__data {
+  font-weight: 500;
+}
+
+.bloqueio__motivo {
+  color: var(--texto-suave);
+  font-size: var(--texto-p);
+}
+
+.bloqueio-novo {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--e3);
+  margin-top: var(--e4);
+}
+
+.bloqueio-novo .campo + .campo {
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .bloqueio-novo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Cor principal: seletor + código ------------------------------------------ */
+.cor-campo {
+  display: flex;
+  gap: var(--e2);
+}
+
+.campo .cor-campo input[type='color'] {
+  flex: none;
+  width: 48px;
+  min-height: 48px;
+  padding: 4px;
+  border: 1.5px solid var(--borda-forte);
+  border-radius: var(--raio-m);
+  background: var(--branco);
+  cursor: pointer;
+}
+
+/* Logotipo ------------------------------------------------------------------ */
+.logotipo-campo {
+  margin-top: 0;
+  margin-bottom: var(--e4);
+}
+
+.logotipo-previa {
+  width: 6rem;
+  height: 6rem;
+  padding: var(--e2);
+  border: 1.5px solid var(--borda);
+  border-radius: var(--raio-m);
+  background: var(--branco);
+  object-fit: contain;
+}

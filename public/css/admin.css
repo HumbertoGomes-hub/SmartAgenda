@@ -184,8 +184,10 @@ a.menu-painel__link:hover {
 }
 
 @media (max-width: 900px) {
+  /* A barra do topo fica com a altura dela; a sobra da tela vai para o conteúdo. */
   .painel {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
   }
 
   .lateral {

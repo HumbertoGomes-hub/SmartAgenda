@@ -32,20 +32,34 @@
  *   removerFotoTrabalho -> DELETE /api/admin/portfolio/:id/fotos/:fotoId
  *   ordenarFotosTrabalho-> PUT   /api/admin/portfolio/:id/fotos/ordem
  *   relatorio           -> GET   /api/admin/relatorio?mes=AAAA-MM
+ *   configuracoes       -> GET   /api/admin/configuracoes
+ *   salvarAgenda        -> PUT   /api/admin/configuracoes/agenda
+ *   salvarVitrine       -> PUT   /api/admin/configuracoes/vitrine
+ *   enviarLogotipo      -> PUT   /api/admin/configuracoes/logotipo   (corpo: a imagem)
+ *   removerLogotipo     -> DELETE /api/admin/configuracoes/logotipo
+ *   criarBloqueio       -> POST  /api/admin/configuracoes/bloqueios
+ *   removerBloqueio     -> DELETE /api/admin/configuracoes/bloqueios/:data
+ *   usuariosPainel      -> GET   /api/admin/usuarios
+ *   criarUsuario        -> POST  /api/admin/usuarios
+ *   editarUsuario       -> PATCH /api/admin/usuarios/:id
+ *   redefinirSenha      -> PUT   /api/admin/usuarios/:id/senha
  * As rotas reais estão em src/rotas/.
  *
  * Serviços e portfólio vêm de ../dados-exemplo.js, os mesmos dados que o site
  * mostra: o que for mudado aqui aparece no site.
  *
- * Os agendamentos ficam salvos no navegador (localStorage), para o que for
- * feito em Pedidos aparecer na Agenda e no Início. Para voltar aos dados de
- * exemplo, rode no console: SmartAgendaPainelAPI.reiniciarDemonstracao()
+ * Os agendamentos, as configurações e os usuários ficam salvos no navegador
+ * (localStorage), para o que for feito numa tela aparecer nas outras. Para
+ * voltar aos dados de exemplo, rode no console:
+ * SmartAgendaPainelAPI.reiniciarDemonstracao()
  *
  * Contas de teste (a senha de todas é: smartagenda)
  *   dono@exemplo.test         -> Dono: vê o menu completo
  *   socio@exemplo.test        -> Sócio: sem Configurações e Usuários
  *   funcionario@exemplo.test  -> Funcionário: Pedidos, Agenda e Portfólio
  *   inativo@exemplo.test      -> usuário desativado: não consegue entrar
+ * Usuários cadastrados na tela Usuários também entram com a senha de teste:
+ * a simulação confere o tamanho da senha nova, mas não a guarda.
  *
  * A sessão expira após 30 minutos sem uso (RNF-07). Para testar sem esperar,
  * rode no console do navegador: SmartAgendaPainelAPI.envelhecerSessao(31)
@@ -73,18 +87,24 @@
     FUNCIONARIO: ['agenda', 'agendamento-manual', 'portfolio'],
   };
 
-  // Identidade da estética. No servidor, vem da tabela empresa (RF-23).
-  var EMPRESA = {
+  // Identidade e contatos da estética (RF-23). No servidor, vêm da tabela empresa.
+  var VITRINE_PADRAO = {
     nome: 'Estética Modelo',
-    logotipoUrl: '../img/exemplo/logotipo.svg',
+    descricao: 'Lavagem detalhada, polimento e proteção de pintura.',
+    endereco: 'Rua das Oficinas, 120, Vila Exemplo, São Paulo',
+    telefoneContato: '+551130000000',
+    instagram: 'esteticamodelo',
+    telefoneWhatsapp: '+5511999990000',
     corPrimaria: '#1f1f1f',
+    logotipoUrl: '../img/exemplo/logotipo.svg',
   };
 
-  var USUARIOS = [
-    { id: 1, nome: 'Marcos Oliveira', email: 'dono@exemplo.test', perfil: 'DONO', ativo: true },
-    { id: 2, nome: 'Ana Ribeiro', email: 'socio@exemplo.test', perfil: 'SOCIO', ativo: true },
-    { id: 3, nome: 'Lucas Ferreira', email: 'funcionario@exemplo.test', perfil: 'FUNCIONARIO', ativo: true },
-    { id: 4, nome: 'Paulo Mendes', email: 'inativo@exemplo.test', perfil: 'FUNCIONARIO', ativo: false },
+  // Usuários do painel (RF-15). cargo é do funcionário; recebeNotificacoes, do dono.
+  var USUARIOS_PADRAO = [
+    { id: 1, nome: 'Marcos Oliveira', email: 'dono@exemplo.test', telefone: '+5511999990000', perfil: 'DONO', ativo: true, cargo: '', recebeNotificacoes: true },
+    { id: 2, nome: 'Ana Ribeiro', email: 'socio@exemplo.test', telefone: '', perfil: 'SOCIO', ativo: true, cargo: '', recebeNotificacoes: false },
+    { id: 3, nome: 'Lucas Ferreira', email: 'funcionario@exemplo.test', telefone: '', perfil: 'FUNCIONARIO', ativo: true, cargo: 'Polidor', recebeNotificacoes: false },
+    { id: 4, nome: 'Paulo Mendes', email: 'inativo@exemplo.test', telefone: '', perfil: 'FUNCIONARIO', ativo: false, cargo: 'Lavador', recebeNotificacoes: false },
   ];
 
   // Serviços e portfólio ficam em ../dados-exemplo.js, compartilhados com o site.
@@ -101,13 +121,51 @@
   };
 
   // ConfiguracaoAgenda (RF-22). Dias: 0 = domingo ... 6 = sábado.
-  var CONFIGURACAO = {
+  var CONFIGURACAO_PADRAO = {
     diasFuncionamento: [1, 2, 3, 4, 5, 6],
     horaAbertura: '08:00',
     horaFechamento: '18:00',
     intervaloMinutos: 30,
     capacidadeSimultanea: 1,
+    antecedenciaMinimaHoras: 2,
+    limiteDiasFuturos: 30,
+    prazoRespostaHoras: PRAZO_RESPOSTA_HORAS,
+    prazoCancelamentoHoras: 2,
   };
+
+  // Configurações e usuários guardados no navegador, para as mudanças feitas
+  // em Configurações e Usuários valerem nas outras telas.
+  var CHAVE_CONFIG = 'smartagenda:painel-config-v1';
+  var CHAVE_USUARIOS = 'smartagenda:painel-usuarios-v1';
+
+  function lerGuardado(chave, padrao) {
+    try {
+      var valor = JSON.parse(localStorage.getItem(chave));
+      if (valor) {
+        return valor;
+      }
+    } catch (erro) {
+      // Sem armazenamento: usa o padrão.
+    }
+    return JSON.parse(JSON.stringify(padrao));
+  }
+
+  function guardar(chave, valor) {
+    try {
+      localStorage.setItem(chave, JSON.stringify(valor));
+      return true;
+    } catch (erro) {
+      return false;
+    }
+  }
+
+  function lerConfig() {
+    return lerGuardado(CHAVE_CONFIG, { agenda: CONFIGURACAO_PADRAO, vitrine: VITRINE_PADRAO });
+  }
+
+  function lerUsuarios() {
+    return lerGuardado(CHAVE_USUARIOS, USUARIOS_PADRAO);
+  }
 
   // Agendamentos de exemplo, posicionados a partir de hoje para a tela nunca
   // ficar vazia. dia: 0 = hoje, 1 = amanhã...; criadoHa: minutos desde o pedido.
@@ -215,7 +273,7 @@
 
   function entrar(email, senha) {
     var procurado = email.trim().toLowerCase();
-    var usuario = USUARIOS.filter(function (u) {
+    var usuario = lerUsuarios().filter(function (u) {
       return u.email === procurado;
     })[0];
 
@@ -392,7 +450,7 @@
       var simultaneos = ocupando.filter(function (a) {
         return new Date(a.dataHoraInicio).getTime() <= ponto && new Date(a.dataHoraFim).getTime() > ponto;
       }).length;
-      return simultaneos >= CONFIGURACAO.capacidadeSimultanea;
+      return simultaneos >= lerConfig().agenda.capacidadeSimultanea;
     });
   }
 
@@ -455,7 +513,7 @@
     return aguardar(
       copia({
         geradoEm: agora.toISOString(),
-        prazoRespostaHoras: PRAZO_RESPOSTA_HORAS,
+        prazoRespostaHoras: lerConfig().agenda.prazoRespostaHoras,
         hoje: todos
           .filter(function (a) {
             return mesmoDia(new Date(a.dataHoraInicio), agora) && ['CONFIRMADO', 'CONCLUIDO', 'NAO_COMPARECEU'].indexOf(a.status) !== -1;
@@ -485,7 +543,7 @@
     var todos = estadoAtual().agendamentos;
     return aguardar(
       copia({
-        prazoRespostaHoras: PRAZO_RESPOSTA_HORAS,
+        prazoRespostaHoras: lerConfig().agenda.prazoRespostaHoras,
         pendentes: todos
           .filter(function (a) {
             return a.status === 'PENDENTE';
@@ -540,7 +598,15 @@
           .map(function (s) {
             return { id: s.id, nome: s.nome, categoria: s.categoria, precoBase: s.precoBase, duracaoMinutos: s.duracaoMinutos };
           }),
-        configuracao: CONFIGURACAO,
+        configuracao: (function (a) {
+          return {
+            diasFuncionamento: a.diasFuncionamento,
+            horaAbertura: a.horaAbertura,
+            horaFechamento: a.horaFechamento,
+            intervaloMinutos: a.intervaloMinutos,
+            capacidadeSimultanea: a.capacidadeSimultanea,
+          };
+        })(lerConfig().agenda),
         bloqueios: estadoAtual().bloqueios.filter(function (b) {
           return b.data >= hoje;
         }),
@@ -1224,8 +1290,463 @@
     });
   }
 
+  /* Configurações (RF-22, RF-23) ----------------------------------------- */
+
+  // Mesmas regras de src/dominio/configuracoes.js.
+  var INTERVALOS = [10, 15, 20, 30, 45, 60];
+
+  function minutosDaHora(texto) {
+    var partes = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(texto || '');
+    if (!partes) {
+      return null;
+    }
+    var minutos = Number(partes[1]) * 60 + Number(partes[2]);
+    return minutos % 5 === 0 ? minutos : null;
+  }
+
+  function inteiroEntre(valor, minimo, maximo) {
+    return typeof valor === 'number' && valor % 1 === 0 && valor >= minimo && valor <= maximo;
+  }
+
+  // '' -> null (sem telefone); inválido -> false; válido -> +55DDDNUMERO.
+  function telefoneDoPainel(valor, celular) {
+    var texto = String(valor || '').trim();
+    if (!texto) {
+      return null;
+    }
+    var digitos = texto.replace(/\D/g, '');
+    if (digitos.length >= 12 && digitos.indexOf('55') === 0) {
+      digitos = digitos.slice(2);
+    }
+    if (!/^[1-9]{2}\d{8,9}$/.test(digitos) || (celular && !/^[1-9]{2}9\d{8}$/.test(digitos))) {
+      return false;
+    }
+    return '+55' + digitos;
+  }
+
+  // "@perfil", "perfil" ou o endereço do Instagram -> "perfil"; inválido -> false.
+  function instagramDoPainel(valor) {
+    var texto = String(valor || '').trim();
+    if (!texto) {
+      return '';
+    }
+    var perfil = texto
+      .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+      .replace(/^@/, '')
+      .replace(/\/.*$/, '');
+    return /^[A-Za-z0-9._]{1,30}$/.test(perfil) ? perfil.toLowerCase() : false;
+  }
+
+  function semEspaco() {
+    return falhar('SEM_ESPACO', 'A demonstração guarda tudo no navegador e o espaço acabou. Use um logotipo menor.');
+  }
+
+  function configuracoes() {
+    var bloqueio = exigirPermissao('configuracao');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var config = lerConfig();
+    var hoje = dataISO(new Date());
+    return aguardar(
+      copia({
+        agenda: config.agenda,
+        vitrine: config.vitrine,
+        bloqueios: estadoAtual().bloqueios.filter(function (b) {
+          return b.data >= hoje;
+        }),
+      }),
+    );
+  }
+
+  function salvarAgenda(dados) {
+    var bloqueio = exigirPermissao('configuracao');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    dados = dados || {};
+    var dias = dados.diasFuncionamento;
+    var diasOk =
+      Array.isArray(dias) &&
+      dias.length > 0 &&
+      dias.every(function (dia) {
+        return inteiroEntre(dia, 0, 6);
+      }) &&
+      dias.filter(function (dia, i) {
+        return dias.indexOf(dia) === i;
+      }).length === dias.length;
+    if (!diasOk) {
+      return invalido('Escolha pelo menos um dia de funcionamento.');
+    }
+    var abertura = minutosDaHora(dados.horaAbertura);
+    var fechamento = minutosDaHora(dados.horaFechamento);
+    if (abertura === null || fechamento === null) {
+      return invalido('Informe a abertura e o fechamento no formato HH:MM, em múltiplos de 5 minutos.');
+    }
+    if (fechamento <= abertura) {
+      return invalido('O fechamento precisa ser depois da abertura.');
+    }
+    if (INTERVALOS.indexOf(dados.intervaloMinutos) === -1) {
+      return invalido('O intervalo entre horários deve ser de ' + INTERVALOS.join(', ') + ' minutos.');
+    }
+    var regras = [
+      ['capacidadeSimultanea', 1, 20, 'A capacidade deve ser de 1 a 20 atendimentos ao mesmo tempo.'],
+      ['antecedenciaMinimaHoras', 0, 168, 'A antecedência mínima deve ser de 0 a 168 horas (7 dias).'],
+      ['limiteDiasFuturos', 1, 365, 'O limite para agendar deve ser de 1 a 365 dias.'],
+      ['prazoRespostaHoras', 1, 168, 'O prazo para responder pedidos deve ser de 1 a 168 horas.'],
+      ['prazoCancelamentoHoras', 0, 168, 'O prazo para o cliente desmarcar deve ser de 0 a 168 horas.'],
+    ];
+    for (var i = 0; i < regras.length; i += 1) {
+      if (!inteiroEntre(dados[regras[i][0]], regras[i][1], regras[i][2])) {
+        return invalido(regras[i][3]);
+      }
+    }
+
+    var config = lerConfig();
+    config.agenda = {
+      diasFuncionamento: dias.slice().sort(),
+      horaAbertura: dados.horaAbertura,
+      horaFechamento: dados.horaFechamento,
+      intervaloMinutos: dados.intervaloMinutos,
+      capacidadeSimultanea: dados.capacidadeSimultanea,
+      antecedenciaMinimaHoras: dados.antecedenciaMinimaHoras,
+      limiteDiasFuturos: dados.limiteDiasFuturos,
+      prazoRespostaHoras: dados.prazoRespostaHoras,
+      prazoCancelamentoHoras: dados.prazoCancelamentoHoras,
+    };
+    return guardar(CHAVE_CONFIG, config) ? aguardar(copia(config.agenda)) : semEspaco();
+  }
+
+  function salvarVitrine(dados) {
+    var bloqueio = exigirPermissao('configuracao');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    dados = dados || {};
+    var nome = textoLimpo(dados.nome || '');
+    var descricao = textoLimpo(dados.descricao || '');
+    var endereco = textoLimpo(dados.endereco || '');
+    var contato = telefoneDoPainel(dados.telefoneContato, false);
+    var whatsapp = telefoneDoPainel(dados.telefoneWhatsapp, true);
+    var instagram = instagramDoPainel(dados.instagram);
+    var cor = dados.corPrimaria || '';
+
+    if (nome.length < 2 || nome.length > 80) {
+      return invalido('O nome da estética precisa ter de 2 a 80 caracteres.');
+    }
+    if (descricao.length > 300) {
+      return invalido('A descrição pode ter até 300 caracteres.');
+    }
+    if (endereco.length > 200) {
+      return invalido('O endereço pode ter até 200 caracteres.');
+    }
+    if (contato === false) {
+      return invalido('Informe o telefone de contato com DDD.');
+    }
+    if (whatsapp === false) {
+      return invalido('Informe o WhatsApp das notificações: um celular com DDD.');
+    }
+    if (instagram === false) {
+      return invalido('Informe o Instagram como @perfil, só com letras, números, ponto e sublinhado.');
+    }
+    if (cor && !/^#[0-9a-fA-F]{6}$/.test(cor)) {
+      return invalido('Informe a cor no formato #rrggbb, como #1f1f1f.');
+    }
+
+    var config = lerConfig();
+    config.vitrine = {
+      nome: nome,
+      descricao: descricao,
+      endereco: endereco,
+      telefoneContato: contato || '',
+      instagram: instagram,
+      telefoneWhatsapp: whatsapp || '',
+      corPrimaria: cor.toLowerCase(),
+      logotipoUrl: config.vitrine.logotipoUrl,
+    };
+    return guardar(CHAVE_CONFIG, config) ? aguardar(copia(config.vitrine)) : semEspaco();
+  }
+
+  function enviarLogotipo(blob) {
+    var bloqueio = exigirPermissao('configuracao');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    return fotoParaDemonstracao(blob).then(function (url) {
+      var config = lerConfig();
+      config.vitrine.logotipoUrl = url;
+      return guardar(CHAVE_CONFIG, config) ? aguardar(copia(config.vitrine)) : semEspaco();
+    });
+  }
+
+  function removerLogotipo() {
+    var bloqueio = exigirPermissao('configuracao');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var config = lerConfig();
+    config.vitrine.logotipoUrl = '';
+    return guardar(CHAVE_CONFIG, config) ? aguardar(copia(config.vitrine)) : semEspaco();
+  }
+
+  function bloqueiosDeHoje(estado) {
+    var hoje = dataISO(new Date());
+    return copia(
+      estado.bloqueios.filter(function (b) {
+        return b.data >= hoje;
+      }),
+    );
+  }
+
+  // dados: { data: 'AAAA-MM-DD', motivo }
+  function criarBloqueio(dados) {
+    var bloqueio = exigirPermissao('configuracao');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    dados = dados || {};
+    if (!lerInstante(dados.data, '00:00')) {
+      return invalido('Informe a data no formato AAAA-MM-DD.');
+    }
+    if (dados.data < dataISO(new Date())) {
+      return invalido('Só dá para bloquear hoje ou datas futuras.');
+    }
+    var motivo = textoLimpo(dados.motivo || '');
+    if (motivo.length > 80) {
+      return invalido('O motivo pode ter até 80 caracteres.');
+    }
+    var estado = estadoAtual();
+    if (
+      estado.bloqueios.some(function (b) {
+        return b.data === dados.data;
+      })
+    ) {
+      return falhar('DATA_JA_BLOQUEADA', 'Essa data já está bloqueada.');
+    }
+    estado.bloqueios.push({ data: dados.data, motivo: motivo });
+    estado.bloqueios.sort(function (a, b) {
+      return a.data < b.data ? -1 : 1;
+    });
+    gravarEstado(estado);
+    return aguardar({ bloqueios: bloqueiosDeHoje(estado) });
+  }
+
+  function removerBloqueio(data) {
+    var bloqueio = exigirPermissao('configuracao');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var estado = estadoAtual();
+    estado.bloqueios = estado.bloqueios.filter(function (b) {
+      return b.data !== data;
+    });
+    gravarEstado(estado);
+    return aguardar({ bloqueios: bloqueiosDeHoje(estado) });
+  }
+
+  /* Usuários (RF-15) ------------------------------------------------------ */
+
+  // Mesmas regras de src/dominio/usuarios.js.
+  var PERFIS = ['DONO', 'SOCIO', 'FUNCIONARIO'];
+  var SENHA_MINIMA = 8;
+
+  function usuarioDoPainel(u) {
+    return {
+      id: u.id,
+      nome: u.nome,
+      email: u.email,
+      telefone: u.telefone || '',
+      perfil: u.perfil,
+      ativo: u.ativo,
+      cargo: u.cargo || '',
+      recebeNotificacoes: u.perfil === 'DONO' ? u.recebeNotificacoes !== false : false,
+    };
+  }
+
+  // Ativos primeiro; depois dono, sócio e funcionário; por fim, o nome.
+  function ordenarUsuarios(lista) {
+    return lista.sort(function (a, b) {
+      return (
+        Number(b.ativo) - Number(a.ativo) ||
+        PERFIS.indexOf(a.perfil) - PERFIS.indexOf(b.perfil) ||
+        a.nome.localeCompare(b.nome, 'pt-BR')
+      );
+    });
+  }
+
+  function senhaValida(senha) {
+    return typeof senha === 'string' && senha.length >= SENHA_MINIMA && senha.length <= 72;
+  }
+
+  // Devolve { campos } ou { erro }. completo = true no cadastro.
+  function lerCamposUsuario(corpo, completo) {
+    corpo = corpo || {};
+    var campos = {};
+    var tem = function (campo) {
+      return completo || corpo[campo] !== undefined;
+    };
+    if (tem('nome')) {
+      var nome = textoLimpo(corpo.nome || '');
+      if (nome.length < 2 || nome.length > 80) {
+        return { erro: 'O nome precisa ter de 2 a 80 caracteres.' };
+      }
+      campos.nome = nome;
+    }
+    if (tem('email')) {
+      var email = String(corpo.email || '').trim().toLowerCase();
+      if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return { erro: 'Informe um e-mail válido, como nome@exemplo.com.' };
+      }
+      campos.email = email;
+    }
+    if (tem('perfil')) {
+      if (PERFIS.indexOf(corpo.perfil) === -1) {
+        return { erro: 'Escolha o perfil: dono, sócio ou funcionário.' };
+      }
+      campos.perfil = corpo.perfil;
+    }
+    if (corpo.telefone !== undefined) {
+      var telefone = telefoneDoPainel(corpo.telefone, false);
+      if (telefone === false) {
+        return { erro: 'Informe o telefone com DDD.' };
+      }
+      campos.telefone = telefone || '';
+    }
+    if (corpo.cargo !== undefined) {
+      var cargo = textoLimpo(corpo.cargo || '');
+      if (cargo.length > 60) {
+        return { erro: 'O cargo pode ter até 60 caracteres.' };
+      }
+      campos.cargo = cargo;
+    }
+    if (corpo.recebeNotificacoes !== undefined) {
+      campos.recebeNotificacoes = Boolean(corpo.recebeNotificacoes);
+    }
+    if (!completo && corpo.ativo !== undefined) {
+      campos.ativo = Boolean(corpo.ativo);
+    }
+    if (completo && !senhaValida(corpo.senha)) {
+      return { erro: 'A senha precisa ter de ' + SENHA_MINIMA + ' a 72 caracteres.' };
+    }
+    return { campos: campos };
+  }
+
+  function emailEmUso(lista, email, ignorarId) {
+    return lista.some(function (u) {
+      return u.email === email && u.id !== ignorarId;
+    });
+  }
+
+  function usuariosPainel() {
+    var bloqueio = exigirPermissao('usuarios');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    return aguardar({ usuarios: ordenarUsuarios(lerUsuarios().map(usuarioDoPainel)) });
+  }
+
+  function criarUsuario(corpo) {
+    var bloqueio = exigirPermissao('usuarios');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var lido = lerCamposUsuario(corpo, true);
+    if (lido.erro) {
+      return invalido(lido.erro);
+    }
+    var lista = lerUsuarios();
+    if (emailEmUso(lista, lido.campos.email)) {
+      return falhar('EMAIL_EM_USO', 'Já existe um usuário com esse e-mail.');
+    }
+    var novo = {
+      id: lista.reduce(function (maior, u) {
+        return Math.max(maior, u.id);
+      }, 0) + 1,
+      nome: lido.campos.nome,
+      email: lido.campos.email,
+      telefone: lido.campos.telefone || '',
+      perfil: lido.campos.perfil,
+      ativo: true,
+      cargo: lido.campos.perfil === 'FUNCIONARIO' ? lido.campos.cargo || '' : '',
+      recebeNotificacoes: lido.campos.perfil === 'DONO' && lido.campos.recebeNotificacoes !== false,
+    };
+    lista.push(novo);
+    guardar(CHAVE_USUARIOS, lista);
+    return aguardar(usuarioDoPainel(novo));
+  }
+
+  function editarUsuario(id, corpo) {
+    var bloqueio = exigirPermissao('usuarios');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var lista = lerUsuarios();
+    var usuario = lista.filter(function (u) {
+      return u.id === Number(id);
+    })[0];
+    if (!usuario) {
+      return falhar('NAO_ENCONTRADO', 'Usuário não encontrado.');
+    }
+    var lido = lerCamposUsuario(corpo, false);
+    if (lido.erro) {
+      return invalido(lido.erro);
+    }
+    var c = lido.campos;
+    if (Object.keys(c).length === 0) {
+      return invalido('Nada para alterar.');
+    }
+    var proprio = sessao().usuario.id === usuario.id;
+    if (proprio && (c.ativo === false || (c.perfil !== undefined && c.perfil !== 'DONO'))) {
+      return falhar(
+        'PROPRIO_ACESSO',
+        'Você não pode desativar nem mudar o perfil do seu próprio acesso. Peça para outro dono fazer isso.',
+      );
+    }
+    if (c.email && emailEmUso(lista, c.email, usuario.id)) {
+      return falhar('EMAIL_EM_USO', 'Já existe um usuário com esse e-mail.');
+    }
+
+    // RN-14: depois da mudança, ainda precisa existir um dono ativo.
+    var perfilDepois = c.perfil !== undefined ? c.perfil : usuario.perfil;
+    var ativoDepois = c.ativo !== undefined ? c.ativo : usuario.ativo;
+    var outroDono = lista.some(function (u) {
+      return u.id !== usuario.id && u.perfil === 'DONO' && u.ativo;
+    });
+    if (!outroDono && !(perfilDepois === 'DONO' && ativoDepois)) {
+      return falhar('ULTIMO_DONO', 'Precisa existir pelo menos um dono ativo. Cadastre ou ative outro dono antes.');
+    }
+
+    Object.keys(c).forEach(function (campo) {
+      usuario[campo] = c[campo];
+    });
+    if (usuario.perfil !== 'FUNCIONARIO') {
+      usuario.cargo = '';
+    }
+    guardar(CHAVE_USUARIOS, lista);
+    return aguardar(usuarioDoPainel(usuario));
+  }
+
+  // A simulação confere a senha nova, mas não a guarda: todos entram com a senha de teste.
+  function redefinirSenha(id, senha) {
+    var bloqueio = exigirPermissao('usuarios');
+    if (bloqueio) {
+      return bloqueio;
+    }
+    var existe = lerUsuarios().some(function (u) {
+      return u.id === Number(id);
+    });
+    if (!existe) {
+      return falhar('NAO_ENCONTRADO', 'Usuário não encontrado.');
+    }
+    if (!senhaValida(senha)) {
+      return invalido('A senha precisa ter de ' + SENHA_MINIMA + ' a 72 caracteres.');
+    }
+    return aguardar(null);
+  }
+
   function empresa() {
-    return aguardar({ nome: EMPRESA.nome, logotipoUrl: EMPRESA.logotipoUrl, corPrimaria: EMPRESA.corPrimaria });
+    var vitrine = lerConfig().vitrine;
+    return aguardar({ nome: vitrine.nome, logotipoUrl: vitrine.logotipoUrl, corPrimaria: vitrine.corPrimaria });
   }
 
   window.SmartAgendaPainelAPI = {
@@ -1258,6 +1779,17 @@
     removerFotoTrabalho: removerFotoTrabalho,
     ordenarFotosTrabalho: ordenarFotosTrabalho,
     relatorio: relatorio,
+    configuracoes: configuracoes,
+    salvarAgenda: salvarAgenda,
+    salvarVitrine: salvarVitrine,
+    enviarLogotipo: enviarLogotipo,
+    removerLogotipo: removerLogotipo,
+    criarBloqueio: criarBloqueio,
+    removerBloqueio: removerBloqueio,
+    usuariosPainel: usuariosPainel,
+    criarUsuario: criarUsuario,
+    editarUsuario: editarUsuario,
+    redefinirSenha: redefinirSenha,
     // Só para testes: faz a sessão parecer parada há N minutos.
     envelhecerSessao: function (minutos) {
       var atual = lerSessao();
@@ -1266,10 +1798,13 @@
         gravarSessao(atual);
       }
     },
-    // Só para testes: volta aos agendamentos, serviços e trabalhos de exemplo.
+    // Só para testes: volta aos agendamentos, serviços, trabalhos,
+    // configurações e usuários de exemplo.
     reiniciarDemonstracao: function () {
       try {
         localStorage.removeItem(CHAVE_AGENDA);
+        localStorage.removeItem(CHAVE_CONFIG);
+        localStorage.removeItem(CHAVE_USUARIOS);
       } catch (erro) {
         // Nada a apagar.
       }

@@ -27,7 +27,11 @@
   // Texto branco ou escuro, o que tiver mais contraste com a cor da marca.
   function aplicarCor(cor) {
     if (!/^#[0-9a-f]{6}$/i.test(cor)) {
-      return; // Sem cor configurada: fica a padrão do tokens.css.
+      // Sem cor configurada: fica a padrão do tokens.css.
+      ['--marca', '--marca-texto', '--sobre-marca-suave'].forEach(function (nome) {
+        raiz.style.removeProperty(nome);
+      });
+      return;
     }
     var l = luminancia(cor);
     var contrasteBranco = 1.05 / (l + 0.05);
@@ -39,6 +43,19 @@
     raiz.style.setProperty('--sobre-marca-suave', textoBranco ? 'rgb(255 255 255 / 0.75)' : 'rgb(31 31 31 / 0.72)');
   }
 
+  // " | Nome da estética" que esta função pôs no fim do título da aba.
+  var sufixoDoTitulo = '';
+
+  function aplicarTitulo(nome) {
+    var titulo = document.title;
+    if (sufixoDoTitulo && titulo.slice(-sufixoDoTitulo.length) === sufixoDoTitulo) {
+      titulo = titulo.slice(0, -sufixoDoTitulo.length);
+    }
+    sufixoDoTitulo = nome ? ' | ' + nome : '';
+    document.title = titulo + sufixoDoTitulo;
+  }
+
+  // Também usada pela tela Configurações, para a mudança aparecer na hora.
   function aplicar(empresa) {
     document.querySelectorAll('[data-empresa-nome]').forEach(function (no) {
       no.textContent = empresa.nome;
@@ -48,20 +65,22 @@
       if (empresa.logotipoUrl) {
         imagem.src = empresa.logotipoUrl;
         imagem.hidden = false;
+      } else {
+        imagem.hidden = true;
+        imagem.removeAttribute('src');
       }
     });
 
     var icone = document.querySelector('link[data-empresa-icone]');
-    if (icone && empresa.logotipoUrl) {
-      icone.href = empresa.logotipoUrl;
+    if (icone) {
+      icone.href = empresa.logotipoUrl || 'data:,';
     }
 
-    if (empresa.nome) {
-      document.title = document.title + ' | ' + empresa.nome;
-    }
-
+    aplicarTitulo(empresa.nome);
     aplicarCor(empresa.corPrimaria);
   }
+
+  window.SmartAgendaMarca = { aplicar: aplicar };
 
   API.empresa()
     .then(aplicar)
