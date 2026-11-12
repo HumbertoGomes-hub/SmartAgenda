@@ -18,7 +18,7 @@
   var agenda = {
     dias: calendario.dataset.diasFuncionamento.split(',').map(Number),
     limiteDias: Number(calendario.dataset.limiteDias),
-    bloqueios: calendario.dataset.bloqueios.split(','),
+    bloqueios: calendario.dataset.bloqueios.split(',').filter(Boolean),
     abertura: calendario.dataset.abertura,
     fechamento: calendario.dataset.fechamento,
     intervalo: Number(calendario.dataset.intervalo),
@@ -26,6 +26,28 @@
 
   var hoje = inicioDoDia(new Date());
   var ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + agenda.limiteDias);
+
+  // A agenda do HTML é só o ponto de partida; a configurada no painel chega
+  // do servidor (dias, horário, intervalo, limite e datas bloqueadas).
+  API.agenda()
+    .then(function (configurada) {
+      agenda.dias = configurada.diasFuncionamento;
+      agenda.limiteDias = configurada.limiteDiasFuturos;
+      agenda.bloqueios = configurada.bloqueios;
+      agenda.abertura = configurada.horaAbertura;
+      agenda.fechamento = configurada.horaFechamento;
+      agenda.intervalo = configurada.intervaloMinutos;
+      ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + agenda.limiteDias);
+      if (estado.passo === 1) {
+        desenharCalendario();
+        if (estado.data) {
+          buscarHorarios();
+        }
+      }
+    })
+    .catch(function () {
+      // Sem a agenda, o calendário usa os dias do HTML e o servidor confere no pedido.
+    });
 
   var estado = {
     passo: 0,

@@ -76,7 +76,9 @@ rotas.post('/entrar', limitarTentativas, async (req, res) => {
   req.session.usuarioId = usuario.id;
   await salvar(req);
 
-  res.json({ usuario: usuarioPublico(usuario) });
+  // Com req.usuario, a resposta já leva o cookie do painel (middlewares/sessao.js).
+  req.usuario = usuarioPublico(usuario);
+  res.json({ usuario: req.usuario });
 });
 
 rotas.post('/sair', (req, res, next) => {

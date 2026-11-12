@@ -472,6 +472,10 @@ textarea {
   text-underline-offset: 3px;
 }
 
+.rodape__linha {
+  display: block;
+}
+
 .rodape__descricao {
   max-width: 38ch;
   margin-top: var(--e3);

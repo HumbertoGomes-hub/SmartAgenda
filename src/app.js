@@ -46,6 +46,12 @@ function criarApp() {
 
   app.use(express.json({ limit: '100kb' }));
 
+  // RNF-03: para o monitoramento saber se o servidor está no ar.
+  app.get('/health', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true });
+  });
+
   // Nome, logotipo e cor da estética para as páginas (RF-23, RNF-12).
   app.use('/api/empresa', rotasEmpresa);
 

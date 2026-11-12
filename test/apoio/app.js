@@ -53,6 +53,25 @@ function substituir(modulo) {
 let servidor;
 let base;
 let cookie = '';
+const cookies = {};
+
+// Guarda todos os cookies recebidos (sessão e painel); valor vazio apaga.
+function guardarCookies(resposta) {
+  for (const linha of resposta.headers.getSetCookie()) {
+    const [par] = linha.split(';');
+    const igual = par.indexOf('=');
+    const nome = par.slice(0, igual);
+    const valor = par.slice(igual + 1);
+    if (valor) {
+      cookies[nome] = valor;
+    } else {
+      delete cookies[nome];
+    }
+  }
+  cookie = Object.keys(cookies)
+    .map((nome) => nome + '=' + cookies[nome])
+    .join('; ');
+}
 
 async function iniciar() {
   servidor = criarApp().listen(0);
@@ -76,10 +95,7 @@ async function pedir(metodo, caminho, corpo) {
     body = JSON.stringify(corpo);
   }
   const resposta = await fetch(base + caminho, { method: metodo, headers: cabecalhos, body });
-  const definido = resposta.headers.get('set-cookie');
-  if (definido) {
-    cookie = definido.split(';')[0];
-  }
+  guardarCookies(resposta);
   const texto = await resposta.text();
   let json = null;
   try {
@@ -90,15 +106,26 @@ async function pedir(metodo, caminho, corpo) {
   return { status: resposta.status, corpo: json, cabecalhos: resposta.headers };
 }
 
+function esquecerCookies() {
+  for (const nome of Object.keys(cookies)) {
+    delete cookies[nome];
+  }
+  cookie = '';
+}
+
 async function entrar(perfil) {
   perfilAtual = perfil;
-  cookie = '';
+  esquecerCookies();
   const r = await pedir('POST', '/api/admin/entrar', { email: 'lucas@teste.test', senha: SENHA });
   assert.equal(r.status, 200);
 }
 
 function sair() {
-  cookie = '';
+  esquecerCookies();
 }
 
-module.exports = { USUARIO_ID, substituir, iniciar, parar, pedir, entrar, sair };
+function porta() {
+  return servidor.address().port;
+}
+
+module.exports = { USUARIO_ID, substituir, iniciar, parar, pedir, entrar, sair, porta };

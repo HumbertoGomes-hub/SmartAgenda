@@ -114,7 +114,7 @@ test('vitrine é pública e só pede o que pode aparecer no site', async () => {
   const r = await pedir('GET', '/api/vitrine/servicos');
   assert.equal(r.status, 200);
   assert.deepEqual(servicos.ultima('listar').argumentos, [{ apenasAtivos: true }]);
-  assert.match(r.cabecalhos.get('cache-control'), /max-age=60/);
+  assert.equal(r.cabecalhos.get('cache-control'), 'no-cache');
 
   assert.equal((await pedir('GET', '/api/vitrine/portfolio')).status, 200);
   assert.deepEqual(portfolio.ultima('listar').argumentos, [{ apenasPublicados: true }]);

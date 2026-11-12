@@ -213,6 +213,11 @@
 
     API.servicos()
       .then(function (r) {
+        if (!r.servicos.length) {
+          // Sem serviço cadastrado, a seção inteira some (sem título solto).
+          areaServicos.closest('section').hidden = true;
+          return;
+        }
         areaServicos.replaceChildren(listaDeServicos(r.servicos.slice(0, 3)));
         pronto(areaServicos);
       })
@@ -251,6 +256,10 @@
     var area = document.getElementById('catalogo');
     API.servicos()
       .then(function (r) {
+        if (!r.servicos.length) {
+          avisoDeFalha(area, 'Os serviços da estética aparecem aqui em breve.');
+          return;
+        }
         var categorias = [];
         r.servicos.forEach(function (s) {
           if (categorias.indexOf(s.categoria) === -1) {
@@ -301,7 +310,7 @@
 
     API.trabalho(id)
       .then(function (t) {
-        document.title = t.titulo + ' | ' + document.title.split(' | ').pop();
+        Site.definirTitulo(t.titulo);
         document.getElementById('trabalho-titulo').textContent = t.titulo;
 
         var visual = el('div', 'obra__visual');

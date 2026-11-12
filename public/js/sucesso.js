@@ -9,9 +9,9 @@
 
   if (codigo) {
     campoCodigo.textContent = codigo;
-    var whatsapp = document.getElementById('falar-whatsapp');
-    whatsapp.href +=
-      '?text=' + encodeURIComponent('Olá! Fiz o pedido ' + codigo + ' pelo site e quero falar sobre ele.');
+    // site.js monta o link do WhatsApp da estética com esta mensagem.
+    document.getElementById('falar-whatsapp').dataset.whatsappTexto =
+      'Olá! Fiz o pedido ' + codigo + ' pelo site e quero falar sobre ele.';
   }
 
   if (pedido && pedido.codigo === codigo) {
@@ -20,6 +20,14 @@
     document.getElementById('ficha-duracao').textContent = pedido.duracaoTexto;
     document.getElementById('ficha-valor').textContent = pedido.precoTexto;
   }
+
+  window.SmartAgendaAPI.agenda()
+    .then(function (agenda) {
+      document.getElementById('prazo-resposta').textContent = agenda.prazoRespostaHoras + ' horas';
+    })
+    .catch(function () {
+      // Sem a agenda, fica o prazo padrão do texto.
+    });
 
   var botao = document.getElementById('copiar-codigo');
   var aviso = document.getElementById('copiar-aviso');

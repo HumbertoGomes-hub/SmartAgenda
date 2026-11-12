@@ -16,10 +16,10 @@ try {
   }
 }
 
-// NODE_ENV e TZ são variáveis padrão do Node e do sistema, definidas pelo
-// provedor de hospedagem; não fazem parte da configuração da estética.
-// Atribuir TZ faz o Node recalcular o fuso: "hoje" passa a ser o dia da estética.
-process.env.TZ = process.env.TZ || 'America/Sao_Paulo';
+// Fuso da estética. Não dá para confiar em TZ: hospedagens como a Vercel já
+// definem TZ=UTC. Atribuir TZ faz o Node recalcular o fuso: "hoje" e os
+// horários da agenda passam a ser os da estética.
+process.env.TZ = process.env.FUSO_HORARIO || 'America/Sao_Paulo';
 
 const producao = process.env.NODE_ENV === 'production';
 
