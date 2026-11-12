@@ -1,0 +1,18 @@
+# Segredos: chave de serviço do Supabase, senha da sessão etc.
+.env
+.env.*
+!.env.example
+
+# Arquivos locais do CLI do Supabase
+supabase/.temp/
+supabase/.branches/
+
+# Dependências: cada máquina (e a Vercel) instala com npm install.
+# Atenção: a pasta node_modules já está no repositório. Esta linha só evita
+# arquivos novos; para tirá-la do Git é preciso rodar `git rm -r --cached node_modules`.
+node_modules/
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+*.log
