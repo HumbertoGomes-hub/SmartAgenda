@@ -2,11 +2,11 @@
 
 **Vitrine e agenda online para estéticas automotivas, com confirmação de horários pelo WhatsApp.**
 
-O SmartAgenda é uma aplicação web em Node.js que funciona ao mesmo tempo como **site institucional** da estética e como **agenda online**. O cliente escolhe os serviços e marca ou desmarca um horário informando apenas nome e telefone, sem precisar criar conta. Cada pedido é enviado por um robô ao WhatsApp do dono, que aceita, pede reagendamento ou recusa pela própria conversa.
+O SmartAgenda é uma aplicação web em Node.js que funciona ao mesmo tempo como **site institucional** da estética e como **agenda online**. O cliente escolhe os serviços e marca um horário informando apenas nome e telefone, sem precisar criar conta; para desmarcar, ele fala com a estética pelo WhatsApp. Cada pedido é enviado por um robô ao WhatsApp do dono, que aceita, pede reagendamento ou recusa pela própria conversa.
 
 A aplicação é **genérica**: nome, logotipo, cores, serviços e horários são configurados no painel administrativo, de modo que uma nova estética pode entrar em operação sem alterar código.
 
-> **Status:** em especificação (versão 1.0 dos requisitos, 04/11/2026).
+> **Status:** em desenvolvimento. Site, agendamento, painel administrativo e banco no Supabase funcionando. O robô do WhatsApp (RF-09 a RF-13) ainda não foi implementado: até lá, o dono responde aos pedidos pelo painel, que abre a conversa no WhatsApp com a mensagem pronta.
 
 ---
 
@@ -30,7 +30,7 @@ A aplicação é **genérica**: nome, logotipo, cores, serviços e horários sã
 ## Objetivos
 
 - Divulgar os serviços e os trabalhos realizados, com fotos e textos próprios.
-- Permitir que o cliente agende e cancele horários pela web, sem criar conta.
+- Permitir que o cliente agende horários pela web, sem criar conta.
 - Avisar o dono pelo WhatsApp a cada novo pedido e permitir a resposta pela própria conversa.
 - Confirmar o agendamento ao cliente pelo WhatsApp.
 - Evitar horários em conflito, com a agenda atualizada a cada resposta.
@@ -47,7 +47,7 @@ A aplicação é **genérica**: nome, logotipo, cores, serviços e horários sã
 - Calendário de horários livres, calculado pela configuração da agenda e pela duração dos serviços escolhidos.
 - Solicitação de agendamento com nome, telefone e, opcionalmente, modelo do veículo e observações.
 - Validação do telefone junto ao provedor de WhatsApp antes de gravar o pedido.
-- Cancelamento pelo cliente informando telefone e código do agendamento.
+- Para desmarcar, o cliente fala com a estética pelo WhatsApp; a estética cancela ou remarca pelo painel.
 - Agenda atualizada a cada mudança de status, liberando horários recusados, expirados ou cancelados.
 
 ### Notificações via WhatsApp
@@ -78,10 +78,10 @@ stateDiagram-v2
     Pendente --> AguardandoCliente: dono propõe novo horário
     Pendente --> Recusado: dono recusa
     Pendente --> Expirado: sem resposta em 12 h
-    Pendente --> Cancelado: cliente cancela
+    Pendente --> Cancelado: estética cancela
     AguardandoCliente --> Confirmado: cliente aceita
     AguardandoCliente --> Cancelado: cliente recusa ou não responde
-    Confirmado --> Cancelado: cliente cancela (até 2 h antes)
+    Confirmado --> Cancelado: estética cancela (cliente pediu pelo WhatsApp)
     Confirmado --> Concluido: atendimento realizado
     Confirmado --> NaoCompareceu: cliente faltou
     Recusado --> [*]
@@ -105,7 +105,7 @@ Status possíveis: Pendente, Aguardando cliente, Confirmado, Recusado, Expirado,
 | Configurar agenda e vitrine | ✅ | ❌ | ❌ |
 | Gerenciar usuários | ✅ | ❌ | ❌ |
 
-O **cliente** não tem login: acessa apenas o site público (vitrine, agendamento e cancelamento).
+O **cliente** não tem login: acessa apenas o site público (vitrine e agendamento).
 
 ## Principais regras de negócio
 
@@ -118,7 +118,7 @@ O **cliente** não tem login: acessa apenas o site público (vitrine, agendament
 | Antecedência | Mínimo de 2 horas e máximo de 30 dias (configurável). |
 | Prazo de resposta | Pedido pendente sem resposta em 12 horas expira e libera o horário (configurável). |
 | Limite por telefone | Máximo de 2 agendamentos ativos por telefone. |
-| Cancelamento | Pelo cliente, até 2 horas antes do horário (configurável). |
+| Cancelamento | O cliente pede pelo WhatsApp; a estética cancela ou remarca pelo painel. |
 | Preço | O valor da vitrine é "a partir de"; o final é definido após avaliar o veículo. |
 | Usuários | Somente o dono gerencia usuários, e sempre deve existir ao menos um dono ativo. |
 
@@ -153,13 +153,10 @@ Principais classes: `Empresa`, `ConfiguracaoAgenda`, `BloqueioAgenda`, `Servico`
 
 ## Primeiros passos
 
-> Os comandos abaixo seguem o padrão de um projeto Node.js/Express e servem de guia enquanto o código é desenvolvido. Ajuste-os conforme o projeto evoluir.
-
 ### Pré-requisitos
 
-- Node.js (versão LTS) e npm
-- Um projeto no Supabase (banco PostgreSQL e um bucket no Storage para as fotos)
-- Acesso a uma API autorizada de WhatsApp
+- Node.js 22 ou mais novo e npm
+- Um projeto no Supabase (o bucket de fotos é criado pelas migrações)
 
 ### Instalação
 
@@ -167,23 +164,33 @@ Principais classes: `Empresa`, `ConfiguracaoAgenda`, `BloqueioAgenda`, `Servico`
 git clone <url-do-repositorio> smartagenda
 cd smartagenda
 npm install
-cp .env.example .env   # preencha as variáveis
-npm run dev
+cp .env.example .env   # preencha as variáveis (o .env nunca vai para o Git)
+npx supabase db push --remote=<id-do-projeto>   # aplica supabase/migrations no banco
+npm run criar-dono     # uma vez: cria a empresa e o primeiro acesso ao painel
+npm run dev            # site em http://localhost:3000, painel em /admin/entrar.html
 ```
 
-### Variáveis de ambiente (sugestão)
+Testes: `npm test`.
+
+### Variáveis de ambiente
 
 Conforme o RNF-12, uma nova estética entra em operação alterando apenas dados no painel e variáveis de ambiente:
 
 | Variável | Uso |
 |---|---|
-| `PORT` | Porta do servidor HTTP |
+| `SESSION_SECRET` | Segredo para assinar a sessão do painel (pelo menos 32 caracteres em produção) |
 | `SUPABASE_URL` | URL do projeto Supabase |
 | `SUPABASE_SERVICE_KEY` | Chave de serviço do Supabase (somente no servidor) |
-| `SUPABASE_BUCKET` | Bucket do Storage para as fotos do portfólio |
-| `WHATSAPP_API_URL` | Endereço da API de WhatsApp |
-| `WHATSAPP_API_TOKEN` | Token de acesso à API de WhatsApp |
-| `SESSION_SECRET` | Segredo para assinar a sessão do painel |
+| `SUPABASE_BUCKET` | Bucket do Storage para as fotos (`portfolio`) |
+| `FUSO_HORARIO` | Fuso da estética, por exemplo `America/Sao_Paulo` |
+| `NODE_ENV` | `production` no servidor publicado |
+| `PORT` | Porta do servidor HTTP (só local) |
+| `WHATSAPP_API_URL` | Endereço da API de WhatsApp (robô, ainda não usado) |
+| `WHATSAPP_API_TOKEN` | Token de acesso à API de WhatsApp (robô, ainda não usado) |
+
+### Publicação na Vercel
+
+O projeto já vem configurado (`vercel.json` e `api/index.js`): as páginas saem de `public/` e as rotas `/api` rodam como função. Basta importar o repositório na Vercel com o preset **Other** e cadastrar as variáveis acima em *Settings > Environment Variables*.
 
 ## Documentação
 

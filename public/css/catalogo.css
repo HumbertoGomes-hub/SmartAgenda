@@ -591,8 +591,3 @@
     grid-column: 1 / -1;
   }
 }
-
-/* Desenhos de exemplo aparecem inteiros (fica por último para valer). */
-.catalogo-pagina img.ilustracao {
-  object-fit: contain;
-}

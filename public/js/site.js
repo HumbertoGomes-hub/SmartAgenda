@@ -368,6 +368,14 @@
       }
     });
 
+    // Grupo sem nenhum item visível (ex.: "Contato" sem telefone nem Instagram) some inteiro.
+    document.querySelectorAll('[data-empresa-grupo]').forEach(function (grupo) {
+      var visiveis = Array.prototype.filter.call(grupo.querySelectorAll('li'), function (item) {
+        return !item.hidden;
+      });
+      grupo.hidden = visiveis.length === 0;
+    });
+
     if (empresa.logotipoUrl) {
       document.querySelectorAll('img[data-empresa-logo]').forEach(function (img) {
         img.src = empresa.logotipoUrl;

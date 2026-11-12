@@ -5,6 +5,7 @@
  */
 'use strict';
 
+const path = require('node:path');
 const { ErroHttp } = require('../util/erros');
 
 function naoEncontrado(req, res, next) {
@@ -46,6 +47,8 @@ function tratarErros(erro, req, res, next) {
 
   if (req.path.startsWith('/api/')) {
     res.status(status).json({ erro: { codigo, mensagem } });
+  } else if (status === 404 && req.method === 'GET') {
+    res.status(404).sendFile(path.join(__dirname, '..', '..', 'public', '404.html'));
   } else {
     res.status(status).type('text/plain').send(mensagem);
   }

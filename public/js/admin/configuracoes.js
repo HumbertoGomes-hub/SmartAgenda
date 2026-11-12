@@ -135,8 +135,12 @@
     document.getElementById('antecedencia').value = a.antecedenciaMinimaHoras;
     document.getElementById('limite-dias').value = a.limiteDiasFuturos;
     document.getElementById('prazo-resposta').value = a.prazoRespostaHoras;
-    document.getElementById('prazo-cancelamento').value = a.prazoCancelamentoHoras;
+    // O cliente desmarca falando com a estética pelo WhatsApp; o prazo
+    // guardado no banco segue como está (a rota pede todos os campos).
+    prazoCancelamentoHoras = a.prazoCancelamentoHoras;
   }
+
+  var prazoCancelamentoHoras = 2;
 
   formAgenda.addEventListener('submit', function (evento) {
     evento.preventDefault();
@@ -159,7 +163,7 @@
       antecedenciaMinimaHoras: numero('antecedencia'),
       limiteDiasFuturos: numero('limite-dias'),
       prazoRespostaHoras: numero('prazo-resposta'),
-      prazoCancelamentoHoras: numero('prazo-cancelamento'),
+      prazoCancelamentoHoras: prazoCancelamentoHoras,
     };
 
     var ok = [
@@ -170,7 +174,6 @@
       marcar('antecedencia', inteiroEntre(dados.antecedenciaMinimaHoras, 0, 168) ? '' : 'De 0 a 168 horas.'),
       marcar('limite-dias', inteiroEntre(dados.limiteDiasFuturos, 1, 365) ? '' : 'De 1 a 365 dias.'),
       marcar('prazo-resposta', inteiroEntre(dados.prazoRespostaHoras, 1, 168) ? '' : 'De 1 a 168 horas.'),
-      marcar('prazo-cancelamento', inteiroEntre(dados.prazoCancelamentoHoras, 0, 168) ? '' : 'De 0 a 168 horas.'),
     ];
     if (ok.indexOf(false) !== -1) {
       var primeiro = formAgenda.querySelector('[aria-invalid="true"]');

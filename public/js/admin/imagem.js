@@ -55,15 +55,11 @@
       });
   }
 
-  // Caminhos dos dados de exemplo são relativos a public/; o painel está em public/admin/.
+  // Fotos vêm do Storage (endereço completo); caminho relativo é de public/,
+  // e o painel está em public/admin/.
   function urlDaFoto(url) {
     return /^(data:|blob:|https?:|\/)/.test(url) ? url : '../' + url;
   }
 
-  // Desenhos de exemplo (.svg) aparecem inteiros; fotos preenchem o quadro.
-  function ehIlustracao(url) {
-    return /\.svg($|\?)/.test(url);
-  }
-
-  window.SmartAgendaImagem = { preparar: preparar, urlDaFoto: urlDaFoto, ehIlustracao: ehIlustracao };
+  window.SmartAgendaImagem = { preparar: preparar, urlDaFoto: urlDaFoto };
 })();

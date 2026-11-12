@@ -40,15 +40,11 @@
     return new Date(partes[0], partes[1] - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   }
 
-  // Desenhos de exemplo aparecem inteiros; fotos de verdade preenchem o quadro.
   function imagem(url, alternativo, classe) {
     var img = el('img', classe);
     img.src = url;
     img.alt = alternativo;
     img.decoding = 'async';
-    if (/\.svg($|\?)/.test(url)) {
-      img.classList.add('ilustracao');
-    }
     return img;
   }
 

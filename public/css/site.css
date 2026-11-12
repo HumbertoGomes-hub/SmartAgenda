@@ -1866,15 +1866,6 @@ textarea {
 }
 
 /* ==========================================================================
-   Ilustrações de exemplo
-   Fica depois dos componentes de foto para vencer o object-fit: cover deles.
-   Desenhos aparecem inteiros; fotos reais preenchem o quadro.
-   ========================================================================== */
-img.ilustracao {
-  object-fit: contain;
-}
-
-/* ==========================================================================
    Movimento reduzido
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {

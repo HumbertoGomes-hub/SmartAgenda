@@ -51,9 +51,6 @@
 
   function miniatura(url, alternativo, classe) {
     var img = el('img', { classe: classe, atributos: { src: Imagem.urlDaFoto(url), alt: alternativo, loading: 'lazy' } });
-    if (Imagem.ehIlustracao(url)) {
-      img.classList.add('ilustracao');
-    }
     return img;
   }
 

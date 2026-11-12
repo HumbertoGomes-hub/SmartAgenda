@@ -569,6 +569,16 @@
 
   function montarOpcoes(servicos) {
     var area = document.getElementById('opcoes-servicos');
+    if (!servicos.length) {
+      // Sem serviço para escolher, o passo explica em vez de ficar em branco.
+      var aviso = document.createElement('p');
+      aviso.className = 'aviso-vitrine';
+      aviso.textContent = 'O agendamento pelo site ainda não tem serviços disponíveis. Fale com a estética pelo WhatsApp para marcar.';
+      area.replaceChildren(aviso);
+      area.removeAttribute('aria-busy');
+      botaoAvancar.hidden = true;
+      return;
+    }
     var categorias = [];
     servicos.forEach(function (s) {
       if (categorias.indexOf(s.categoria) === -1) {
