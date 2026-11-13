@@ -587,7 +587,8 @@
           dialogo.close();
           Aviso.mostrar('Alterações de ' + salvo.titulo + ' salvas.');
         }
-        return carregar();
+        // Sem esperar a lista: o botão fica livre para o próximo cadastro.
+        carregar();
       })
       .catch(function (erro) {
         falhou(erro, alerta);

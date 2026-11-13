@@ -1,0 +1,6 @@
+# Fica fora do envio pela linha de comando (vercel deploy).
+# As variáveis de produção estão cadastradas na própria Vercel.
+.env
+.env.*
+supabase/.temp/
+node_modules/

@@ -355,7 +355,8 @@
       .then(function (salvo) {
         dialogo.close();
         Aviso.mostrar(novo ? salvo.nome + ' foi criado.' : 'Alterações de ' + salvo.nome + ' salvas.');
-        return carregar();
+        // Sem esperar a lista: o botão fica livre para o próximo cadastro.
+        carregar();
       })
       .catch(function (erro) {
         alerta.textContent = erro.message || 'Não foi possível salvar. Tente de novo.';

@@ -728,18 +728,21 @@
     }
   });
 
-  // Executa uma ação da API com o botão ocupado; ao terminar, recarrega a agenda.
+  // Executa uma ação da API com o botão ocupado; ao terminar, libera o botão
+  // e recarrega a agenda (sem esperar, para o botão não ficar preso).
   function executar(botao, promessa, depois, alerta) {
     var texto = botao.textContent;
     botao.setAttribute('aria-busy', 'true');
     botao.textContent = texto + '…';
     return promessa
       .then(function (resultado) {
+        botao.removeAttribute('aria-busy');
+        botao.textContent = texto;
         document.querySelectorAll('dialog[open]').forEach(function (d) {
           d.close();
         });
         depois(resultado);
-        return carregar();
+        carregar();
       })
       .catch(function (erro) {
         botao.removeAttribute('aria-busy');

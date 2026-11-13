@@ -275,7 +275,8 @@
             ? salvo.nome + ' foi cadastrado como ' + ROTULOS[salvo.perfil].toLowerCase() + '. Passe o e-mail e a senha para a pessoa.'
             : 'Alterações de ' + salvo.nome + ' salvas.',
         );
-        return carregar();
+        // Sem esperar a lista: o botão fica livre para o próximo cadastro.
+        carregar();
       })
       .catch(function (erro) {
         if (erro.codigo === 'EMAIL_EM_USO') {
