@@ -6,8 +6,8 @@
  * foto é só texto; trabalho sem foto vira um cartão de texto; sem capa, a
  * abertura fica só com o nome e a descrição.
  *
- * Enquanto o painel não tem nenhum serviço (ou nenhum trabalho publicado),
- * o site mostra os exemplos de js/exemplos.js, com o selo "Exemplo".
+ * Enquanto o painel não tem nenhum trabalho publicado, o site mostra os
+ * trabalhos de exemplo de js/exemplos.js, com o selo "Exemplo".
  *
  * Cada página diz o que montar em <body data-pagina="...">.
  */
@@ -148,7 +148,7 @@
     var preco = el('p', 'servico__preco');
     preco.append(el('small', '', 'a partir de'), ' ', el('strong', '', formatar.preco(servico.precoBase)));
     var agendar = el('a', 'botao botao--contorno', 'Agendar');
-    agendar.href = servico.exemplo ? 'agendar.html' : 'agendar.html?servico=' + servico.id;
+    agendar.href = 'agendar.html?servico=' + servico.id;
     agendar.setAttribute('aria-label', 'Agendar ' + servico.nome);
 
     artigo.append(texto, el('span', 'etiqueta', formatar.duracao(servico.duracaoMinutos)), preco, agendar);
@@ -227,7 +227,12 @@
 
     API.servicos()
       .then(function (r) {
-        areaServicos.replaceChildren(listaDeServicos(ouExemplos(r.servicos, Exemplos.servicos).slice(0, 3)));
+        if (!r.servicos.length) {
+          // Sem serviço cadastrado, a seção inteira some (sem título solto).
+          areaServicos.closest('section').hidden = true;
+          return;
+        }
+        areaServicos.replaceChildren(listaDeServicos(r.servicos.slice(0, 3)));
         pronto(areaServicos);
       })
       .catch(function () {
@@ -266,7 +271,11 @@
     var area = document.getElementById('catalogo');
     API.servicos()
       .then(function (r) {
-        var servicos = ouExemplos(r.servicos, Exemplos.servicos);
+        if (!r.servicos.length) {
+          avisoDeFalha(area, 'Os serviços da estética aparecem aqui em breve.');
+          return;
+        }
+        var servicos = r.servicos;
         var categorias = [];
         servicos.forEach(function (s) {
           if (categorias.indexOf(s.categoria) === -1) {
