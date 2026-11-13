@@ -6,6 +6,9 @@
  * foto é só texto; trabalho sem foto vira um cartão de texto; sem capa, a
  * abertura fica só com o nome e a descrição.
  *
+ * Enquanto o painel não tem nenhum serviço (ou nenhum trabalho publicado),
+ * o site mostra os exemplos de js/exemplos.js, com o selo "Exemplo".
+ *
  * Cada página diz o que montar em <body data-pagina="...">.
  */
 (function () {
@@ -14,6 +17,7 @@
   var API = window.SmartAgendaAPI;
   var Site = window.SmartAgendaSite;
   var formatar = Site.formatar;
+  var Exemplos = window.SmartAgendaExemplos;
 
   var ICONE_ALCA =
     '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M8.5 6 3.5 11l5 5M13.5 6l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -40,12 +44,30 @@
     return new Date(partes[0], partes[1] - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   }
 
+  // Desenhos de exemplo (.svg) aparecem inteiros; fotos preenchem o quadro.
   function imagem(url, alternativo, classe) {
     var img = el('img', classe);
     img.src = url;
     img.alt = alternativo;
     img.decoding = 'async';
+    if (/\.svg($|\?)/.test(url)) {
+      img.classList.add('ilustracao');
+    }
     return img;
+  }
+
+  // Título com o selo "Exemplo" quando o item é de exemplo.
+  function titulo(tag, item, texto) {
+    var no = el(tag, '', texto);
+    if (item.exemplo) {
+      no.append(' ', el('span', 'selo-exemplo', 'Exemplo'));
+    }
+    return no;
+  }
+
+  // Lista do painel ou, se estiver vazia, os exemplos.
+  function ouExemplos(lista, exemplos) {
+    return lista.length ? lista : exemplos();
   }
 
   function fotoDoTipo(trabalho, tipo) {
@@ -123,14 +145,14 @@
       artigo.append(foto);
     }
     var texto = el('div', 'servico__texto');
-    texto.append(el('h3', '', servico.nome));
+    texto.append(titulo('h3', servico, servico.nome));
     if (servico.descricao) {
       texto.append(el('p', '', servico.descricao));
     }
     var preco = el('p', 'servico__preco');
     preco.append(el('small', '', 'a partir de'), ' ', el('strong', '', formatar.preco(servico.precoBase)));
     var agendar = el('a', 'botao botao--contorno', 'Agendar');
-    agendar.href = 'agendar.html?servico=' + servico.id;
+    agendar.href = servico.exemplo ? 'agendar.html' : 'agendar.html?servico=' + servico.id;
     agendar.setAttribute('aria-label', 'Agendar ' + servico.nome);
 
     artigo.append(texto, el('span', 'etiqueta', formatar.duracao(servico.duracaoMinutos)), preco, agendar);
@@ -153,7 +175,7 @@
     var link = el('a', 'trabalho');
     link.href = 'trabalho.html?id=' + trabalho.id;
     var foto = fotoPrincipal(trabalho);
-    var titulo = el('h3', '', trabalho.titulo);
+    var cabecalho = titulo('h3', trabalho, trabalho.titulo);
     var texto = meta(trabalho);
     var linhaMeta = texto ? el('p', 'trabalho__meta', maiuscula(texto)) : null;
 
@@ -162,11 +184,11 @@
       var img = imagem(foto.url, textoAlternativo(trabalho, foto));
       img.loading = 'lazy';
       quadro.append(img);
-      link.append(quadro, titulo);
+      link.append(quadro, cabecalho);
     } else {
       // Sem foto: o cartão é só texto, sem quadro vazio.
       link.classList.add('trabalho--sem-foto');
-      link.append(titulo);
+      link.append(cabecalho);
       if (trabalho.descricao) {
         link.append(el('p', 'trabalho__resumo', trabalho.descricao));
       }
@@ -209,12 +231,7 @@
 
     API.servicos()
       .then(function (r) {
-        if (!r.servicos.length) {
-          // Sem serviço cadastrado, a seção inteira some (sem título solto).
-          areaServicos.closest('section').hidden = true;
-          return;
-        }
-        areaServicos.replaceChildren(listaDeServicos(r.servicos.slice(0, 3)));
+        areaServicos.replaceChildren(listaDeServicos(ouExemplos(r.servicos, Exemplos.servicos).slice(0, 3)));
         pronto(areaServicos);
       })
       .catch(function () {
@@ -222,12 +239,13 @@
       });
 
     API.portfolio().then(function (r) {
-      var naCapa = r.trabalhos.filter(function (t) {
+      var trabalhos = ouExemplos(r.trabalhos, Exemplos.trabalhos);
+      var naCapa = trabalhos.filter(function (t) {
         return t.naCapa && temComparador(t);
       })[0];
       if (naCapa) {
         var legenda = el('figcaption', 'comparador__legenda');
-        var verTrabalho = el('a', 'ligacao', naCapa.titulo);
+        var verTrabalho = el('a', 'ligacao', (naCapa.exemplo ? 'Exemplo: ' : '') + naCapa.titulo);
         verTrabalho.href = 'trabalho.html?id=' + naCapa.id;
         var verMais = el('a', 'ligacao', 'Ver mais trabalhos');
         verMais.href = 'portfolio.html';
@@ -238,7 +256,7 @@
         Site.iniciarComparador(figura);
       }
 
-      var destaques = r.trabalhos.filter(function (t) {
+      var destaques = trabalhos.filter(function (t) {
         return t.emDestaque;
       });
       if (destaques.length) {
@@ -252,12 +270,9 @@
     var area = document.getElementById('catalogo');
     API.servicos()
       .then(function (r) {
-        if (!r.servicos.length) {
-          avisoDeFalha(area, 'Os serviços da estética aparecem aqui em breve.');
-          return;
-        }
+        var servicos = ouExemplos(r.servicos, Exemplos.servicos);
         var categorias = [];
-        r.servicos.forEach(function (s) {
+        servicos.forEach(function (s) {
           if (categorias.indexOf(s.categoria) === -1) {
             categorias.push(s.categoria);
           }
@@ -269,7 +284,7 @@
             secao.append(
               el('h2', '', categoria),
               listaDeServicos(
-                r.servicos.filter(function (s) {
+                servicos.filter(function (s) {
                   return s.categoria === categoria;
                 }),
               ),
@@ -288,11 +303,7 @@
     var area = document.getElementById('galeria-portfolio');
     API.portfolio()
       .then(function (r) {
-        if (!r.trabalhos.length) {
-          avisoDeFalha(area, 'Os trabalhos da estética aparecem aqui em breve.');
-          return;
-        }
-        area.replaceChildren(galeria(r.trabalhos));
+        area.replaceChildren(galeria(ouExemplos(r.trabalhos, Exemplos.trabalhos)));
         pronto(area);
       })
       .catch(function () {
@@ -304,10 +315,18 @@
     var id = new URLSearchParams(location.search).get('id');
     var area = document.getElementById('obra');
 
-    API.trabalho(id)
+    var busca = Exemplos.ehExemplo(id)
+      ? new Promise(function (resolver, falhar) {
+        var exemplo = Exemplos.trabalho(id);
+        return exemplo ? resolver(exemplo) : falhar(new Error('não encontrado'));
+      })
+      : API.trabalho(id);
+
+    busca
       .then(function (t) {
         Site.definirTitulo(t.titulo);
-        document.getElementById('trabalho-titulo').textContent = t.titulo;
+        var cabecalho = document.getElementById('trabalho-titulo');
+        cabecalho.replaceChildren.apply(cabecalho, Array.prototype.slice.call(titulo('h1', t, t.titulo).childNodes));
 
         var visual = el('div', 'obra__visual');
         var extras = t.fotos.filter(function (f) {
@@ -361,7 +380,7 @@
           texto.append(ficha);
         }
         var agendar = el('a', 'botao', t.servico ? 'Agendar este serviço' : 'Agendar horário');
-        agendar.href = 'agendar.html' + (t.servico ? '?servico=' + t.servico.id : '');
+        agendar.href = 'agendar.html' + (t.servico && !t.exemplo ? '?servico=' + t.servico.id : '');
         texto.append(agendar);
 
         // Sem nenhuma foto, o texto ocupa a largura toda.
