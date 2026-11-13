@@ -342,7 +342,7 @@
     var digitos = telefone.replace(/\D/g, '');
     var valores = {
       nome: nomeDaEmpresa,
-      descricao: empresa.descricao || '',
+      descricao: empresa.descricao || 'Estética automotiva com agendamento online: escolha o serviço, veja os horários livres e marque sem criar conta.',
       endereco: empresa.endereco || '',
       horario: horarioTexto(empresa.horario),
       telefone: telefoneTexto(telefone),
