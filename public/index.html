@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#05070b" />
+    <meta name="color-scheme" content="dark" />
     <title>Agende seu horário</title>
     <meta name="description" content="Lavagem detalhada, polimento e proteção de pintura. Veja os serviços e agende seu horário pelo site." />
     <meta property="og:type" content="website" />
@@ -12,15 +13,17 @@
     <meta property="og:description" content="Lavagem detalhada, polimento e proteção de pintura. Veja os serviços e agende seu horário pelo site." />
     <meta name="twitter:card" content="summary" />
     <link rel="icon" href="img/favicon.svg" type="image/svg+xml" data-empresa-icone />
-    <link rel="preconnect" href="https://api.fontshare.com" />
-    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+    <link rel="preload" href="fontes/michroma-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="fontes/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/site.css" />
+    <link rel="stylesheet" href="css/tema.css" />
     <script src="js/api.js" defer></script>
     <script src="js/site.js" defer></script>
+    <script src="js/efeitos.js" defer></script>
     <script src="js/exemplos.js" defer></script>
     <script src="js/vitrine.js" defer></script>
+    <script type="module" src="js/aro3d.js"></script>
   </head>
   <body data-pagina="inicio">
     <a class="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
@@ -54,15 +57,36 @@
 
     <main id="conteudo">
       <section class="abertura">
-        <div class="conteudo">
-          <h1 class="abertura__nome" data-empresa="nome">&nbsp;</h1>
-          <div class="abertura__apoio">
-            <p data-empresa="descricao" data-empresa-se="descricao"></p>
-            <a class="botao botao--grande" href="agendar.html">Agendar horário</a>
+        <div class="conteudo abertura__grade">
+          <div class="abertura__texto">
+            <h1 class="abertura__nome" data-empresa="nome">&nbsp;</h1>
+            <div class="abertura__apoio">
+              <p data-empresa="descricao" data-empresa-se="descricao"></p>
+              <div class="abertura__acoes">
+                <a class="botao botao--grande" href="agendar.html">Agendar horário</a>
+                <a class="botao botao--grande botao--contorno" href="portfolio.html">Ver trabalhos</a>
+              </div>
+            </div>
           </div>
-          <!-- Comparador antes/depois do trabalho escolhido como capa no painel.
-               Sem capa, a abertura fica só com o nome e a descrição. -->
-          <figure id="capa" class="abertura__capa" hidden></figure>
+          <!-- Aro 3D (js/aro3d.js). A imagem é a mesma roda parada: aparece
+               enquanto o 3D carrega e fica no lugar dele em aparelhos fracos,
+               sem WebGL ou para quem pede menos movimento. -->
+          <div class="abertura__palco" aria-hidden="true">
+            <img class="abertura__aro" src="img/aro-3d.webp" alt="" width="900" height="900" fetchpriority="high" />
+            <canvas id="aro-3d"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Comparador antes/depois do trabalho escolhido como capa no painel.
+           Sem capa, a seção inteira some. -->
+      <section id="capa" class="secao capa" aria-labelledby="titulo-capa" hidden>
+        <div class="conteudo">
+          <div class="secao__topo">
+            <h2 id="titulo-capa">Antes e depois</h2>
+            <p class="capa__dica">Arraste a linha para comparar.</p>
+          </div>
+          <figure id="capa-comparador"></figure>
         </div>
       </section>
 
@@ -105,24 +129,8 @@
       </section>
 
       <section class="passos-faixa secao" aria-labelledby="titulo-como">
-        <div class="passos-faixa__roda" aria-hidden="true" data-paralaxe>
-          <svg viewBox="-100 -100 200 200" fill="none" stroke="currentColor">
-            <defs>
-              <pattern id="roda-hachura" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                <rect width="1.2" height="6" fill="currentColor" stroke="none" />
-              </pattern>
-            </defs>
-            <path d="M0-97a97 97 0 1 1 0 194a97 97 0 1 1 0-194M0-70a70 70 0 1 0 0 140a70 70 0 1 0 0-140" fill="url(#roda-hachura)" fill-rule="evenodd" stroke-width="1.5" />
-            <circle r="64" stroke-width="1.5" />
-            <circle r="14" stroke-width="1.5" />
-            <g stroke-width="1.5">
-              <path d="M-5-14 -9-63M5-14 9-63" />
-              <path d="M-5-14 -9-63M5-14 9-63" transform="rotate(72)" />
-              <path d="M-5-14 -9-63M5-14 9-63" transform="rotate(144)" />
-              <path d="M-5-14 -9-63M5-14 9-63" transform="rotate(216)" />
-              <path d="M-5-14 -9-63M5-14 9-63" transform="rotate(288)" />
-            </g>
-          </svg>
+        <div class="passos-faixa__foto" aria-hidden="true" data-paralaxe>
+          <img src="img/fotos/silhueta-esportivo.webp" alt="" width="1024" height="683" loading="lazy" decoding="async" />
         </div>
         <div class="conteudo passos-faixa__grade">
           <div>

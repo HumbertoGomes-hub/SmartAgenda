@@ -321,6 +321,12 @@
       return; // sem cor configurada: fica a do tokens.css
     }
     var l = luminancia(cor);
+    // No tema escuro (tema.css), cor quase preta sumiria no fundo: fica o azul do tema.
+    var temaEscuro = getComputedStyle(document.documentElement).getPropertyValue('--tema').trim() === 'escuro';
+    if (temaEscuro && l < 0.05) {
+      return;
+    }
+    document.documentElement.style.setProperty('--marca-2', cor);
     var textoBranco = 1.05 / (l + 0.05) >= (l + 0.05) / (luminancia('#1f1f1f') + 0.05);
     document.documentElement.style.setProperty('--marca', cor);
     document.documentElement.style.setProperty('--marca-texto', textoBranco ? '#ffffff' : '#1f1f1f');
@@ -376,11 +382,12 @@
       grupo.hidden = visiveis.length === 0;
     });
 
+    // Sem logotipo cadastrado no painel, a marca usa o logotipo padrão.
+    document.querySelectorAll('img[data-empresa-logo]').forEach(function (img) {
+      img.src = empresa.logotipoUrl || '/img/logotipo-padrao.svg';
+      img.hidden = false;
+    });
     if (empresa.logotipoUrl) {
-      document.querySelectorAll('img[data-empresa-logo]').forEach(function (img) {
-        img.src = empresa.logotipoUrl;
-        img.hidden = false;
-      });
       var icone = document.querySelector('link[data-empresa-icone]');
       if (icone) {
         icone.href = empresa.logotipoUrl;

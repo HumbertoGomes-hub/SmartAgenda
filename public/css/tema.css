@@ -1,0 +1,730 @@
+/*
+ * Tema do site público: noite, cromo e azul elétrico.
+ *
+ * Carregado só nas páginas públicas, depois de tokens.css e site.css. O painel
+ * (public/admin/) não carrega este arquivo e continua claro.
+ *
+ * Primeiro redefine os tokens (o site.css inteiro passa a usar a paleta
+ * escura); depois ajusta os componentes que pedem tratamento próprio.
+ *
+ * Fontes no próprio projeto (public/fontes/, licença SIL OFL):
+ *   Michroma ........ títulos e nome da estética (larga, de letreiro automotivo)
+ *   Instrument Sans . texto e interface
+ */
+
+@font-face {
+  font-family: 'Michroma';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fontes/michroma-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
+  font-display: swap;
+  src: url('../fontes/instrument-sans-latin.woff2') format('woff2');
+}
+
+:root {
+  /* Lido por site.js: a cor da estética não pode ser quase preta neste tema. */
+  --tema: escuro;
+  color-scheme: dark;
+
+  /* Paleta */
+  --noite: #05070b;
+  --grafite: #0c1016;
+  --grafite-alto: #121821;
+  --cromo: #e9edf3;
+  --nevoa: #8f9aaa;
+  --eletrico: #1f66f0;
+  --ciano: #36cfff;
+
+  /* Papéis do site.css, agora no escuro */
+  --branco: var(--noite);
+  --tinta: var(--cromo);
+  --creme: var(--grafite);
+  --cinza: var(--grafite-alto);
+  --texto-suave: var(--nevoa);
+  --borda: rgb(200 215 255 / 0.1);
+  --borda-forte: rgb(200 215 255 / 0.22);
+  --sobre-marca-suave: #a9b4c4;
+  --erro: #ff7a6b;
+  --erro-fundo: rgb(255 90 70 / 0.12);
+  --hachura: repeating-linear-gradient(135deg, transparent 0 4px, rgb(200 215 255 / 0.09) 4px 5px);
+
+  /* Identidade: --marca pode vir da cor da estética (site.js) */
+  --marca: var(--eletrico);
+  --marca-2: #1450d0;
+  --marca-texto: #ffffff;
+  --brilho: rgb(54 150 255 / 0.35);
+
+  /* Cromo: reflexo de um horizonte no meio das letras, como emblema de carro */
+  --cromado: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #e4e9f0 34%,
+    #9aa3b0 49%,
+    #5d6573 51%,
+    #c3cad5 70%,
+    #f5f7fa 100%
+  );
+
+  /* Tipografia */
+  --fonte: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fonte-titulo: 'Michroma', 'Instrument Sans', 'Segoe UI', sans-serif;
+  --titulo-p: 1.25rem;
+  --titulo-m: clamp(1.45rem, 1.15rem + 1.3vw, 2.2rem);
+  --titulo-g: clamp(1.85rem, 1.35rem + 2.3vw, 3.2rem);
+  --titulo-abertura: clamp(2.5rem, 1.2rem + 5.4vw, 6.25rem);
+
+  /* Raios mais secos: peça usinada, não brinquedo */
+  --raio-p: 6px;
+  --raio-m: 10px;
+  --raio-g: 18px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+body {
+  background:
+    radial-gradient(1100px 620px at 85% -8%, rgb(31 102 240 / 0.14), transparent 62%),
+    radial-gradient(900px 500px at -10% 30%, rgb(54 207 255 / 0.05), transparent 60%),
+    var(--noite);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgb(31 102 240 / 0.55);
+  color: #ffffff;
+}
+
+h1,
+h2 {
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.01em;
+  line-height: 1.18;
+}
+
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline-color: var(--ciano);
+}
+
+/* ==========================================================================
+   Botões
+   ========================================================================== */
+.botao {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(120 170 255 / 0.45);
+  background: linear-gradient(180deg, var(--marca) 0%, var(--marca-2) 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 8px 24px -10px var(--brilho);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s var(--curva-saida),
+    border-color 0.25s ease;
+}
+
+/* Reflexo que atravessa o botão ao passar o mouse, como luz sobre pintura. */
+.botao::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.28) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.6s var(--curva-saida);
+  pointer-events: none;
+}
+
+.botao:hover {
+  opacity: 1;
+  border-color: rgb(140 190 255 / 0.8);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 12px 32px -10px rgb(54 150 255 / 0.6);
+  transform: translateY(-1px);
+}
+
+.botao:hover::after {
+  transform: translateX(120%);
+}
+
+.botao--contorno {
+  border-color: var(--borda-forte);
+  background: rgb(255 255 255 / 0.03);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  color: var(--cromo);
+  backdrop-filter: blur(6px);
+}
+
+.botao--contorno:hover {
+  border-color: rgb(200 215 255 / 0.5);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
+}
+
+.botao--invertido {
+  border-color: rgb(255 255 255 / 0.8);
+  background: linear-gradient(180deg, #ffffff, #d9dfe8);
+  color: #0a0d12;
+  box-shadow: 0 10px 30px -12px rgb(255 255 255 / 0.35);
+}
+
+.etiqueta {
+  border-color: var(--borda-forte);
+  color: var(--nevoa);
+}
+
+.ligacao {
+  text-decoration-color: rgb(54 207 255 / 0.55);
+}
+
+.ligacao:hover {
+  text-decoration-color: var(--ciano);
+}
+
+/* ==========================================================================
+   Cabeçalho e rodapé
+   ========================================================================== */
+.cabecalho {
+  background: rgb(5 7 11 / 0.55);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .cabecalho {
+    backdrop-filter: saturate(1.4) blur(14px);
+  }
+
+  .cabecalho[data-rolado='true'] {
+    background: rgb(5 7 11 / 0.72);
+  }
+}
+
+.marca {
+  font-family: var(--fonte-titulo);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.navegacao a {
+  color: #c4ccd8;
+  transition: color 0.2s ease;
+}
+
+.navegacao a:hover,
+.navegacao a[aria-current='page'] {
+  color: #ffffff;
+}
+
+.navegacao a:not(.navegacao__whatsapp)::after {
+  background: linear-gradient(90deg, var(--marca), var(--ciano));
+}
+
+@media (min-width: 761px) {
+  .navegacao__whatsapp:hover {
+    border-color: var(--ciano);
+    color: var(--ciano);
+  }
+}
+
+@media (max-width: 760px) {
+  .navegacao {
+    background: rgb(5 7 11 / 0.96);
+  }
+}
+
+.rodape {
+  border-top: 1px solid var(--borda);
+  background: linear-gradient(180deg, var(--grafite), var(--noite));
+}
+
+/* Rótulos das colunas do rodapé: texto de apoio, não título. */
+.rodape__grade h2 {
+  font-family: var(--fonte);
+  letter-spacing: 0;
+}
+
+/* ==========================================================================
+   Abertura: nome cromado e aro 3D
+   ========================================================================== */
+.abertura {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--e6) var(--e7);
+  background:
+    radial-gradient(60% 70% at 78% 55%, rgb(31 102 240 / 0.22), transparent 70%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.02), transparent 40%);
+}
+
+/* Linha de horizonte: o "chão" do estúdio sob a roda. */
+.abertura::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(54 207 255 / 0.5) 60%, transparent);
+}
+
+.abertura__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--e6);
+  min-height: min(78vh, 680px);
+}
+
+.abertura__nome {
+  margin-left: -0.04em;
+  background: var(--cromado);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: var(--titulo-abertura);
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  overflow-wrap: anywhere;
+  filter: drop-shadow(0 2px 18px rgb(31 102 240 / 0.25));
+}
+
+.abertura__apoio {
+  display: block;
+  margin-block: var(--e5) 0;
+}
+
+.abertura__apoio p {
+  max-width: 44ch;
+  color: #c4ccd8;
+}
+
+.abertura__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e3);
+  margin-top: var(--e6);
+}
+
+.abertura__palco {
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 620px;
+  justify-self: end;
+}
+
+/* Brilho azul no chão, embaixo da roda. */
+.abertura__palco::before {
+  content: '';
+  position: absolute;
+  right: 12%;
+  bottom: 9%;
+  left: 12%;
+  height: 12%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(54 150 255 / 0.45), transparent);
+  filter: blur(10px);
+}
+
+.abertura__aro,
+#aro-3d {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#aro-3d {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+/* aro3d.js marca o palco quando o primeiro quadro 3D foi desenhado. */
+.abertura__palco[data-3d='pronto'] #aro-3d {
+  opacity: 1;
+}
+
+.abertura__palco[data-3d='pronto'] .abertura__aro {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+@media (max-width: 860px) {
+  .abertura__grade {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .abertura__palco {
+    order: -1;
+    width: min(100%, 420px);
+    margin: calc(var(--e5) * -1) auto calc(var(--e6) * -1);
+    justify-self: center;
+  }
+}
+
+/* ==========================================================================
+   Antes e depois
+   ========================================================================== */
+.capa {
+  padding-top: var(--e7);
+}
+
+.capa__dica {
+  color: var(--nevoa);
+}
+
+.comparador {
+  border: 1px solid var(--borda);
+  background: var(--grafite);
+  box-shadow: 0 40px 80px -40px rgb(31 102 240 / 0.35);
+}
+
+.comparador__camada--depois,
+.comparador__camada--antes {
+  background: var(--grafite);
+}
+
+.comparador__divisor {
+  width: 2px;
+  background: linear-gradient(180deg, transparent, var(--ciano) 15%, var(--marca) 85%, transparent);
+  box-shadow: 0 0 18px rgb(54 207 255 / 0.7);
+}
+
+.comparador__alca {
+  border: 1px solid rgb(160 200 255 / 0.6);
+  background: linear-gradient(180deg, var(--marca), var(--marca-2));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 0 24px rgb(54 150 255 / 0.6);
+  color: #ffffff;
+}
+
+.comparador__rotulo {
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(5 7 11 / 0.6);
+  backdrop-filter: blur(8px);
+  color: var(--cromo);
+}
+
+.comparador:has(.comparador__controle:focus-visible) .comparador__alca {
+  outline-color: #ffffff;
+}
+
+/* ==========================================================================
+   Informações, seções e cabeçalhos de página
+   ========================================================================== */
+.informacoes {
+  border-bottom: 1px solid var(--borda);
+}
+
+.informacoes dd {
+  color: var(--cromo);
+}
+
+.secao--creme {
+  border-block: 1px solid var(--borda);
+  background: linear-gradient(180deg, var(--grafite), rgb(12 16 22 / 0.4));
+}
+
+.pagina-topo--creme {
+  border-bottom: 1px solid var(--borda);
+  background:
+    radial-gradient(70% 140% at 90% 0%, rgb(31 102 240 / 0.16), transparent 70%),
+    var(--grafite);
+}
+
+.pagina-topo h1,
+.painel-central h1 {
+  letter-spacing: -0.015em;
+}
+
+/* ==========================================================================
+   Serviços
+   ========================================================================== */
+.categoria h2 {
+  color: var(--nevoa);
+}
+
+.servico h3 {
+  color: #ffffff;
+}
+
+.servico__preco strong {
+  font-weight: 600;
+}
+
+.servico__foto {
+  border: 1px solid var(--borda);
+  background: var(--grafite-alto);
+}
+
+/* ==========================================================================
+   Portfólio: cartões que inclinam e refletem a luz (efeitos.js)
+   ========================================================================== */
+.trabalho__foto {
+  --rx: 0deg;
+  --ry: 0deg;
+  --brilho-x: 50%;
+  --brilho-y: 50%;
+  position: relative;
+  border: 1px solid var(--borda);
+  background: var(--grafite);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition:
+    transform 0.6s var(--curva-saida),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.trabalho__foto img {
+  transition: transform 0.8s var(--curva-saida);
+}
+
+.trabalho__foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--brilho-x) var(--brilho-y),
+    rgb(160 205 255 / 0.28),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.trabalho[data-inclinado='true'] .trabalho__foto {
+  border-color: rgb(120 170 255 / 0.4);
+  box-shadow: 0 30px 60px -30px rgb(31 102 240 / 0.55);
+  transition:
+    transform 0.12s linear,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.trabalho[data-inclinado='true'] .trabalho__foto::after {
+  opacity: 1;
+}
+
+.trabalho:hover .trabalho__foto img {
+  transform: scale(1.03);
+}
+
+.trabalho h3 {
+  font-family: var(--fonte);
+  font-weight: 600;
+}
+
+.trabalho--sem-foto {
+  padding: var(--e5);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-g);
+  background: var(--grafite);
+}
+
+.fotos-extras img {
+  border: 1px solid var(--borda);
+  background: var(--grafite);
+}
+
+/* ==========================================================================
+   Como funciona: foto real com paralaxe
+   ========================================================================== */
+.passos-faixa {
+  border-block: 1px solid var(--borda);
+  background: var(--noite);
+  color: var(--cromo);
+}
+
+.passos-faixa__foto {
+  --desloc: 0px;
+  position: absolute;
+  inset: -18% 0;
+  z-index: -1;
+  transform: translate3d(0, var(--desloc), 0);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.passos-faixa__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 30% 60%;
+  /* A foto é quase toda preta: clareia para a silhueta aparecer. */
+  filter: brightness(1.8) contrast(1.15);
+}
+
+/* Escurece onde fica o texto e deixa a silhueta aparecer à esquerda. */
+.passos-faixa__foto::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(5 7 11 / 0.15) 0%, rgb(5 7 11 / 0.5) 30%, rgb(5 7 11 / 0.9) 45%, rgb(5 7 11 / 0.96) 100%),
+    linear-gradient(180deg, var(--noite) 0%, transparent 22%, transparent 78%, var(--noite) 100%);
+}
+
+.passos-faixa li + li {
+  border-top-color: rgb(200 215 255 / 0.12);
+}
+
+.passos-faixa li::before {
+  font-family: var(--fonte-titulo);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  background: linear-gradient(180deg, var(--ciano), var(--marca));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.passos-faixa h3 {
+  font-size: var(--texto-g);
+  line-height: 1.3;
+}
+
+@media (max-width: 860px) {
+  .passos-faixa__foto::after {
+    background:
+      linear-gradient(180deg, var(--noite) 0%, rgb(5 7 11 / 0.7) 30%, rgb(5 7 11 / 0.92) 100%);
+  }
+}
+
+/* ==========================================================================
+   Formulários e agendamento
+   ========================================================================== */
+.campo input,
+.campo textarea {
+  border-color: var(--borda-forte);
+  background: rgb(255 255 255 / 0.03);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.campo input:hover,
+.campo textarea:hover {
+  border-color: rgb(200 215 255 / 0.4);
+}
+
+.campo input:focus,
+.campo textarea:focus {
+  border-color: var(--marca);
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(31 102 240 / 0.3);
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: #5f6a7a;
+}
+
+.consentimento label,
+.horarios__mensagem {
+  border: 1px solid var(--borda);
+}
+
+.opcao {
+  background: rgb(255 255 255 / 0.02);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.opcao:hover {
+  border-color: rgb(200 215 255 / 0.4);
+}
+
+.opcao:has(input:checked),
+.dia[aria-pressed='true'],
+.horario[aria-pressed='true'],
+.etapas li[data-estado='atual']::before,
+.etapas li[data-estado='feita']::before,
+.legenda li:nth-child(3)::before {
+  border-color: rgb(120 170 255 / 0.6);
+  background: linear-gradient(180deg, var(--marca), var(--marca-2));
+  box-shadow: 0 6px 20px -8px var(--brilho);
+}
+
+.dia,
+.horario {
+  transition: border-color 0.15s ease;
+}
+
+.dia:hover:not(:disabled),
+.horario:hover:not(:disabled),
+.calendario__seta:hover:not(:disabled) {
+  border-color: var(--ciano);
+}
+
+.resumo,
+.ficha {
+  border: 1px solid var(--borda);
+  background: linear-gradient(180deg, var(--grafite-alto), var(--grafite));
+}
+
+.fluxo__acoes {
+  background: rgb(5 7 11 / 0.92);
+  backdrop-filter: blur(10px);
+}
+
+/* O código do pedido como placa Mercosul: fundo claro e faixa azul. */
+.placa {
+  border-color: #c9d1dc;
+  background: #f1f3f6;
+  color: #0b0d12;
+  box-shadow: 0 20px 50px -20px rgb(31 102 240 / 0.5);
+}
+
+.placa__faixa {
+  background: linear-gradient(90deg, #1450d0, #1f66f0);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Conteúdo de exemplo
+   ========================================================================== */
+.selo-exemplo {
+  border-color: rgb(54 207 255 / 0.35);
+  color: #9fdcff;
+  font-family: var(--fonte);
+}
+
+/* ==========================================================================
+   Movimento reduzido
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .botao,
+  .botao::after,
+  .trabalho__foto,
+  .trabalho__foto img {
+    transition: none;
+  }
+
+  .botao:hover {
+    transform: none;
+  }
+
+  .trabalho__foto {
+    transform: none;
+  }
+}

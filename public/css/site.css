@@ -1868,13 +1868,7 @@ textarea {
 /* ==========================================================================
    Conteúdo de exemplo (js/exemplos.js)
    Aparece enquanto o painel não tem serviços ou trabalhos próprios.
-   Fica depois dos componentes de foto para vencer o object-fit: cover deles:
-   os desenhos aparecem inteiros.
    ========================================================================== */
-img.ilustracao {
-  object-fit: contain;
-}
-
 .selo-exemplo {
   display: inline-block;
   margin-left: 0.25rem;

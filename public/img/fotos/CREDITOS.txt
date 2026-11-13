@@ -1,0 +1,16 @@
+Fotos de exemplo do site (js/exemplos.js e faixa "Marque sem criar conta").
+
+Todas têm licença CC0 (domínio público): uso livre, inclusive comercial, sem
+atribuição obrigatória. Encontradas pelo Openverse (openverse.org). As
+versões "-antes" foram geradas a partir da foto original, para ilustrar o
+comparador antes/depois.
+
+cupe-estudio.webp ........... rawpixel, "Free luxurious black car image"
+cupe-estudio-frente.webp .... rawpixel, "Free black luxurious car image"
+silhueta-esportivo.webp ..... rawpixel, "Free monotone luxury car image"
+seda-floresta.webp .......... rawpixel, "Free luxury black car park"
+roda-asfalto.webp ........... rawpixel, "Black car chrome rim asphalt"
+lavagem-espuma.webp ......... rawpixel, "Free black car washing image"
+roda-pinca.webp ............. rawpixel, "Black Jaguar car"
+reflexo-pintura.webp ........ rawpixel, Markus Spiske, "Vintage polished oldtimer car"
+frente-preta.webp ........... StockSnap, Rucksack Magazine, "Black Car"

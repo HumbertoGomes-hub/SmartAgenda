@@ -44,15 +44,11 @@
     return new Date(partes[0], partes[1] - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   }
 
-  // Desenhos de exemplo (.svg) aparecem inteiros; fotos preenchem o quadro.
   function imagem(url, alternativo, classe) {
     var img = el('img', classe);
     img.src = url;
     img.alt = alternativo;
     img.decoding = 'async';
-    if (/\.svg($|\?)/.test(url)) {
-      img.classList.add('ilustracao');
-    }
     return img;
   }
 
@@ -251,7 +247,7 @@
         verMais.href = 'portfolio.html';
         legenda.append(verTrabalho, verMais);
         var figura = comparador(naCapa, true);
-        capa.replaceChildren(figura, legenda);
+        document.getElementById('capa-comparador').replaceChildren(figura, legenda);
         capa.hidden = false;
         Site.iniciarComparador(figura);
       }
