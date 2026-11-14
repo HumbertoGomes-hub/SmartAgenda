@@ -1,0 +1,394 @@
+/*
+ * Painel administrativo no tema do site: noite, cromo e azul elétrico.
+ *
+ * Carregado por último nas páginas de public/admin/, depois de tema.css (que
+ * redefine os tokens para o escuro) e das folhas de cada tela. Aqui ficam só
+ * os ajustes que o painel pede: status legíveis no escuro, menu lateral,
+ * blocos que antes eram "tinta sobre branco" e a impressão do relatório,
+ * que volta para o claro para sair bem no papel.
+ */
+
+:root {
+  /* Status do agendamento (RN-16): texto claro sobre fundo translúcido. */
+  --status-pendente: #ffc35c;
+  --status-pendente-fundo: rgb(255 179 64 / 0.13);
+  --status-aguardando: #8ec5ff;
+  --status-aguardando-fundo: rgb(54 150 255 / 0.15);
+  --status-confirmado: #6fe0a0;
+  --status-confirmado-fundo: rgb(60 200 120 / 0.14);
+
+  --vidro: rgb(12 16 22 / 0.72);
+  --sombra-flutuante: 0 24px 64px -12px rgb(0 0 0 / 0.7), 0 0 0 1px var(--borda);
+}
+
+body {
+  background:
+    radial-gradient(900px 520px at 100% -10%, rgb(31 102 240 / 0.12), transparent 60%),
+    var(--noite);
+  background-attachment: fixed;
+}
+
+/* Títulos das telas em Michroma; os de bloco ficam na fonte de texto,
+   que lê melhor em tamanho pequeno. */
+.painel-topo h1,
+.entrar h1 {
+  letter-spacing: -0.01em;
+}
+
+.bloco__topo h2,
+.dialogo h2 {
+  font-family: var(--fonte);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   Menu lateral
+   ========================================================================== */
+.lateral {
+  border-right: 1px solid var(--borda);
+  background: linear-gradient(180deg, var(--grafite-alto), var(--grafite) 40%, var(--noite));
+}
+
+.lateral .marca {
+  font-size: 0.875rem;
+}
+
+.marca__apoio {
+  margin-top: 0.125rem;
+  color: var(--nevoa);
+  font-family: var(--fonte);
+  letter-spacing: 0;
+}
+
+.lateral__alternar {
+  border: 1px solid var(--borda-forte);
+  color: var(--cromo);
+}
+
+.menu-painel__link {
+  color: #c4ccd8;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+a.menu-painel__link:hover {
+  background: rgb(200 215 255 / 0.06);
+  color: #ffffff;
+}
+
+.menu-painel__link[aria-current='page'],
+.menu-painel__link[aria-current='page']:hover {
+  position: relative;
+  background: linear-gradient(90deg, rgb(31 102 240 / 0.28), rgb(31 102 240 / 0.08));
+  box-shadow: inset 0 0 0 1px rgb(120 170 255 / 0.25);
+  color: #ffffff;
+}
+
+/* Filete aceso à esquerda do item atual. */
+.menu-painel__link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, var(--ciano), var(--marca));
+  box-shadow: 0 0 10px rgb(54 207 255 / 0.7);
+}
+
+.menu-painel__breve {
+  border-color: var(--borda-forte);
+  color: var(--nevoa);
+}
+
+.lateral__usuario {
+  border-top: 1px solid var(--borda);
+}
+
+@media (max-width: 900px) {
+  .lateral {
+    border-right: 0;
+    border-bottom: 1px solid var(--borda);
+    background: var(--vidro);
+    backdrop-filter: saturate(1.4) blur(14px);
+  }
+
+  .lateral__gaveta {
+    border-bottom: 1px solid var(--borda);
+    background: rgb(5 7 11 / 0.97);
+  }
+}
+
+/* ==========================================================================
+   Indicadores, listas e blocos
+   ========================================================================== */
+.indicador {
+  border: 1px solid var(--borda);
+  background: linear-gradient(180deg, var(--grafite-alto), var(--grafite));
+}
+
+.indicador[data-destaque='true'] {
+  border-color: rgb(120 170 255 / 0.5);
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(54 207 255 / 0.25), transparent 60%),
+    linear-gradient(160deg, var(--marca), var(--marca-2));
+  box-shadow: 0 18px 40px -20px var(--brilho);
+}
+
+.indicador[data-destaque='true'] .indicador__apoio {
+  color: rgb(255 255 255 / 0.78);
+}
+
+.indicador__numero {
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+}
+
+.lista-agendamentos,
+.linha-agendamento {
+  border-color: var(--borda);
+}
+
+.linha-agendamento[data-agora='true'] {
+  box-shadow: inset 3px 0 0 var(--ciano);
+  background: linear-gradient(90deg, rgb(54 207 255 / 0.06), transparent 40%);
+}
+
+.vazio,
+.aviso,
+.lista-dia__vazio,
+.cliente-fixo {
+  border: 1px solid var(--borda);
+  background: var(--grafite);
+}
+
+.status[data-status='CONCLUIDO'] {
+  color: var(--cromo);
+}
+
+/* ==========================================================================
+   Controles da agenda e dos catálogos
+   ========================================================================== */
+.controle,
+.botao-icone,
+.filtro-servico select,
+.campo select,
+.dia-opcao span,
+.campo .cor-campo input[type='color'],
+.logotipo-previa {
+  border-color: var(--borda-forte);
+  background: rgb(255 255 255 / 0.03);
+}
+
+.controle:hover,
+.botao-icone:hover:not(:disabled),
+.campo-foto__vazio:hover,
+.dia-opcao:hover span {
+  border-color: var(--ciano);
+}
+
+.segmentado {
+  border: 1px solid var(--borda);
+  background: var(--grafite);
+}
+
+.segmentado button {
+  color: var(--nevoa);
+}
+
+.segmentado button[aria-pressed='true'] {
+  background: linear-gradient(180deg, var(--grafite-alto), #1a212c);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 0 1px var(--borda-forte);
+  color: #ffffff;
+}
+
+.dia-opcao input:checked + span,
+.selo--forte {
+  border-color: rgb(120 170 255 / 0.6);
+  background: linear-gradient(180deg, var(--marca), var(--marca-2));
+  color: #ffffff;
+}
+
+.filtro-chip:has(input:checked) {
+  border-color: rgb(120 170 255 / 0.55);
+}
+
+/* Agenda: folha do dia e marcadores que eram "tinta" sólida. */
+.folha {
+  border: 1px solid var(--borda-forte);
+  background: var(--grafite);
+}
+
+.folha__semana,
+.mes__contagem {
+  background: linear-gradient(180deg, var(--marca), var(--marca-2));
+  color: #ffffff;
+}
+
+.grade__cabecalho {
+  background: rgb(5 7 11 / 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.mes__dia[data-fora-do-mes] {
+  background: rgb(255 255 255 / 0.015);
+}
+
+.mes__dia[data-hoje] .mes__numero,
+.grade__dia[data-hoje] .grade__numero {
+  background: linear-gradient(180deg, var(--marca), var(--marca-2));
+  box-shadow: 0 0 14px rgb(54 150 255 / 0.55);
+  color: #ffffff;
+}
+
+/* Horário bloqueado na grade: hachura sobre o fundo escuro. */
+.grade__fechado {
+  background: var(--hachura), rgb(12 16 22 / 0.75);
+}
+
+.evento:hover {
+  filter: brightness(1.18);
+}
+
+.evento[data-status='CONFIRMADO'] {
+  background: linear-gradient(180deg, var(--marca), var(--marca-2));
+}
+
+.servico-opcao:has(input:checked) {
+  background: rgb(31 102 240 / 0.12);
+}
+
+/* Relatório: barras em gradiente aceso. */
+.barra__valor {
+  background: linear-gradient(90deg, var(--marca-2), var(--marca), var(--ciano));
+}
+
+/* ==========================================================================
+   Aviso depois de uma ação e diálogos
+   ========================================================================== */
+.aviso-acao {
+  border: 1px solid var(--borda-forte);
+  background: var(--vidro);
+  backdrop-filter: saturate(1.4) blur(16px);
+  box-shadow: var(--sombra-flutuante);
+  color: var(--cromo);
+}
+
+.aviso-acao .botao-whatsapp {
+  border-color: var(--borda-forte);
+  color: var(--cromo);
+}
+
+.aviso-acao__fechar {
+  color: var(--nevoa);
+}
+
+.aviso-acao__fechar:hover {
+  color: #ffffff;
+}
+
+.dialogo {
+  border: 1px solid var(--borda-forte);
+  background: linear-gradient(180deg, var(--grafite-alto), var(--grafite));
+  box-shadow: var(--sombra-flutuante);
+  color: var(--cromo);
+}
+
+.dialogo::backdrop {
+  background: rgb(2 3 6 / 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.dialogo__fechar {
+  background: rgb(255 255 255 / 0.06);
+  color: var(--cromo);
+}
+
+.botao-perigo--cheio {
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Entrar
+   ========================================================================== */
+.corpo-entrar {
+  background:
+    radial-gradient(700px 420px at 50% 0%, rgb(31 102 240 / 0.22), transparent 70%),
+    radial-gradient(500px 300px at 50% 100%, rgb(54 207 255 / 0.08), transparent 70%),
+    var(--noite);
+}
+
+.entrar__cartao {
+  position: relative;
+  border: 1px solid var(--borda-forte);
+  background: linear-gradient(180deg, rgb(18 24 33 / 0.9), rgb(12 16 22 / 0.9));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 40px 90px -40px rgb(31 102 240 / 0.5);
+  backdrop-filter: blur(12px);
+}
+
+/* Filete cromado no topo do cartão. */
+.entrar__cartao::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 18%;
+  left: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ciano), transparent);
+}
+
+.campo-senha__alternar {
+  color: var(--nevoa);
+}
+
+.campo-senha__alternar:hover {
+  background: rgb(255 255 255 / 0.06);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Impressão (relatório): volta para o claro, que é o que o papel aceita.
+   ========================================================================== */
+@media print {
+  :root {
+    --branco: #ffffff;
+    --tinta: #1f1f1f;
+    --creme: #f6f7ed;
+    --cinza: #f4f4f4;
+    --cromo: #1f1f1f;
+    --texto-suave: #5c5d56;
+    --borda: #e2e3d8;
+    --borda-forte: #c4c5b8;
+    color-scheme: light;
+  }
+
+  body,
+  .indicador,
+  .indicador[data-destaque='true'] {
+    background: #ffffff;
+    box-shadow: none;
+    color: #1f1f1f;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--fonte);
+    font-weight: 600;
+  }
+
+  .indicador__numero {
+    font-family: var(--fonte);
+    font-weight: 500;
+  }
+
+  .barra__valor {
+    background: #1f1f1f;
+  }
+}
