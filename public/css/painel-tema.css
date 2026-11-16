@@ -21,11 +21,19 @@
   --sombra-flutuante: 0 24px 64px -12px rgb(0 0 0 / 0.7), 0 0 0 1px var(--borda);
 }
 
-body {
-  background:
-    radial-gradient(900px 520px at 100% -10%, rgb(31 102 240 / 0.12), transparent 60%),
-    var(--noite);
-  background-attachment: fixed;
+/* O brilho de fundo fica na camada fixa de tema.css (body::before). */
+body::before {
+  background: radial-gradient(900px 520px at 100% -10%, rgb(31 102 240 / 0.12), transparent 60%);
+}
+
+.corpo-entrar::before {
+  display: none;
+}
+
+@media print {
+  body::before {
+    display: none;
+  }
 }
 
 /* Títulos das telas em Michroma; os de bloco ficam na fonte de texto,

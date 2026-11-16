@@ -230,6 +230,7 @@
         if (!r.servicos.length) {
           // Sem serviço cadastrado, a seção inteira some (sem título solto).
           areaServicos.closest('section').hidden = true;
+          pronto(areaServicos);
           return;
         }
         areaServicos.replaceChildren(listaDeServicos(r.servicos.slice(0, 3)));

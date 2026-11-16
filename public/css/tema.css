@@ -91,11 +91,20 @@
    Base
    ========================================================================== */
 body {
+  background: var(--noite);
+}
+
+/* Brilhos de fundo numa camada presa à tela. Faz o mesmo efeito de
+   background-attachment: fixed sem repintar a página a cada rolagem. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background:
     radial-gradient(1100px 620px at 85% -8%, rgb(31 102 240 / 0.14), transparent 62%),
-    radial-gradient(900px 500px at -10% 30%, rgb(54 207 255 / 0.05), transparent 60%),
-    var(--noite);
-  background-attachment: fixed;
+    radial-gradient(900px 500px at -10% 30%, rgb(54 207 255 / 0.05), transparent 60%);
+  pointer-events: none;
 }
 
 ::selection {
