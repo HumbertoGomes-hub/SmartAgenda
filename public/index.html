@@ -78,19 +78,7 @@
         </div>
       </section>
 
-      <!-- Comparador antes/depois do trabalho escolhido como capa no painel.
-           Sem capa, a seção inteira some. -->
-      <section id="capa" class="secao capa" aria-labelledby="titulo-capa" hidden>
-        <div class="conteudo">
-          <div class="secao__topo">
-            <h2 id="titulo-capa">Antes e depois</h2>
-            <p class="capa__dica">Arraste a linha para comparar.</p>
-          </div>
-          <figure id="capa-comparador"></figure>
-        </div>
-      </section>
-
-      <section class="conteudo" aria-label="Informações da estética">
+      <section class="conteudo faixa-informacoes" aria-label="Informações da estética">
         <dl class="informacoes">
           <div data-empresa-se="endereco">
             <dt>Endereço</dt>
@@ -105,6 +93,18 @@
             <dd><a href="#" data-empresa-link="telefone" data-empresa="telefone"></a></dd>
           </div>
         </dl>
+      </section>
+
+      <!-- Comparador antes/depois do trabalho escolhido como capa no painel.
+           Sem capa, a seção inteira some. -->
+      <section id="capa" class="secao capa" aria-labelledby="titulo-capa" hidden>
+        <div class="conteudo">
+          <div class="secao__topo">
+            <h2 id="titulo-capa">Antes e depois</h2>
+            <p class="capa__dica">Arraste a linha para comparar.</p>
+          </div>
+          <figure id="capa-comparador"></figure>
+        </div>
       </section>
 
       <section class="secao secao--creme" aria-labelledby="titulo-servicos">
@@ -171,8 +171,6 @@
             <li data-empresa-se="telefone"><a href="#" data-empresa-link="telefone" data-empresa="telefone"></a></li>
             <li data-empresa-se="whatsapp"><a href="#" data-empresa-link="whatsapp">WhatsApp</a></li>
             <li data-empresa-se="instagram"><a href="#" data-empresa-link="instagram" rel="noopener">Instagram</a></li>
-            <!-- temporário: acesso ao painel da equipe enquanto o projeto está no início -->
-            <li><a href="admin/">Entrar no painel</a></li>
           </ul>
         </div>
         <div>
@@ -180,9 +178,16 @@
           <ul>
             <li><a href="servicos.html">Serviços</a></li>
             <li><a href="portfolio.html">Portfólio</a></li>
-            <li><a href="privacidade.html">Privacidade</a></li>
+            <li><a href="agendar.html">Agendar horário</a></li>
           </ul>
         </div>
+      </div>
+      <div class="conteudo rodape__base">
+        <p>© <span data-ano>2026</span> <span data-empresa="nome"></span></p>
+        <ul>
+          <li><a href="privacidade.html">Privacidade</a></li>
+          <li><a href="admin/entrar.html" rel="nofollow">Área da equipe</a></li>
+        </ul>
       </div>
     </footer>
     <!-- fim: rodapé -->

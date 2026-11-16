@@ -253,6 +253,43 @@ h3 {
   background: linear-gradient(180deg, var(--grafite), var(--noite));
 }
 
+/* Barra final: direitos, privacidade e o acesso da equipe, em todas as páginas. */
+.rodape__base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e2) var(--e5);
+  padding-block: var(--e4);
+  border-top: 1px solid var(--borda);
+  color: var(--nevoa);
+  font-size: var(--texto-p);
+}
+
+.rodape__base ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e1) var(--e5);
+}
+
+.rodape__base a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.rodape__base a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.rodape__grade {
+  padding-block: var(--e7) var(--e6);
+}
+
 /* Rótulos das colunas do rodapé: texto de apoio, não título. */
 .rodape__grade h2 {
   font-family: var(--fonte);
@@ -352,6 +389,13 @@ h3 {
 #aro-3d {
   opacity: 0;
   transition: opacity 0.8s ease;
+  cursor: grab;
+  /* arrastar de lado gira a roda; rolar a página para cima e para baixo continua livre */
+  touch-action: pan-y;
+}
+
+#aro-3d[data-arrastando] {
+  cursor: grabbing;
 }
 
 /* aro3d.js marca o palco quando o primeiro quadro 3D foi desenhado. */
@@ -429,12 +473,51 @@ h3 {
 /* ==========================================================================
    Informações, seções e cabeçalhos de página
    ========================================================================== */
+/* Faixa logo abaixo da abertura: endereço, horário e contato lado a lado,
+   separados por filetes. Colunas vazias somem (data-empresa-se). */
 .informacoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding-block: 0;
   border-bottom: 1px solid var(--borda);
+}
+
+.informacoes > div {
+  flex: 1 1 14rem;
+  padding: var(--e5) var(--e5) var(--e5) 0;
+}
+
+.informacoes > div + div {
+  padding-left: var(--e5);
+  border-left: 1px solid var(--borda);
+}
+
+.informacoes dt {
+  letter-spacing: 0.01em;
 }
 
 .informacoes dd {
   color: var(--cromo);
+  font-size: var(--texto-m);
+  font-weight: 500;
+}
+
+.informacoes a {
+  text-decoration-color: rgb(54 207 255 / 0.55);
+}
+
+@media (max-width: 760px) {
+  .informacoes > div,
+  .informacoes > div + div {
+    flex-basis: 100%;
+    padding: var(--e4) 0;
+    border-left: 0;
+  }
+
+  .informacoes > div + div {
+    border-top: 1px solid var(--borda);
+  }
 }
 
 .secao--creme {

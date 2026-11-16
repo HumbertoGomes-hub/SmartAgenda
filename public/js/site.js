@@ -194,6 +194,11 @@
 
   document.querySelectorAll('.comparador').forEach(iniciarComparador);
 
+  /* Ano do rodapé */
+  document.querySelectorAll('[data-ano]').forEach(function (no) {
+    no.textContent = new Date().getFullYear();
+  });
+
   /* Formatação compartilhada (vitrine e agendamento) */
   // Centavos só quando existem: R$ 80, R$ 95,50.
   function formatarPreco(valor) {

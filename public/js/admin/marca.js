@@ -28,12 +28,20 @@
   function aplicarCor(cor) {
     if (!/^#[0-9a-f]{6}$/i.test(cor)) {
       // Sem cor configurada: fica a padrão do tokens.css.
-      ['--marca', '--marca-texto', '--sobre-marca-suave'].forEach(function (nome) {
+      ['--marca', '--marca-2', '--marca-texto', '--sobre-marca-suave'].forEach(function (nome) {
         raiz.style.removeProperty(nome);
       });
       return;
     }
     var l = luminancia(cor);
+    // No tema escuro (tema.css), cor quase preta sumiria no fundo: fica o azul do tema.
+    if (getComputedStyle(raiz).getPropertyValue('--tema').trim() === 'escuro' && l < 0.05) {
+      ['--marca', '--marca-2', '--marca-texto', '--sobre-marca-suave'].forEach(function (nome) {
+        raiz.style.removeProperty(nome);
+      });
+      return;
+    }
+    raiz.style.setProperty('--marca-2', cor);
     var contrasteBranco = 1.05 / (l + 0.05);
     var contrasteEscuro = (l + 0.05) / (luminancia('#1f1f1f') + 0.05);
     var textoBranco = contrasteBranco >= contrasteEscuro;
