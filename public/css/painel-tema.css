@@ -36,7 +36,7 @@ body::before {
   }
 }
 
-/* Títulos das telas em Michroma; os de bloco ficam na fonte de texto,
+/* Títulos das telas na Archivo expandida; os de bloco ficam na fonte de texto,
    que lê melhor em tamanho pequeno. */
 .painel-topo h1,
 .entrar h1 {
@@ -46,6 +46,7 @@ body::before {
 .bloco__topo h2,
 .dialogo h2 {
   font-family: var(--fonte);
+  font-stretch: 100%;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -66,6 +67,7 @@ body::before {
   margin-top: 0.125rem;
   color: var(--nevoa);
   font-family: var(--fonte);
+  font-stretch: 100%;
   letter-spacing: 0;
 }
 
@@ -152,7 +154,8 @@ a.menu-painel__link:hover {
 
 .indicador__numero {
   font-family: var(--fonte-titulo);
-  font-weight: 400;
+  font-stretch: var(--largura-titulo);
+  font-weight: 600;
 }
 
 .lista-agendamentos,
@@ -388,11 +391,13 @@ a.menu-painel__link:hover {
   h1,
   h2 {
     font-family: var(--fonte);
+  font-stretch: 100%;
     font-weight: 600;
   }
 
   .indicador__numero {
     font-family: var(--fonte);
+  font-stretch: 100%;
     font-weight: 500;
   }
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>SmartAgenda — Especificação de Requisitos</title>
-<meta name="author" content="Humberto e Gabriel Nascimento Botelho">
+<meta name="author" content="Humberto Pereira Gomes e Gabriel Nascimento Botelho">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 <style>
   @page {
@@ -70,20 +70,22 @@
 <header>
   <h1>SmartAgenda — Especificação de Requisitos</h1>
   <p class="subtitulo">Sistema web de vitrine e agendamento para estéticas automotivas</p>
-  <p class="meta">Versão 1.0 · 04/11/2026 · Colaboradores: Humberto e Gabriel Nascimento Botelho</p>
+  <p class="meta">Versão 1.1 · 16/11/2026 · Colaboradores: Humberto Pereira Gomes e Gabriel Nascimento Botelho</p>
 </header>
 
 <h2>1. Visão Geral e Objetivos</h2>
 <p>O SmartAgenda é uma aplicação web em Node.js para estéticas automotivas. O site funciona como vitrine
-da empresa e como agenda online: o cliente escolhe os serviços e marca ou desmarca um horário informando
-apenas nome e telefone, sem cadastro. Cada pedido é enviado ao WhatsApp do dono por um robô, e o dono
-aceita, pede reagendamento ou recusa. A aplicação é genérica: nome, logotipo, cores, serviços e horários
-são configurados no painel administrativo.</p>
+da empresa e como agenda online: o cliente escolhe os serviços e marca um horário informando apenas
+nome e telefone, sem cadastro; para desmarcar, ele fala com a estética pelo WhatsApp. Cada pedido é enviado
+ao WhatsApp do dono por um robô, e o dono aceita, pede reagendamento ou recusa. A aplicação é genérica:
+nome, logotipo, cores, serviços e horários são configurados no painel administrativo.</p>
+<p>Esta versão 1.1 registra as decisões tomadas durante o desenvolvimento (seção 7) e a situação de cada
+requisito na entrega (seção 8).</p>
 
 <h3>Objetivos</h3>
 <ul>
   <li>Divulgar os serviços e os trabalhos realizados, com fotos e textos próprios.</li>
-  <li>Permitir que o cliente agende e cancele horários pela web, sem criar conta.</li>
+  <li>Permitir que o cliente agende horários pela web, sem criar conta.</li>
   <li>Avisar o dono pelo WhatsApp a cada novo pedido e permitir a resposta pela própria conversa.</li>
   <li>Confirmar o agendamento ao cliente pelo WhatsApp.</li>
   <li>Evitar horários em conflito, com a agenda atualizada a cada resposta.</li>
@@ -95,7 +97,7 @@ são configurados no painel administrativo.</p>
   <colgroup><col class="a"><col></colgroup>
   <thead><tr><th>Usuário</th><th>Acesso</th></tr></thead>
   <tbody>
-    <tr><td class="k">Cliente</td><td>Site público: vitrine, agendamento e cancelamento</td></tr>
+    <tr><td class="k">Cliente</td><td>Site público: vitrine e agendamento</td></tr>
     <tr><td class="k">Dono</td><td>Painel completo, incluindo usuários, agenda e vitrine</td></tr>
     <tr><td class="k">Sócio</td><td>Painel: agenda, serviços, portfólio e relatórios</td></tr>
     <tr><td class="k">Funcionário</td><td>Painel: agenda e portfólio</td></tr>
@@ -112,9 +114,9 @@ aplicativo nativo e controle financeiro ou de estoque.</p>
   <colgroup><col class="id"><col class="nome"><col></colgroup>
   <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th></tr></thead>
   <tbody>
-    <tr><td class="k">RF-01</td><td>Exibir página inicial</td><td>Exibir nome, logotipo, descrição, endereço, horário de funcionamento e contatos da estética, com acesso ao agendamento.</td></tr>
+    <tr><td class="k">RF-01</td><td>Exibir página inicial</td><td>Exibir nome, logotipo, descrição, endereço, horário de funcionamento e contatos da estética, com acesso ao agendamento e um comparador de antes e depois do trabalho escolhido no painel.</td></tr>
     <tr><td class="k">RF-02</td><td>Exibir catálogo de serviços</td><td>Listar os serviços ativos por categoria, com descrição, preço “a partir de” e duração estimada.</td></tr>
-    <tr><td class="k">RF-03</td><td>Exibir portfólio</td><td>Exibir os trabalhos publicados em galeria, com título, descrição, fotos e serviço relacionado.</td></tr>
+    <tr><td class="k">RF-03</td><td>Exibir portfólio</td><td>Exibir os trabalhos publicados em galeria, com título, descrição, fotos (antes, depois e gerais) e serviço relacionado. Enquanto não houver trabalho publicado, exibir trabalhos de exemplo identificados como tal.</td></tr>
   </tbody>
 </table>
 
@@ -126,7 +128,7 @@ aplicativo nativo e controle financeiro ou de estoque.</p>
     <tr><td class="k">RF-04</td><td>Consultar horários disponíveis</td><td>Exibir calendário com os horários livres, calculados pela configuração da agenda e pela duração dos serviços escolhidos.</td></tr>
     <tr><td class="k">RF-05</td><td>Solicitar agendamento</td><td>Permitir que o cliente escolha serviços, data e horário, informe nome, telefone e, opcionalmente, modelo do veículo e observações. O pedido é gravado com status Pendente.</td></tr>
     <tr><td class="k">RF-06</td><td>Validar telefone</td><td>Confirmar junto ao provedor de WhatsApp que o telefone informado existe antes de gravar o pedido.</td></tr>
-    <tr><td class="k">RF-07</td><td>Cancelar agendamento</td><td>Permitir que o cliente desmarque um agendamento informando telefone e código do agendamento.</td></tr>
+    <tr><td class="k">RF-07</td><td>Desmarcar a pedido do cliente</td><td>O cliente pede pelo WhatsApp da estética para desmarcar ou mudar o horário; um usuário do painel desmarca ou remarca o agendamento e o horário volta a ficar livre.</td></tr>
     <tr><td class="k">RF-08</td><td>Atualizar agenda</td><td>Refletir na agenda cada mudança de status, liberando horários recusados, expirados ou cancelados.</td></tr>
   </tbody>
 </table>
@@ -140,7 +142,7 @@ aplicativo nativo e controle financeiro ou de estoque.</p>
     <tr><td class="k">RF-10</td><td>Receber resposta do dono</td><td>Interpretar a resposta enviada ao robô e atualizar o status do agendamento.</td></tr>
     <tr><td class="k">RF-11</td><td>Propor reagendamento</td><td>Enviar ao cliente o novo horário proposto e registrar se ele aceita ou recusa.</td></tr>
     <tr><td class="k">RF-12</td><td>Confirmar ao cliente</td><td>Enviar ao cliente data, horário, serviços, endereço e código quando o pedido for aceito.</td></tr>
-    <tr><td class="k">RF-13</td><td>Avisar recusa e cancelamento</td><td>Avisar o cliente sobre recusa ou expiração do pedido, e o dono sobre cancelamento feito pelo cliente.</td></tr>
+    <tr><td class="k">RF-13</td><td>Avisar recusa e cancelamento</td><td>Avisar o cliente sobre recusa, expiração ou cancelamento do pedido.</td></tr>
   </tbody>
 </table>
 
@@ -151,12 +153,12 @@ aplicativo nativo e controle financeiro ou de estoque.</p>
   <tbody>
     <tr><td class="k">RF-14</td><td>Autenticar usuário</td><td>Permitir acesso ao painel com e-mail e senha de usuário ativo.</td></tr>
     <tr><td class="k">RF-15</td><td>Gerenciar usuários</td><td>Permitir que o dono cadastre, edite e desative sócios e funcionários.</td></tr>
-    <tr><td class="k">RF-16</td><td>Responder pedidos pelo painel</td><td>Aceitar, reagendar ou recusar pedidos pendentes pelo painel.</td></tr>
-    <tr><td class="k">RF-17</td><td>Visualizar agenda</td><td>Exibir agendamentos em visão diária, semanal e mensal, com filtro por status e serviço.</td></tr>
+    <tr><td class="k">RF-16</td><td>Responder pedidos pelo painel</td><td>Aceitar pedidos pendentes pelo painel ou chamar o cliente no WhatsApp, com mensagem pronta, para combinar outro horário e remarcar. Pedido sem resposta expira (RN-08).</td></tr>
+    <tr><td class="k">RF-17</td><td>Visualizar agenda</td><td>Exibir agendamentos em visão diária, semanal e mensal, com filtro por status e serviço, e permitir editar, remarcar e desmarcar cada agendamento.</td></tr>
     <tr><td class="k">RF-18</td><td>Criar agendamento manual</td><td>Registrar agendamento confirmado para cliente atendido por telefone ou presencialmente.</td></tr>
     <tr><td class="k">RF-19</td><td>Registrar atendimento</td><td>Marcar agendamento confirmado como Concluído ou Não compareceu.</td></tr>
-    <tr><td class="k">RF-20</td><td>Gerenciar serviços</td><td>Cadastrar, editar, ativar e desativar serviços, com categoria, preço base e duração.</td></tr>
-    <tr><td class="k">RF-21</td><td>Gerenciar portfólio</td><td>Criar trabalhos com título, descrição e fotos, ordenar fotos e publicar ou ocultar cada trabalho.</td></tr>
+    <tr><td class="k">RF-20</td><td>Gerenciar serviços</td><td>Cadastrar, editar, ativar e desativar serviços, com categoria, preço base, duração e foto opcional.</td></tr>
+    <tr><td class="k">RF-21</td><td>Gerenciar portfólio</td><td>Criar trabalhos com título, descrição e fotos (antes, depois e gerais), ordenar fotos, publicar ou ocultar cada trabalho e escolher o trabalho do comparador e os destaques da página inicial.</td></tr>
     <tr><td class="k">RF-22</td><td>Configurar agenda</td><td>Definir dias e horários de funcionamento, intervalo entre horários, capacidade simultânea, prazos e datas bloqueadas.</td></tr>
     <tr><td class="k">RF-23</td><td>Personalizar vitrine</td><td>Alterar nome, logotipo, cores, descrição, endereço, contatos e número de WhatsApp das notificações.</td></tr>
     <tr><td class="k">RF-24</td><td>Gerar relatório mensal</td><td>Gerar o total de agendamentos por status e por serviço e o valor estimado dos atendimentos concluídos no mês.</td></tr>
@@ -178,7 +180,7 @@ aplicativo nativo e controle financeiro ou de estoque.</p>
     <tr><td class="k">RNF-08</td><td>Comunicação segura</td><td>Todas as páginas devem usar HTTPS.</td></tr>
     <tr><td class="k">RNF-09</td><td>Imagens</td><td>Upload em JPG, PNG ou WebP de até 5 MB, redimensionado para no máximo 1600 px no maior lado.</td></tr>
     <tr><td class="k">RNF-10</td><td>Backup</td><td>Cópia diária do banco de dados, mantida por 7 dias.</td></tr>
-    <tr><td class="k">RNF-11</td><td>Plataforma</td><td>Back-end em Node.js (LTS) com Express e banco de dados Supabase (PostgreSQL), com Supabase Storage para as fotos do portfólio.</td></tr>
+    <tr><td class="k">RNF-11</td><td>Plataforma</td><td>Back-end em Node.js (LTS) com Express e banco de dados Supabase (PostgreSQL), com Supabase Storage para as fotos do portfólio. Publicação na Vercel.</td></tr>
     <tr><td class="k">RNF-12</td><td>Configuração sem código</td><td>Uma nova estética deve entrar em operação alterando apenas dados no painel e variáveis de ambiente.</td></tr>
     <tr><td class="k">RNF-13</td><td>LGPD</td><td>Coletar nome e telefone somente com consentimento explícito e anonimizar clientes sem agendamento há 12 meses.</td></tr>
     <tr><td class="k">RNF-14</td><td>Integração com WhatsApp</td><td>Usar API autorizada de WhatsApp; a indisponibilidade do serviço não deve impedir o agendamento pelo site, e as mensagens pendentes devem ser reenviadas.</td></tr>
@@ -201,7 +203,7 @@ aplicativo nativo e controle financeiro ou de estoque.</p>
     <tr><td class="k">RN-09</td><td>Limite por telefone</td><td>Máximo de 2 agendamentos ativos (pendentes ou confirmados) por telefone.</td></tr>
     <tr><td class="k">RN-10</td><td>Confirmação</td><td>O cliente só recebe confirmação após aceite de um usuário administrativo.</td></tr>
     <tr><td class="k">RN-11</td><td>Reagendamento</td><td>O novo horário deve estar livre; recusa ou falta de resposta do cliente cancela o agendamento.</td></tr>
-    <tr><td class="k">RN-12</td><td>Cancelamento pelo cliente</td><td>Permitido até 2 horas antes do horário (configurável).</td></tr>
+    <tr><td class="k">RN-12</td><td>Cancelamento</td><td>O cliente não desmarca pelo site: pede pelo WhatsApp, e a equipe desmarca ou remarca no painel.</td></tr>
     <tr><td class="k">RN-13</td><td>Permissões por perfil</td><td>Cada perfil executa apenas as ações da matriz de permissões abaixo.</td></tr>
     <tr><td class="k">RN-14</td><td>Gestão de usuários</td><td>Somente o dono cadastra ou desativa usuários; deve existir sempre pelo menos um dono ativo.</td></tr>
     <tr><td class="k">RN-15</td><td>Preço estimado</td><td>O preço da vitrine é “a partir de”; o valor final é definido após avaliação do veículo.</td></tr>
@@ -255,6 +257,44 @@ aplicativo nativo e controle financeiro ou de estoque.</p>
     <li><code>UsuarioAdmin.podeExecutar()</code> : <code>{abstract}</code>, implementado em cada perfil conforme a matriz de permissões.</li>
   </ul>
   <p><strong>Notação:</strong> <code>+</code> público, <code>-</code> privado, <code>#</code> protegido.</p>
+</section>
+
+<section class="nova-pagina">
+  <h2>7. Decisões tomadas no desenvolvimento</h2>
+  <table class="dupla">
+    <colgroup><col class="a"><col></colgroup>
+    <thead><tr><th>Assunto</th><th>Decisão</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Desmarcar horário</td><td>O site não tem tela de cancelamento. O cliente pede pelo WhatsApp e a equipe desmarca ou remarca no painel (RF-07, RN-12). O prazo de cancelamento guardado na configuração deixou de aparecer no painel.</td></tr>
+      <tr><td class="k">Resposta aos pedidos</td><td>No painel, o pedido é aceito ou o cliente é chamado no WhatsApp com mensagem pronta. Não há botão de recusar: um horário que não serve é remarcado, e o pedido sem resposta expira sozinho (RF-16, RN-08).</td></tr>
+      <tr><td class="k">Anonimização (LGPD)</td><td>Cliente sem agendamento há 12 meses tem o nome trocado por “Cliente removido” e o telefone por um número sem relação com o original, em vez de um hash (o hash de um celular se desfaz por força bruta). A rotina roda todo dia às 3h pelo pg_cron.</td></tr>
+      <tr><td class="k">Sessão do painel</td><td>Cookie assinado (HMAC) com validade de 30 minutos, renovada a cada uso, sem guardar sessão no servidor. Assim funciona nas funções da Vercel (RNF-07).</td></tr>
+      <tr><td class="k">Conteúdo de exemplo</td><td>Enquanto o painel não tem trabalho publicado, o site mostra trabalhos de exemplo com fotos de licença livre (CC0) e o selo “Exemplo”. Eles somem quando o primeiro trabalho real é publicado.</td></tr>
+      <tr><td class="k">Identidade visual</td><td>Site e painel em tema escuro (preto, cromo e azul elétrico), fonte Archivo e uma roda 3D na abertura do site. A cor principal configurada no painel substitui o azul, exceto cores quase pretas, que sumiriam no fundo.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8. Situação dos requisitos na entrega</h2>
+  <table class="dupla">
+    <colgroup><col class="a"><col></colgroup>
+    <thead><tr><th>Situação</th><th>Requisitos</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Implementados</td><td>RF-01 a RF-05, RF-07, RF-08 e RF-14 a RF-24; RNF-05 a RNF-09 e RNF-11 a RNF-13; RN-01, RN-03 a RN-10 e RN-12 a RN-16.</td></tr>
+      <tr><td class="k">Dependem do robô do WhatsApp</td><td>RF-06, RF-09 a RF-13, RN-02, RN-11 (resposta do cliente à proposta de novo horário), RNF-02 e RNF-14. Exigem uma conta na API oficial do WhatsApp (Meta). Até lá, o painel abre a conversa com o cliente com a mensagem pronta.</td></tr>
+      <tr><td class="k">Dependem da hospedagem</td><td>RNF-03 (disponibilidade), que segue as garantias da Vercel e do Supabase, e RNF-10 (backup diário): os backups automáticos do Supabase fazem parte dos planos pagos.</td></tr>
+      <tr><td class="k">Ainda não medidos</td><td>RNF-01 (tempo de resposta) e RNF-04 (50 usuários simultâneos): o sistema foi feito para atendê-los, mas não passou por teste de carga.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Histórico de versões</h3>
+  <table class="dupla">
+    <colgroup><col class="a"><col></colgroup>
+    <thead><tr><th>Versão</th><th>Mudanças</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1.0 · 04/11/2026</td><td>Especificação inicial.</td></tr>
+      <tr><td class="k">1.1 · 16/11/2026</td><td>RF-01, RF-03, RF-07, RF-13, RF-16, RF-17, RF-20, RF-21, RNF-11 e RN-12 revistos; seções 7 e 8 incluídas.</td></tr>
+    </tbody>
+  </table>
 </section>
 
 </body>

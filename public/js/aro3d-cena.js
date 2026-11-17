@@ -299,7 +299,8 @@ function desenharPneu(THREE, anisotropia) {
       ctx.scale(-1, espelho ? 1 : -1); // lê certo de fora, com o topo das letras para a banda
       ctx.fillStyle = ctx === r ? '#c8c8c8' : '#c2c2c2';
       ctx.textBaseline = 'middle';
-      ctx.font = '700 46px "Michroma", "Arial Black", Arial, sans-serif';
+      ctx.font = '700 46px "Archivo", "Arial Black", Arial, sans-serif';
+      if ('fontStretch' in ctx) ctx.fontStretch = 'expanded';
       const frases = ['GH PERFORMANCE', '245/35 ZR20', 'ULTRA GRIP', '245/35 ZR20'];
       frases.forEach((frase, i) => {
         ctx.textAlign = 'center';

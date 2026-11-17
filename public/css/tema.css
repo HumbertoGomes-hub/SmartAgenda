@@ -1,32 +1,26 @@
 /*
- * Tema do site público: noite, cromo e azul elétrico.
+ * Tema escuro: noite, cromo e azul elétrico.
  *
- * Carregado só nas páginas públicas, depois de tokens.css e site.css. O painel
- * (public/admin/) não carrega este arquivo e continua claro.
+ * Carregado em todas as páginas, do site e do painel, depois de tokens.css e
+ * site.css. No painel, painel-tema.css vem por último com os ajustes das telas.
  *
  * Primeiro redefine os tokens (o site.css inteiro passa a usar a paleta
  * escura); depois ajusta os componentes que pedem tratamento próprio.
  *
- * Fontes no próprio projeto (public/fontes/, licença SIL OFL):
- *   Michroma ........ títulos e nome da estética (larga, de letreiro automotivo)
- *   Instrument Sans . texto e interface
+ * Fonte no próprio projeto (public/fontes/, licença SIL OFL): Archivo, uma
+ * família variável em peso e largura. Uma só para tudo:
+ *   títulos e nome da estética: expandida (125%) e seminegrito, como letreiro
+ *     de carro;
+ *   texto e interface: largura normal.
  */
 
 @font-face {
-  font-family: 'Michroma';
+  font-family: 'Archivo';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
   font-display: swap;
-  src: url('../fontes/michroma-latin.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Instrument Sans';
-  font-style: normal;
-  font-weight: 400 700;
-  font-stretch: 75% 100%;
-  font-display: swap;
-  src: url('../fontes/instrument-sans-latin.woff2') format('woff2');
+  src: url('../fontes/archivo-latin.woff2') format('woff2');
 }
 
 :root {
@@ -74,8 +68,9 @@
   );
 
   /* Tipografia */
-  --fonte: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --fonte-titulo: 'Michroma', 'Instrument Sans', 'Segoe UI', sans-serif;
+  --fonte: 'Archivo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --fonte-titulo: 'Archivo', 'Segoe UI', sans-serif;
+  --largura-titulo: 125%;
   --titulo-p: 1.25rem;
   --titulo-m: clamp(1.45rem, 1.15rem + 1.3vw, 2.2rem);
   --titulo-g: clamp(1.85rem, 1.35rem + 2.3vw, 3.2rem);
@@ -115,10 +110,10 @@ body::before {
 h1,
 h2 {
   font-family: var(--fonte-titulo);
-  font-weight: 400;
-  font-synthesis: none;
-  letter-spacing: -0.01em;
-  line-height: 1.18;
+  font-stretch: var(--largura-titulo);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
 }
 
 h3 {
@@ -225,9 +220,10 @@ h3 {
 
 .marca {
   font-family: var(--fonte-titulo);
+  font-stretch: var(--largura-titulo);
   font-size: 0.9375rem;
-  font-weight: 400;
-  letter-spacing: 0.02em;
+  font-weight: 650;
+  letter-spacing: 0;
 }
 
 .navegacao a {
@@ -302,6 +298,7 @@ h3 {
 /* Rótulos das colunas do rodapé: texto de apoio, não título. */
 .rodape__grade h2 {
   font-family: var(--fonte);
+  font-stretch: 100%;
   letter-spacing: 0;
 }
 
@@ -622,6 +619,7 @@ h3 {
 
 .trabalho h3 {
   font-family: var(--fonte);
+  font-stretch: 100%;
   font-weight: 600;
 }
 
@@ -681,6 +679,8 @@ h3 {
 
 .passos-faixa li::before {
   font-family: var(--fonte-titulo);
+  font-stretch: var(--largura-titulo);
+  font-weight: 600;
   font-size: 1.125rem;
   line-height: 1.6;
   background: linear-gradient(180deg, var(--ciano), var(--marca));
@@ -799,6 +799,7 @@ h3 {
   border-color: rgb(54 207 255 / 0.35);
   color: #9fdcff;
   font-family: var(--fonte);
+  font-stretch: 100%;
 }
 
 /* ==========================================================================
